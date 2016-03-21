@@ -1,0 +1,134 @@
+! Exercicios -  Fundamentos de SO 
+! Exercicio: 12 - b)
+!
+! 12. Escreva um programa em Assembly que leia dois numeros inteiros x e y calcule x^y usando
+! (b) apenas somas
+!
+! Alexandre Maros
+! UDESC - 2015/1
+
+_EXIT	   =	  1	! seven system call numbers
+_READ	   =	  3
+_WRITE	   =	  4
+_OPEN	   =	  5
+_CLOSE	   =	  6
+_CREAT	   =	  8
+_LSEEK	   =	 19
+_GETCHAR   =	117	! five system subroutine numbers
+_SPRINTF   =	121
+_PUTCHAR   =	122
+_SSCANF	   =	125
+_PRINTF	   =	127
+STDIN	   =	  0	! three initially opened file descriptors
+STDOUT	   =	  1
+STDERR	   =	  2
+
+.SECT .TEXT		! Definition of section header labels
+TxtSecHd:
+.SECT .DATA
+DatSecHd:
+.SECT .TEXT
+
+.SECT .TEXT
+start:
+    MOV     BP,SP       ! salva SP
+    PUSH    entre_x     ! endereco da string
+    PUSH    _PRINTF     ! no. da syscall
+    SYS                 ! executa syscall 
+
+    CALL    readnum     ! le string e converte para numero
+    MOV     (x),AX      ! armazena o numero lido em 'x'
+    
+    DEC     AX          ! Decrementa AX para colocar no cont2 para controlar as somas
+    MOV     (cont2),AX  
+
+    PUSH    entre_y     ! endereco da string
+    PUSH    _PRINTF     ! no. da syscall
+    SYS                 ! executa syscall
+
+    CALL    readnum     ! le string e converte para numero
+    MOV     (y),AX      ! armazena o numero lido em 'y'
+    
+    MOV     (cont),AX   ! Coloca AX na variavel cont para controlar as somas
+    MOV     AX,(x)      
+    JMP     loopSoma1
+
+!   4 * 4 * 4    
+!   (4 * 4) * 4
+! = (4+4+4+4) * 4
+! = (16) * 4
+! = 16 + 16 + 16 + 16
+
+loopSoma1:
+    MOV     CX,(cont)   ! Coloca contador principal em CX
+    MOV     (x),AX      ! Move AX para x
+    DEC     CX          ! Decremente CX
+    JE      imprime     ! Caso CX for 0, imprima x^y
+    MOV     (cont),CX   ! Se nao for, guarde contador principal
+    MOV     CX,(cont2)  ! coloque contador secundario em CX
+    JMP     loopSoma2   ! Va para a segundo loop
+        
+loopSoma2:
+    ADD     AX,(x)      ! Some x em AX
+    DEC     CX          ! Decremente CX
+    JE      loopSoma1   ! Caso CX seja 0, volte para loop1
+    JMP     loopSoma2   ! Se nao, continue somando
+
+imprime:
+    PUSH    (x)         ! Coloque x^y na pilha
+    PUSH    resultado   ! Coloque string na pilha
+    PUSH    _PRINTF
+    SYS
+
+encerra:    
+    MOV     SP,BP       ! limpa pilha
+    PUSH    0           ! codigo de retorno=0
+    PUSH    _EXIT       
+    SYS                 ! encerra o programa
+
+.SECT   .DATA
+entre_x:        .ASCIZ  '\nEntre x: '
+entre_y:        .ASCIZ  '\nEntre y: '
+resultado:      .ASCIZ  'x^y: %d\n'
+
+.SECT   .BSS
+x:      .SPACE 16
+y:      .SPACE 16
+cont:   .SPACE 16
+cont2:  .SPACE 16
+! subrotina para ler um numero da entrada padrao em as88
+! - numero lido e' retornado em AX
+! - nao e' verificado se o numero lido cabe em 16 bits
+!
+! (c) rro, 2015-02-24
+
+_RNBSIZ=8			! tamanho do buffer de leitura
+
+.SECT	.TEXT
+	
+readnum:
+	PUSH	BP		! salva BP
+	MOV	BP,SP		! salva SP em BP
+	PUSH	_RNBSIZ		! no. de bytes a ler
+	PUSH	_rnbuf		! endereco da string
+	PUSH	STDIN		! arquivo de entrada
+	PUSH	_READ		! no. da syscall
+	SYS			! executa syscall 
+
+	PUSH	_rnum		! onde sera armazenado o numero
+	PUSH	_rnssf		! string de formato
+	PUSH	_rnbuf		! string lida
+	PUSH	_SSCANF
+	SYS
+
+	MOV	AX,(_rnum)	! guarda o numero em AX
+	MOV	SP,BP		! limpa a pilha
+	POP	BP		! restaura BP
+	RET			! encerra funcao
+	
+.SECT	.DATA
+_rnbuf:	.SPACE	_RNBSIZ
+_rnssf:	.ASCIZ	'%d'
+_rnum:	.WORD	0
+	
+.SECT	.BSS

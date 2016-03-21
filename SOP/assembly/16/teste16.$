@@ -1,0 +1,157 @@
+! Programa teste para ler numeros e utilizar a funcao media, imprimindo (sem os restos) o resultado no final.
+! O arquivo 16.s contem a implementacao da sub rotina
+! Alexandre Maros
+! UDESC - 2015/1
+!
+
+_EXIT	   =	  1	! seven system call numbers
+_READ	   =	  3
+_WRITE	   =	  4
+_OPEN	   =	  5
+_CLOSE	   =	  6
+_CREAT	   =	  8
+_LSEEK	   =	 19
+_GETCHAR   =	117	! five system subroutine numbers
+_SPRINTF   =	121
+_PUTCHAR   =	122
+_SSCANF	   =	125
+_PRINTF	   =	127
+STDIN	   =	  0	! three initially opened file descriptors
+STDOUT	   =	  1
+STDERR	   =	  2
+
+.SECT .TEXT		! Definition of section header labels
+TxtSecHd:
+.SECT .DATA
+DatSecHd:
+.SECT .TEXT
+
+.SECT .TEXT
+start:
+    MOV     BP,SP       ! salva SP
+    
+    PUSH    entreQtd    ! endereco da string
+    PUSH    _PRINTF     ! no. da syscall
+    SYS                 ! executa syscall 
+
+    CALL    readnum     ! le string e converte para numero
+    
+    MOV     (_nNum),AX  ! guarda quantidade de numeros
+    MOV     CX,AX       ! coloca quantidade de numeros em CX
+    JMP     loop1
+
+loop1:
+    
+    MOV     BP,SP       ! guarda posicao da pilha
+    PUSH    entreN
+    PUSH    _PRINTF
+    SYS
+    MOV     SP,BP       ! limpa pilha
+
+    CALL    readnum     ! le numero
+    PUSH    AX          ! coloca na pilha
+    DEC     CX          ! Decrementa CX
+    JNZ     loop1       ! volta se nao chegou em zero
+    JMP     imprime     ! imprime Media
+
+imprime:
+    PUSH    (_nNum)     ! empilha qtd numeros
+    CALL    media       ! chama funcao media
+    PUSH    AX          ! empilha AX (resultado de media)
+    PUSH    resultado   ! empilha string
+    PUSH    _PRINTF     ! imprime
+    SYS
+
+encerra:    
+    MOV     SP,BP   ! limpa pilha
+    PUSH    0       ! codigo de retorno=0
+    PUSH    _EXIT       
+    SYS             ! encerra o programa
+
+.SECT   .DATA
+entreQtd:       .ASCIZ  '\nEntre quantidade de numeros: '
+entreN:   .ASCIZ  'Digite numero: '
+resultado:  .ASCIZ  'Media: %d\n'
+
+.SECT   .BSS
+nNum:   .SPACE 16
+x:      .SPACE 16
+! Exercicios -  Fundamentos de SO 
+!16. Escreva uma subrotina em Assembly que calcule a media aritmetica de uma quantidade arbitraria
+!de numeros passados como parametro na pilha. O primeiro parametro deve ser a quantidade de
+!numeros a processar. Por exemplo, para calcular a media de 4, 9 e 5, a chamada em C equivalente
+!seria media(3, 4, 9, 5). A media calculada deve ser retornada em AX.
+! 
+!
+! Alexandre Maros
+! UDESC - SOP - 2015/1
+
+.SECT   .TEXT
+media:
+    PUSH    BP              ! salva BP
+    MOV     BP,SP           ! salva SP em BP
+    ADD     BP,4            ! Coloca o ponteiro no primeiro argumento da pilha
+    MOV     CX,(BP)         ! Coloca o valor do primiero argumento em CX (numero de elementos)
+    MOV     (_nNum),CX      ! Coloca a quantidade de numeros em nNum
+    XOR     AX,AX           ! Zera AX
+    MOV     (_num),AX       ! Zera Num
+    JMP     _loop           ! Vai para loop
+
+_loop:
+    ADD     BP,2            ! Passa por todos os argumentos restantes
+    MOV     AX,(BP)         ! Tira numero digitado
+    ADD     (_num),AX       ! Adiciona em _num 
+    DEC     CX              ! Decrementa CX
+    JNZ     _loop           ! Volta
+
+_encerra:
+    MOV     AX,(_num)       ! Adiciona a soa de todos os numeros em AX
+    MOV     CX,(_nNum)      ! Adiciona a quantidade de numeros em CX
+    DIV     CX              ! Divide AX por CX
+    MOV     (_num),AX       !
+    MOV     AX,(_num)
+    POP     BP              ! restaura BP
+    RET                     ! encerra funcao
+                            ! retorno fica salvo em AX
+
+.SECT   .DATA
+_num:   .SPACE 16
+_nNum:  .SPACE 16
+
+.SECT   .BSS
+! subrotina para ler um numero da entrada padrao em as88
+! - numero lido e' retornado em AX
+! - nao e' verificado se o numero lido cabe em 16 bits
+!
+! (c) rro, 2015-02-24
+
+_RNBSIZ=8			! tamanho do buffer de leitura
+
+.SECT	.TEXT
+	
+readnum:
+	PUSH	BP		! salva BP
+	MOV	BP,SP		! salva SP em BP
+	PUSH	_RNBSIZ		! no. de bytes a ler
+	PUSH	_rnbuf		! endereco da string
+	PUSH	STDIN		! arquivo de entrada
+	PUSH	_READ		! no. da syscall
+	SYS			! executa syscall 
+
+	PUSH	_rnum		! onde sera armazenado o numero
+	PUSH	_rnssf		! string de formato
+	PUSH	_rnbuf		! string lida
+	PUSH	_SSCANF
+	SYS
+
+	MOV	AX,(_rnum)	! guarda o numero em AX
+	MOV	SP,BP		! limpa a pilha
+	POP	BP		! restaura BP
+	RET			! encerra funcao
+	
+.SECT	.DATA
+_rnbuf:	.SPACE	_RNBSIZ
+_rnssf:	.ASCIZ	'%d'
+_rnum:	.WORD	0
+	
+.SECT	.BSS
