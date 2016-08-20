@@ -1,6 +1,6 @@
-# Z/Eves 2.3 for Linux
+#Z/Eves 2.3 for Linux
 
-Download: https://www.com.s/orgylt28cy7o6y6/ZEves/tar.bz2.dl?dropbox=0  
+Download: https://www.dropbox.com/s/orgylt28cy7o6y6/ZEves.tar.bz2?dl=0
 
 To execute:  
 1. tar -xvf ZEves.tar.bz2  
