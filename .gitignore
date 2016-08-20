@@ -1,2 +1,7 @@
 *.o
 .vscode
+
+## Latex stuff
+*.aux
+*.dvi
+*.log
