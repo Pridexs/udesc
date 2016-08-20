@@ -1,0 +1,12 @@
+\select@language {brazil}
+\contentsline {chapter}{Introdu\IeC {\c c}\IeC {\~a}o}{2}
+\contentsline {chapter}{Objetivo}{3}
+\contentsline {chapter}{Problem\IeC {\'a}tica}{4}
+\contentsline {section}{\numberline {1.1}Classifica\IeC {\c c}\IeC {\~a}o Externa}{4}
+\contentsline {subsection}{\numberline {1.1.1}Sele\IeC {\c c}\IeC {\~a}o por Substitui\IeC {\c c}\IeC {\~a}o}{5}
+\contentsline {subsection}{\numberline {1.1.2}Balanceamento de N Caminhos}{6}
+\contentsline {chapter}{Experimento}{7}
+\contentsline {section}{\numberline {2.2}Informa\IeC {\c c}\IeC {\~o}es T\IeC {\'e}cnicas}{7}
+\contentsline {section}{\numberline {2.3}Resultados}{8}
+\contentsline {subsection}{\numberline {2.3.1}An\IeC {\'a}lise dos Resultados}{8}
+\contentsline {chapter}{Conclus\IeC {\~a}o}{9}

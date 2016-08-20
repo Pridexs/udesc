@@ -1,0 +1,58 @@
+%Modelo de relatório de Transformações Bioquímicas em Latex (2009/3)
+%Escrito por Amadeus Folego da Silva
+\documentclass[a4paper, oneside]{report}                        %classe relatório, papel A4, formato de uma página
+\usepackage[top=3cm, bottom=2cm, left=3cm, right=2cm]{geometry} %margens da folha
+\usepackage[utf8]{inputenc}                                     %|
+\usepackage[brazil]{babel}                                      %|adaptações para português brasileiro
+%\usepackage{pslatex}                                           %fonte Times New Roman
+\usepackage[alf]{abntex2cite}                                      %pacote de citações formato alfanumérico da abnt
+\usepackage{indentfirst}                                        %começa parágrafo sempre
+\usepackage{fancyhdr}                                           %pacote para editar layout da pagina
+\usepackage{graphicx}                                           %pacote para colocar gráficos
+\usepackage{amsmath}                                            %pacote para notações matemáticas da ams
+\usepackage{url}                                                %pacote para colocar endereço online
+\usepackage{listing}
+\cfoot{}                                                        %nada no rodapé central
+\rfoot{\thepage}                                                %número da página no rodapé à direita
+\setlength{\headheight}{15pt}
+\pagestyle{fancyplain}                                          %utiliza layout estabelecido
+
+%\setlength{\parindent}{2.5cm}                                   %parágrafo com recuo de 2.5cm
+\fontsize{12pt}{1.5cm}                                          %fonte tamanho 12, entrelinhas de 1.5cm
+
+\title{\Huge{Universidade do Estado de Santa Catarina}\\[1.5cm]\huge{Projeto de Arquivos}\\[3cm]\large{\textbf{ORDENAÇÃO EXTERNA PELO METÓDO - SELEÇÃO POR SUBSTITUIÇÃO E A INTERCALAÇÃO DE N CAMINHOS}}\\[4cm]}  %título editado
+
+\author{\hfill \textbf{Grupo}\smallskip\\\hfill Alexandre Maros\\\hfill Mateus Boiani\\\hfill \medskip\\\hfill \textbf{Prof. Responsável}\smallskip\\\hfill Wesley Bezerra} %autores editado
+
+\date{\vfill\today}                                           %data
+
+\begin{document}                                                %inicia documento
+
+\maketitle                                                      %faz capa
+\tableofcontents                                                %faz sumário
+
+\renewcommand{\abstractname}{Resumo}                            %coloca nome de abstract para resumo
+%\begin{abstract}                                                %inicia abstract
+%\input{Resumo}                                                  %coloca resumo
+%\end{abstract}                                                  %finaliza abstract
+
+\chapter*{Introdução}                                           %inicia capítulo sem numeração
+\addcontentsline{toc}{chapter}{Introdução}                      %como não numeramos os capítulos, precisamos fazer isso pra colocar a introdução no sumário
+\input{Introducao}
+\chapter*{Objetivos}
+\addcontentsline{toc}{chapter}{Objetivo}
+\input{Objetivo}
+\chapter*{Problemática}
+\addcontentsline{toc}{chapter}{Problemática}
+\input{Problematica}
+\chapter*{Experimento}
+\addcontentsline{toc}{chapter}{Experimento}
+\input{Exercicios}
+\chapter*{Conclusão}
+\addcontentsline{toc}{chapter}{Conclusão}
+\input{Conclusao}
+
+%\bibliographystyle{abnt-alf}                                    %define estilo de bibliografia como abnt
+%\bibliography{Bibliografia}                                     %coloca bibliografia
+
+\end{document}                                                  %finaliza documento
