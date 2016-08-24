@@ -1,0 +1,244 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{zed-csp}
+\usepackage{bbm}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[left=3.00cm, right=2.00cm, top=5.00cm, bottom=3.00cm]{geometry}
+
+\thispagestyle{fancy}
+%\fancyhead[R]{Universidade do Estado de Santa Catarina/Centro de Ciências Tecnológicas UDESC/CCT}
+%\fancyhead[L]{}
+
+\lhead{
+	\includegraphics[scale=0.75]{figuras/logo_udescjlle.pdf}
+}
+\chead{
+	\scriptsize{
+		UNIVERSIDADE DO ESTADO DE SANTA CATARINA -- UDESC\\
+		CENTRO DE CIÊNCIAS TECNOLÓGICAS -- CCT\\
+		DEPARTAMENTO DE CIÊNCIA DA COMPUTAÇÃO -- DCC
+	}
+}
+%\rhead{\includegraphics[width=0.3\columnwidth]{figuras/logo_udescjlle.png}}
+\rhead{
+	\includegraphics[scale=0.75]{figuras/logo_dcc.pdf}
+}
+
+
+\begin{document}
+
+\begin{center}
+    \huge  Operações com cartão de crédito\\
+\end{center}
+
+\begin{center}
+    Nome Sobrenome\\
+    Métodos Formais - Linguagem Z\\
+\end{center}
+\vspace{1.5cm}
+
+Modelagem de um sistema de cartão de crédito, incluindo suas operações como:
+\begin{itemize}
+  \item Autenticação (falha/sucesso)
+  \item Efetuar pagamento (falha/sucesso)
+  \item Verificação de saldo (falha/sucesso)
+  \item Pagamento com crédito (falha/sucesso)
+  \item Pagamento limite (falha/sucesso)\\
+  \\
+\end{itemize}
+
+\textbf{Tipos globais da especificação :}
+
+\begin{zed}
+    [CartãoDeCrédito] \\
+   Caracter : \{a, b, c, ..., z\}\\
+   Retorno == Falha na Autenticação | Saldo Insuficiente | Limite Estourado | OK\\
+\end{zed}
+
+\begin{schema}{CartãoDeCrédito}
+    cliente: {\it seq1}\ Caracter \\
+    senha: \nat \\
+    numeroCartão:\nat\\
+    saldo: \real\\
+    limiteUsado:\real\\
+    limiteTotal:\real
+    
+    \where
+    
+    \#senha=6\\
+    limite \geq 0\\
+    \#numeroCartão=16\\
+    limiteUsado \leq limiteTotal\\
+    saldo \geq 0\\
+    limiteUsado \geq 0
+\end{schema}
+
+\pagebreak
+
+Para a autenticação ser efetuada com sucesso, o número de cartão precisa existir em CartãoDeCrédito e a senha fornecida precisa ser a mesma contida em CartãoDeCrédito.\\
+Caso positivo, a mensagem de OK será mostrada.
+\begin{schema}{Autenticação}
+    \Xi CartãoDeCrédito\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    msg!:Retorno
+\where
+    numeroCartão? \in CartãoDeCrédito \land numeroCartão?.senha = senha?\\
+    msg! = OK
+    
+\end{schema}
+
+\begin{schema}{FalhaAutenticação}
+    \Xi Autenticação\\
+    \Xi CartãoDeCrédito\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    msg!:Retorno
+\where
+    (numeroCartão? \in CartãoDeCrédito \land numeroCartão?.senha \neq senha?) \lor\\
+    (numeroCartão? \nin CartãoDeCrédito)\\
+    msg! = Falha na Autenticação
+    
+\end{schema}
+
+Para EfetuarPagamento ser executada com sucesso, o saldo do cartão precisa ser maior ou igual ao valor do pagamento. Com isso, o novo saldo será calculado subtraindo-se o valor pago.\\
+Caso positivo, a mensagem de OK será mostrada.
+
+\begin{schema}{EfetuarPagamento}
+    \Delta CartãoDeCrédito\\
+    \Xi Autenticação\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    valor?: \real
+    msg!: Retorno
+
+    \where
+    \Xi Autenticação\\
+    saldo \geq valor?\\
+    saldo' = saldo - valor?\\
+    msg! = OK
+    
+\end{schema}
+
+\begin{schema}{FalhaEfetuarPagamento}
+    \Xi EfetuarPagamento\\
+    \Xi CartãoDeCrédito\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    valor?: \real
+    msg!: Retorno
+
+    \where
+    \Xi FalhaAutenticação \lor saldo \leq valor?\\
+    \IF saldo \leq valor? \THEN msg! = Saldo Insuficiente
+    
+\end{schema}
+
+Para verificar o saldo, a autenticação deve ser executada com sucesso. Caso positivo, duas mensagens serão mostradas, a de saldo e o limite disponível.
+
+\begin{schema}{VerificarSaldo}
+    \Xi CartãoDeCrédito\\
+    \Xi Autenticação\\
+    limite:\real \\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    msg1!: \real\\
+    msg2!: \real
+    
+    \where
+    
+    \Xi Autenticação\\
+    msg1!=saldo\\
+    msg2!=limiteTotal - limiteUsado
+\end{schema}
+
+Caso a verificação falhe, a mensagem de FalhanaAutenticação será mostrada:
+
+\begin{schema}{FalhaVerificarSaldo}
+    \Xi VerificarSaldo\\
+    \Xi CartãoDeCrédito\\
+    saldo: \real\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    msg!: Retorno
+    
+    \where
+    
+    \Xi FalhaAutenticação\\
+    msg! = Falha na Autenticação
+\end{schema}
+
+\pagebreak
+
+Para o pagamento ser efetuado com sucesso, o valor a ser pago + limite usado deve ser menor que o limite total. Será tambem atualizado o valor do limiteUsado.\\
+Caso positivo, a mensagem de OK será mostrada.
+
+\begin{schema}{EfetuarPagamentoCrédito}
+    \Delta CartãoDeCrédito\\
+    \Xi Verificação\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    valor?: \real\\
+    msg!: Retorno
+
+    \where
+    \Xi Autenticação\\
+    limiteTotal \geq valor? + limiteUsado\\
+    limiteUsado' = limiteUsado + valor?\\
+    msg! = OK
+    
+\end{schema}
+
+\begin{schema}{FalhaEfetuarPagamentoCrédito}
+    \Xi CartãoDeCrédito\\
+    \Xi EfetuarPagamentoCrédito\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    valor?: \real\\
+    msg!: Retorno
+
+    \where
+    \Xi FalhaAutenticação \lor (limiteTotal < limiteUsado + valor?) \\
+    \IF limiteTotal < (limiteUsado + valor?) \THEN msg!= Limite Estourado
+    
+\end{schema}
+
+\pagebreak
+
+Para EfetuarPagamentoLimite ser executado com sucesso, o saldo deve ser maior ou igual ao valor a ser pago. Será atualizado o valor do limiteUsado.\\
+Caso positivo, a mensagem de OK será mostrada.
+
+\begin{schema}{EfetuarPagamentoLimite}
+    \Delta CartãoDeCrédito\\
+    \Xi Autenticação\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    valor?: \real\\
+    msg!: Retorno
+
+    \where
+    \Xi Autenticação\\
+    saldo \geq valor?\\
+    limiteUsado' = limiteUsado - valor?\\
+    msg! = OK
+    
+\end{schema}
+
+Caso o saldo seja inferior ao valor necessário para o pagamento, a mensagem de SaldoInsuficiente será mostrada:
+
+\begin{schema}{FalhaEfetuarPagamentoLimite}
+    \Xi CartãoDeCrédito\\
+    \Xi EfetuarPagamentoLimite\\
+    numeroCartão?: \nat\\
+    senha?: \nat\\
+    valor?: \real\\
+    msg!: Retorno
+
+    \where
+   \Xi FalhaAutenticação \lor (saldo \leq valor?)\\
+   \IF saldo \leq valor? \THEN msg!= Saldo Insuficiente
+    
+\end{schema}
+
+\end{document}
