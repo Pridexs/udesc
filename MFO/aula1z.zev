@@ -1,12 +1,12 @@
-<Z-EVES-GUI-State version="1" index="6"><textItem location="gui::1" history="2"><zed-box location="gui::1">[pessoas, livros]</zed-box></textItem
-><textItem location="gui::2" history="3"><axiomatic-box location="gui::2"><decl-part/>lendo: pessoas &lrarr; livros
+<Z-EVES-GUI-State version="1" index="6"><textItem location="gui::1"><zed-box location="gui::1">[pessoas, livros]</zed-box></textItem
+><textItem location="gui::2"><axiomatic-box location="gui::2"><decl-part/>lendo: pessoas &lrarr; livros
 custo: &Nopf;&lrarr;livros</axiomatic-box></textItem
-><textItem location="gui::3" history="4"><schema-box location="gui::3">defGostar<decl-part/>gosta: &Popf; pessoas<ax-part/>&forall; p1, p2: pessoas; l1: livros &bullet; (p1,l1) &isin; lendo &wedge; (p2,l1) &isin; lendo &wedge; p1&neq; p2 &rArr; p1 &isin; gosta &wedge; p2 &isin; gosta</schema-box></textItem
+><textItem location="gui::3"><schema-box location="gui::3">defGostar<decl-part/>gosta: &Popf; pessoas<ax-part/>&forall; p1, p2: pessoas; l1: livros &bullet; (p1,l1) &isin; lendo &wedge; (p2,l1) &isin; lendo &wedge; p1&neq; p2 &rArr; p1 &isin; gosta &wedge; p2 &isin; gosta</schema-box></textItem
 ><textItem location="gui::4"><schema-box location="gui::4"> defgulosos<decl-part/>p1lendo: &Popf;livros
 gulosos: &Popf;pessoas<ax-part/>&forall;p1: pessoas &bullet; p1lendo = lendo(p1) &wedge; #p1lendo &gt; 3 &rArr; p1 &isin; gulosos</schema-box></textItem
-><textItem location="gui::6"><schema-box location="gui::6"> defamam<decl-part/>amam: &Popf;pessoas
-lendoJuntos: pessoas &lrarr; livros<ax-part/>amam &subeq; gulosos
-&forall;a3, a4: pessoas; l1: livros; a3 &neq; a4 &wedge; (a3,l1) &isin; lendo &wedge; (a4,l1) &isin; lendo =&gt;  
+><textItem location="gui::6"><schema-box location="gui::6"> defamam<decl-part/> amam: &Popf;pessoas
+lendoJuntos: pessoas &lrarr; pessoas<ax-part/> amam &subeq; gulosos
+&forall;a3, a4: pessoas; l1: livros; a3 &neq; a4 &wedge; (a3,l1) &isin; lendo &wedge; (a4,l1) &isin; lendo =&gt;  (a3,a4) &isin; lendoJuntos
 &forall;a1, a2: amam
 a1 &neq; a2
 lendoa1 = lendo(a1); lendoa2 = lendo(a2)
