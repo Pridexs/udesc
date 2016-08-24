@@ -1,0 +1,124 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{zed-csp}
+\usepackage{bbm}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage[left=3.00cm, right=2.00cm, top=5.00cm, bottom=3.00cm]{geometry}
+
+\thispagestyle{fancy}
+%\fancyhead[R]{Universidade do Estado de Santa Catarina/Centro de Ciências Tecnológicas UDESC/CCT}
+%\fancyhead[L]{}
+
+\lhead{
+	\includegraphics[scale=0.75]{figuras/logo_udescjlle.pdf}
+}
+\chead{
+	\scriptsize{
+		UNIVERSIDADE DO ESTADO DE SANTA CATARINA -- UDESC\\
+		CENTRO DE CIÊNCIAS TECNOLÓGICAS -- CCT\\
+		DEPARTAMENTO DE CIÊNCIA DA COMPUTAÇÃO -- DCC
+	}
+}
+%\rhead{\includegraphics[width=0.3\columnwidth]{figuras/logo_udescjlle.png}}
+\rhead{
+	\includegraphics[scale=0.75]{figuras/logo_dcc.pdf}
+}
+
+
+\begin{document}
+
+\begin{center}
+    \huge  Exercício Tanque 1\\
+\end{center}
+
+\begin{center}
+    Alexandre Maros\\
+    Métodos Formais - Linguagem Z\\
+\end{center}
+\vspace{1.5cm}
+
+Resolução do Exercício 1 - Tanque\\\\
+
+\textbf{Tipos globais da especificação :}
+
+\begin{zed}
+   mensagens ::= qtd\_minima\_OK | qtd\_minima\_NOK | qtd\_maxima\_OK | qtd\_minima\_NOK\\
+   luzes ::= verde | vermelho\\
+   alarmes :== ligado | desligado
+\end{zed}
+
+\textbf{a --} Encher o tanque até o máximo permitido\\
+\begin{schema}{EncherTanqueMax}
+    \Delta tanqueCombustivel\\
+    qtdC: \nat
+    
+    \where
+    
+    qtdC=nivel\_max - conteudo\\
+    \heq nivel\_min \leq conteudo + qtdC \leq nivel\_max\\
+    conteudo' = conteudo + qtdC
+\end{schema}
+
+\textbf{b --} Encher o tanque com qualquer quantidade, respeitando o limite máximo
+\begin{schema}{EncherTanque}
+    \Delta tanqueCombustivel\\
+    qtdC?: \nat
+    
+    \where
+    
+    conteudo + qtdC? \leq nivel\_max\\
+    conteudo' = conteudo + qtdC?
+\end{schema}
+
+\textbf{c --} Indicar transbordamento
+\begin{schema}{MonitorarMax}
+    \Xi tanqueCombustivel\\
+    luz: luzes\\
+    alarme: alarmes\\
+    msg: mensagens
+    
+    \where
+    
+    conteudo > nivel\_max\\
+    luz = vermelha\\
+    alarme = ligado\\
+    msg != qtd\_maxima\_NOK
+\end{schema}
+
+\pagebreak
+
+\textbf{d --} Esvaziar o tanque por uma quantidade qualquer, respeitando o mínimo
+\begin{schema}{EsvaziarTanque}
+    \Delta tanqueCombustivel\\
+    qtdC?: \nat
+    
+    \where
+    
+    conteudo - qtdC? \geq nivel\_min\\
+    conteudo' = conteudo - qtdC?
+\end{schema}
+
+\textbf{e --} Esvaziar completamente o tanque
+\begin{schema}{EsvaziarCompletamente}
+    \Delta tanqueCombustivel
+    
+    \where
+    
+    conteudo' = 0
+\end{schema}
+
+\textbf{f --} Esvaziar o tanque para uma quantidade que estoura o limite mínimo e avisa este ocorrido
+\begin{schema}{EsvaziarTanqueEstourandoMinimo}
+    \Delta tanqueCombustivel\\
+    qtdC?: \nat\\
+    msg: mensagens
+    
+    \where
+    
+    0 \leq conteudo - qtdC < nivel\_min\\
+    conteudo' = conteudo - qtdC?\\
+    msg != qtd\_minima\_NOK
+\end{schema}
+
+\end{document}
