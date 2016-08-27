@@ -1,3 +1,7 @@
+// Alexandre Maros
+// pridexs.com
+// CAL0001 - Complexidade de Algoritmos
+
 #include <cmath>
 #include <cstdio>
 #include <ctime>
