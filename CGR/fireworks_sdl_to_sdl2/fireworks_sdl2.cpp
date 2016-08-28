@@ -12,11 +12,6 @@
 // Para acessalo: http://www.joinville.udesc.br/portal/professores/andretavares
 // Materiais -> CGR -> fireworks_sdl.c
 //
-// Ainda nao esta completo.
-// TO-DO:
-// [ ] - Disponibilizar Toggle FullScreen
-// [ ] - Settar fixed time stamp
-//
 
 //Using SDL, SDL OpenGL, standard IO, and, strings
 #include <SDL2/SDL.h>
@@ -38,7 +33,7 @@ bool init();
 bool initGL();
 
 //Input handler
-void handleKeys( unsigned char key, int x, int y );
+void handleKeyPress( SDL_Keysym *keysym );
 
 //Per frame update
 void update();
@@ -67,6 +62,9 @@ struct s_pf {
   float x, y, veloc_x, veloc_y;
   unsigned lifetime;
 } particles[NUM_PARTICLES];
+
+// Main loop flag
+bool quit = false;
 
 // Initialize the particles
 void InitParticle(int pause)
@@ -177,12 +175,19 @@ bool initGL()
 	return success;
 }
 
-void handleKeys( unsigned char key, int x, int y )
+void handleKeyPress( SDL_Keysym *keysym )
 {
-	//Toggle quad
-	if( key == 'q' )
+	switch ( keysym->sym ) 
 	{
-		gRenderQuad = !gRenderQuad;
+		case SDLK_ESCAPE:
+			quit = true;
+			break;
+		case SDLK_F1:
+			// Needs to implement a toggle funciton
+			SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			break;
+		default:
+			break;
 	}
 }
 
@@ -236,8 +241,6 @@ int main( int argc, char* args[] )
 	}
 	else
 	{
-		//Main loop flag
-		bool quit = false;
 
 		//Event handler
 		SDL_Event e;
@@ -257,11 +260,9 @@ int main( int argc, char* args[] )
 					quit = true;
 				}
 				//Handle keypress with current mouse position
-				else if( e.type == SDL_TEXTINPUT )
+				else if( e.type == SDL_KEYDOWN )
 				{
-					int x = 0, y = 0;
-					SDL_GetMouseState( &x, &y );
-					handleKeys( e.text.text[ 0 ], x, y );
+					handleKeyPress( &e.key.keysym );
 				}
 			}
 
@@ -274,8 +275,6 @@ int main( int argc, char* args[] )
 			SDL_GL_SwapWindow( gWindow );
 		}
 		
-		//Disable text input
-		SDL_StopTextInput();
 	}
 
 
