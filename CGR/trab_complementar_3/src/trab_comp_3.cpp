@@ -1,19 +1,11 @@
 // Alexandre Maros
 // pridexs.com
 // CGR - Computacao Grafica
+// Trabalho complementar 3
 //
-// Consideracoes:
-// Esse codigo teve como base o tutorial do 'Lazy Foo' sobre introducao
-// do SDL2 e o codigo disponbilizado pelo professor Andre Tavares da Silva
-// sobre particulas.
-// O codigo disponbilizado pelo professor era implementado em SDL1, entao
-// tomei a liberdade de migrar o codigo com a ajuda do tutorial.
-//
-// Para acessalo: http://www.joinville.udesc.br/portal/professores/andretavares
-// Materiais -> CGR -> fireworks_sdl.c
+// Sistema de Particulas
 //
 
-//Using SDL, SDL OpenGL, standard IO, and, strings
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <GL/glu.h>
