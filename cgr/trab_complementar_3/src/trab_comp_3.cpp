@@ -251,6 +251,10 @@ int main( int argc, char* args[] )
         PTimer stepTimer;
         stepTimer.start();
 
+		// Rain Test
+		PRain rainParticles(SCREEN_WIDTH/2, 100, SCREEN_WIDTH, SCREEN_HEIGHT
+			, 0.5f, 3000);
+
 		//While application is running
 		while( !quit )
 		{
@@ -271,10 +275,12 @@ int main( int argc, char* args[] )
 
 			float timeStep = stepTimer.getTicks() / 1000.f;
             stepTimer.start();
-            update(timeStep);
+            rainParticles.update(timeStep);
+			//update(timeStep);
 
 			//Render quad
-			render();
+			//render();
+			rainParticles.render();
 			
 			//Update screen
 			SDL_GL_SwapWindow( gWindow );
