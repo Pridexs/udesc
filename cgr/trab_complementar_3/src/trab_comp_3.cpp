@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 #include "../include/PTimer.h"
+#include "../include/PRain.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 800;
