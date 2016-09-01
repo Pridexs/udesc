@@ -29,5 +29,18 @@ plot(rwf(dowjones, 10, drift=TRUE))
 # 2.8.3.a)
 data(ibmclose, package='fma')
 plot(ibmclose)
-ibm_train <- ibmclose[1:300]
-ibm_test <- ibmclose[301:369]
+
+# 2.8.3.b)
+
+ibm_train <- window(ibmclose, end=300)
+ibm_test <- window(ibmclose, start=301)
+
+ibm_train_fit1 <- mean(ibm_train, h=11)
+ibm_train_fit2 <- rwf(ibm_train, h=11)
+ibm_train_fit3 <- snaive(ibm_train, h=11)
+
+par(mfrow=c(1,1))
+plot(ivm_train_fit1, plot.conf=FALSE, main="Forecasts for quarterly beer production")
+lines(ibm_train_fit2$mean, col=2)
+lines(ibm_train_fit3$mean, col=3)
+lines(ibm_train_fit3)
