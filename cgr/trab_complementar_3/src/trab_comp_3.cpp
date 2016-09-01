@@ -253,7 +253,7 @@ int main( int argc, char* args[] )
 
 		// Rain Test
 		PRain rainParticles(SCREEN_WIDTH/2, 100, SCREEN_WIDTH, SCREEN_HEIGHT
-			, 0.5f, 3000);
+			, 100.f, 3000);
 
 		//While application is running
 		while( !quit )
