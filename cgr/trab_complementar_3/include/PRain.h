@@ -17,7 +17,9 @@
 //
 
 #include <vector>
+#include <list>
 #include <SDL2/SDL.h>
+#include <GL/glu.h>
 
 class PRain
 {
@@ -28,6 +30,7 @@ class PRain
         void handleEvent( SDL_Event& e );
 
         void render();
+        void update(float dt);
 
     private:
         float mWidth, mHeight;
@@ -38,9 +41,10 @@ class PRain
 
         struct Particle {
             float x, y, veloc_y;
+            float distanceTraveled;
         };
 
-        std::vector<struct Particle> mParticles;
+        std::list<struct Particle> mParticles;
 };
 
 #endif
