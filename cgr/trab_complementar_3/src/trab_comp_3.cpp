@@ -16,6 +16,7 @@
 
 #include "../include/PTimer.h"
 #include "../include/PRain.h"
+#include "../include/POriginal.h"
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 800;
@@ -52,7 +53,7 @@ bool quit = false;
 // original = mostrado em sala de aula.
 namespace ParticleType {
 	enum ParticleType {
-		original, rain, TOTAL_TYPE_PARTICLE
+		original, rain, TOTAL_COUNT
 	};
 }
 
@@ -73,27 +74,11 @@ float rainMaxHeight = 0.1;
 // Original Particles Structure
 const int numOriginalParticles = 5000;
 
-struct s_pf {
-  float x, y, veloc_x, veloc_y;
-  float lifetime;
-} particles[numOriginalParticles];
+// Particles
+PRain rainParticles(rainSpawnPointX, rainSpawnPointY, rainWidth, 
+		rainHeight, rainMaxHeight , rainVelocity_y, numRainParticles);
 
-
-// Initialize the particles
-void InitParticle()
-{
-	int i;
-
-  	for(i=0;i<numOriginalParticles;i++) {
-    	float velocity = (float)(rand() % 100) / 100.f;
-    	float angle = (rand() % 360) * M_PI / 180.0;
-    	particles[i].veloc_x = cos( angle ) * velocity;
-    	particles[i].veloc_y = sin( angle ) * velocity;
-    	particles[i].x = 0.0;
-    	particles[i].y = 0.0;
-    	particles[i].lifetime = 5.f;
-  	}
-}
+POriginal originalParticles(numOriginalParticles, 5.f, worldGravity);
 
 bool init()
 {
@@ -200,49 +185,28 @@ void handleKeyPress( SDL_Keysym *keysym )
 
 void update( float dt )
 {
-	int i, active_particles = 0;
-
-	if (currentParticle == ParticleType::original) 
+	if (currentParticle == ParticleType::original)
 	{
-		for(i=0;i<numOriginalParticles;i++)
-		{
-			if(particles[i].lifetime > 0) 
-			{
-				active_particles++;
-				particles[i].veloc_y -= worldGravity;
-				particles[i].x += particles[i].veloc_x * dt;
-				particles[i].y += particles[i].veloc_y * dt;
-				particles[i].lifetime -= dt;
-			}
-		}
-
-		if(!active_particles) InitParticle();
+		originalParticles.update(dt);
 	}
-
-	
+	else if (currentParticle == ParticleType::rain)
+	{
+		rainParticles.update(dt);
+	}
 }
 
 void render()
 {
-	int i;
-	
-	//Clear color buffer
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	
 	if (currentParticle == ParticleType::original)
 	{
-		glBegin(GL_POINTS);
-			for(i=0;i<numOriginalParticles;i++)
-			{
-				if(particles[i].lifetime > 0) 
-				{ 
-					glVertex3f( particles[i].x, particles[i].y, 0.0f); // draw pixel
-				}
-			}
-		glEnd();
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		originalParticles.render();
 	}
-	
+	else if (currentParticle == ParticleType::rain)
+	{
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+		rainParticles.render();
+	}
 }
 
 void close()
@@ -259,11 +223,6 @@ int main( int argc, char* args[] )
 {
 
     srand(time(NULL));
-
-    InitParticle();
-
-	PRain rainParticles(rainSpawnPointX, rainSpawnPointY, rainWidth, 
-		rainHeight, rainMaxHeight , rainVelocity_y, numRainParticles);
 
 	//Start up SDL and create window
 	if( !init() )
@@ -301,11 +260,9 @@ int main( int argc, char* args[] )
 
 			float timeStep = stepTimer.getTicks() / 1000.f;
             stepTimer.start();
-
-			rainParticles.update(timeStep);
-			rainParticles.render();
-			//update(timeStep);
-			//render();
+			
+			update(timeStep);
+			render();
 
 			//Update screen
 			SDL_GL_SwapWindow( gWindow );
