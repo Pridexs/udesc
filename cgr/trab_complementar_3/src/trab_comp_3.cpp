@@ -50,7 +50,6 @@ bool quit = false;
 
 // Variavel para manter o tipo de particula ativa.
 // original = mostrado em sala de aula.
-
 namespace ParticleType {
 	enum ParticleType {
 		original, rain, TOTAL_TYPE_PARTICLE
@@ -63,12 +62,6 @@ ParticleType::ParticleType currentParticle = ParticleType::rain;
 float worldGravity = 0.0000;
 
 // FOR RAIN
-struct RainParticle {
-	float x1, y1, veloc_y;
-	float x2, y2;
-	float distanceTraveled;
-};
-
 float numRainParticles = 500;
 float rainWidth = SCREEN_WIDTH;
 float rainHeight = SCREEN_HEIGHT;
@@ -76,25 +69,6 @@ float rainVelocity_y = (float)(rand() % 200) / 100.f;
 float rainSpawnPointX = 0.0f;
 float rainSpawnPointY = 0;
 float rainMaxHeight = 0.1;
-std::list<struct RainParticle> rainParticles;
-
-
-// Initialize Rain Particles
-void initRainParticles()
-{
-	for (int i = 0; i < numRainParticles; i++) 
-    {
-        struct RainParticle p;
-        p.x1 = 1 - ((rand() % 200) / 100.f) ;
-        p.y1 = 1.0;
-		p.x2 = p.x1;
-		p.y2 = p.y1 + (rainMaxHeight * ((rand() % 100) / 100.0));
-        p.veloc_y = 0.5 + (float)(rand() % 50) / 100.f;
-        p.distanceTraveled = 0;
-        rainParticles.push_back(p);
-    }
-}
-
 
 // Original Particles Structure
 const int numOriginalParticles = 5000;
@@ -244,28 +218,6 @@ void update( float dt )
 
 		if(!active_particles) InitParticle();
 	}
-	else if (currentParticle == ParticleType::rain)
-	{
-		float dTrav;
-		for (std::list<struct RainParticle>::iterator it = rainParticles.begin(); it != rainParticles.end(); it++) 
-		{
-			//printf("%f %f\n", it->distanceTraveled, mHeight);
-			if (it->y1 > -1.0) 
-			{
-				dTrav = it->veloc_y * dt;
-				it->y1 -= dTrav;
-				it->y2 -=  dTrav;
-			}
-			else
-			{
-				it->x1 = 1 - ((rand() % 200) / 100.f);
-				it->y1 = 1.0;
-				it->x2 = it->x1;
-				it->y2 = it->y1 + (rainMaxHeight * ((rand() % 100) / 100.0));
-				it->distanceTraveled = 0;
-			}
-		}
-	}
 
 	
 }
@@ -290,17 +242,6 @@ void render()
 			}
 		glEnd();
 	}
-	else if (currentParticle == ParticleType::rain)
-	{
-		for (std::list<struct RainParticle>::iterator it = rainParticles.begin(); it != rainParticles.end(); it++) 
-		{
-			glBegin(GL_LINES);
-				glVertex2f( it->x1, it->y1 );
-				glVertex2f( it->x2, it->y2 );
-			glEnd();
-		}
-		
-	}
 	
 }
 
@@ -320,7 +261,9 @@ int main( int argc, char* args[] )
     srand(time(NULL));
 
     InitParticle();
-	initRainParticles();
+
+	PRain rainParticles(rainSpawnPointX, rainSpawnPointY, rainWidth, 
+		rainHeight, rainMaxHeight , rainVelocity_y, numRainParticles);
 
 	//Start up SDL and create window
 	if( !init() )
@@ -329,7 +272,6 @@ int main( int argc, char* args[] )
 	}
 	else
 	{
-
 		//Event handler
 		SDL_Event e;
 		
@@ -360,8 +302,10 @@ int main( int argc, char* args[] )
 			float timeStep = stepTimer.getTicks() / 1000.f;
             stepTimer.start();
 
-			update(timeStep);
-			render();
+			rainParticles.update(timeStep);
+			rainParticles.render();
+			//update(timeStep);
+			//render();
 
 			//Update screen
 			SDL_GL_SwapWindow( gWindow );

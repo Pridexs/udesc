@@ -12,7 +12,7 @@
 // mHeight - A altura que a chuva ira cair (ao percorrer x unidades
 // ela some, em que x é o height)
 //
-// mNParticles - Numero de particulas máximas que podem existir ao
+// mNumParticles - Numero de particulas máximas que podem existir ao
 // mesmo tempo
 //
 
@@ -25,7 +25,8 @@ class PRain
 {
     public:
         PRain(int spawnPointX, int spawnPointY, 
-            float width, float height, float velocity_y, unsigned int nParticles);
+            float width, float height, float maxHeight,
+             float velocity_y, unsigned int nParticles);
 
         void handleEvent( SDL_Event& e );
 
@@ -33,15 +34,15 @@ class PRain
         void update(float dt);
 
     private:
-        float mWidth, mHeight;
+        float mWidth, mHeight, mMaxHeight;
         float mVelocity_y;
 
         int mSpawnPointX, mSpawnPointY;
-        int mNParticles;
+        int mNumParticles;
 
         struct Particle {
-            float x, y, veloc_y;
-            float distanceTraveled;
+            float x1, y1, veloc_y;
+            float x2, y2;
         };
 
         std::list<struct Particle> mParticles;
