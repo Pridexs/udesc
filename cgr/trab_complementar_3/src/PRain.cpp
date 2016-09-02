@@ -3,24 +3,27 @@
 // CGR - Computacao Grafica
 
 #include "PRain.h"
-
+#include <iostream> 
 PRain::PRain(int spawnPointX, int spawnPointY, 
-    float width, float height, float velocity_y, unsigned int nParticles)
+    float width, float height, float maxHeight,
+     float velocity_y, unsigned int nParticles)
 {
     mSpawnPointX = spawnPointX;
     mSpawnPointY = spawnPointY;
-    mNParticles = nParticles;
+    mNumParticles = nParticles;
     mVelocity_y = velocity_y;
     mHeight = height;
+    mMaxHeight = maxHeight;
     mWidth = width;
 
-    for (int i = 0; i < mNParticles; i++) 
+    for (int i = 0; i < mNumParticles; i++) 
     {
         struct Particle p;
-        p.x = (rand() % int(width / 2.0)) +  spawnPointX;
-        p.y = spawnPointY;
-        p.veloc_y = velocity_y;
-        p.distanceTraveled = 0;
+        p.x1 = 1 - ((rand() % 200) / 100.f);
+        p.y1 = 1.0f;
+        p.x2 = p.x1;
+        p.y2 = p.y1 + (mMaxHeight * ((rand() % 100) / 100.0));
+        p.veloc_y = 0.5 + (float)(rand() % 50) / 100.f;
         mParticles.push_back(p);
     }
 }
@@ -36,28 +39,32 @@ void PRain::update( float dt )
     for (std::list<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
     {
         //printf("%f %f\n", it->distanceTraveled, mHeight);
-        if (it->distanceTraveled < mHeight) 
+        if (it->y1 > -1.0) 
         {
             dTrav = it->veloc_y * dt;
-            it->y += dTrav;
-            it->distanceTraveled += dTrav;
+            it->y1 -= dTrav;
+            it->y2 -=  dTrav;
+            printf("%f %f\n", it->y1, it->y2);
         }
         else
         {
-            it->x = (rand() % int(mWidth / 2.0)) +  mSpawnPointX;
-            it->y = mSpawnPointY;
-            it->distanceTraveled = 0;
+            it->x1 = 1 - ((rand() % 200) / 100.f);
+            it->y1 = 1.0;
+            it->x2 = it->x1;
+            it->y2 = it->y1 + (mMaxHeight * ((rand() % 100) / 100.0));
         }
     }
 }
 
 void PRain::render()
 {
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
     for (std::list<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
     {
-        printf("%f %f\n", it->x, it->y);
-        glBegin(GL_POINTS);
-            glVertex3f( it->x, it->y, 0.0f);
+        glBegin(GL_LINES);
+            glVertex2f( it->x1, it->y1 );
+            glVertex2f( it->x2, it->y2 );
         glEnd();
     }
 }

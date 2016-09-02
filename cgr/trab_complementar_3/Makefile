@@ -5,10 +5,10 @@ IDIR = include
 ODIR = obj
 SDIR = src
 
-_DEPS = PTimer.h
+_DEPS = PTimer.h PRain.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = PTimer.o
+_OBJ = PTimer.o PRain.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
