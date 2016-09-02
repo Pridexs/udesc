@@ -28,7 +28,8 @@ void PRain::initParticles()
         p.y1 = 1.0f;
         p.x2 = p.x1;
         p.y2 = p.y1 + (mMaxHeight * ((rand() % 100) / 100.0));
-        p.veloc_y = 0.5 + (float)(rand() % 50) / 100.f;
+        p.veloc_y = 0.5 + (float)(rand() % 60) / 100.f;
+        p.veloc_x = 0;
         mParticles.push_back(p);
     }
 }
@@ -39,28 +40,52 @@ void PRain::resetParticles()
     initParticles();
 }
 
-void PRain::handleEvent( SDL_Event& e )
+void PRain::updateParticles()
 {
+    for (std::vector<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
+    {
+        it->veloc_x = mVelocity_x;
+        it->x1 = it->x1;
+        it->x2 = it->x1 + (mVelocity_x * 0.2);
+    }
+}
 
+void PRain::handleEvent( SDL_Keysym *keysym )
+{
+    switch(keysym->sym)
+        {
+            case SDLK_w:
+                mVelocity_x += 0.01;
+                updateParticles();
+                break;
+            case SDLK_s:
+                mVelocity_x -= 0.01;
+                updateParticles();
+                break;
+        }
 }
 
 void PRain::update( float dt )
 {
-    float dTrav;
+    float dTravY, dTravX;
     for (std::vector<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
     {
         if (it->y1 > -1.0) 
         {
-            dTrav = it->veloc_y * dt;
-            it->y1 -= dTrav;
-            it->y2 -=  dTrav;
+            dTravY = it->veloc_y * dt;
+            dTravX = it->veloc_x * dt;
+            it->y1 -= dTravY;
+            it->y2 -=  dTravY;
+            it->x1 -= dTravX;
+            it->x2 -= dTravX;
         }
         else
         {
             it->x1 = 1 - ((rand() % 200) / 100.f);
             it->y1 = 1.0;
-            it->x2 = it->x1;
+            it->x2 = it->x1 + mVelocity_x;
             it->y2 = it->y1 + (mMaxHeight * ((rand() % 100) / 100.0));
+            it->veloc_x = mVelocity_x;
         }
     }
 }
