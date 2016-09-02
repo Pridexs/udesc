@@ -36,7 +36,7 @@ void PRain::handleEvent( SDL_Event& e )
 void PRain::update( float dt )
 {
     float dTrav;
-    for (std::list<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
+    for (std::vector<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
     {
         if (it->y1 > -1.0) 
         {
@@ -58,7 +58,7 @@ void PRain::render()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    for (std::list<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
+    for (std::vector<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
     {
         glBegin(GL_LINES);
             glVertex2f( it->x1, it->y1 );

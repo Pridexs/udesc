@@ -17,7 +17,6 @@
 //
 
 #include <vector>
-#include <list>
 #include <SDL2/SDL.h>
 #include <GL/glu.h>
 
@@ -45,7 +44,7 @@ class PRain
             float x2, y2;
         };
 
-        std::list<struct Particle> mParticles;
+        std::vector<struct Particle> mParticles;
 };
 
 #endif

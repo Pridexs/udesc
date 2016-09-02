@@ -40,7 +40,7 @@ void POriginal::handleEvent( SDL_Event& e )
 void POriginal::update( float dt )
 {
     int activeParticles = 0;
-    for (std::list<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
+    for (std::vector<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
     {
         if(it->lifetime > 0) 
         {
@@ -60,7 +60,7 @@ void POriginal::render()
 {
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-    for (std::list<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
+    for (std::vector<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
     {
         glBegin(GL_POINTS);
             glVertex3f( it->x, it->y, 0.0f );
