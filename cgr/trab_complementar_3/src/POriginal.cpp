@@ -2,7 +2,9 @@
 // pridexs.com
 // CGR - Computacao Grafica
 //
-// Particulas originais mostradas em sala.
+//
+// Class to hold the information about the
+// original particle system showed in class.
 
 #include "POriginal.h"
 

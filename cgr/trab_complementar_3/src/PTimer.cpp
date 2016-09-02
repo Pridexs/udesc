@@ -1,3 +1,11 @@
+// Alexandre Maros
+// pridexs.com
+// CGR - Computacao Grafica
+//
+// PTimer.cpp
+// Class to use as a Timer
+// Implementation by: Lazy Foo
+
 #include "PTimer.h"
 
 PTimer::PTimer()

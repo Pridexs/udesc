@@ -1,6 +1,9 @@
 // Alexandre Maros
 // pridexs.com
 // CGR - Computacao Grafica
+//
+// PRain
+// Class to hold the Rain Particles and Logic.
 
 #include "PRain.h"
 
@@ -35,13 +38,17 @@ void PRain::initParticles()
         p.veloc_y = 0.5 + (float)(rand() % 60) / 100.f;
         p.veloc_x = 0;
         mParticles.push_back(p);
+        // I am calling update here so the particles dont all start at the same
+        // place.
+        update(0.005);
     }
 }
 
 void PRain::resetParticles()
 {
     mParticles.clear();
-    mRainAngle = 360.0f;
+    mRainAngle = 0.0f;
+    mVelocity_x = 0;
     initParticles();
 }
 

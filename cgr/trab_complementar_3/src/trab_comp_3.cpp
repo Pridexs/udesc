@@ -61,16 +61,16 @@ namespace ParticleType {
 ParticleType::ParticleType currentParticle = ParticleType::rain;
 
 /* for the particles */
-float worldGravity = 0.0000;
+float worldGravity      = 0.0000;
 
 // FOR RAIN
-float numRainParticles = 700;
-float rainWidth = SCREEN_WIDTH;
-float rainHeight = SCREEN_HEIGHT;
-float rainVelocity_y = (float)(rand() % 200) / 100.f;
-float rainSpawnPointX = 0.0f;
-float rainSpawnPointY = 0;
-float rainMaxHeight = 0.09;
+float numRainParticles  = 700;
+float rainWidth         = SCREEN_WIDTH;
+float rainHeight        = SCREEN_HEIGHT;
+float rainVelocity_y    = 0.0f;
+float rainSpawnPointX   = 0.0f;
+float rainSpawnPointY   = 0;
+float rainMaxHeight     = 0.09;
 
 // Original Particles Structure
 const int numOriginalParticles = 5000;
@@ -81,6 +81,7 @@ PRain rainParticles(rainSpawnPointX, rainSpawnPointY, rainWidth,
 
 POriginal originalParticles(numOriginalParticles, 5.f, worldGravity);
 
+// Initalize SDL
 bool init()
 {
     //Initialization flag
@@ -125,6 +126,7 @@ bool init()
     return success;
 }
 
+// Initialize OpenGL
 bool initGL()
 {
     bool success = true;
@@ -168,6 +170,7 @@ bool initGL()
     return success;
 }
 
+// Toggle Full Screen
 void toggleFullScreen()
 {
     if (!isFullScreen)
@@ -187,7 +190,7 @@ void toggleFullScreen()
                 isFullScreen = !isFullScreen;
             }
             // Breaking because I am only interested in the main display.
-            // I do need to look into finding in whichi display the window is currently at.
+            // I do need to look into finding in which display the window is currently at.
             break;
         }
     }
@@ -199,6 +202,7 @@ void toggleFullScreen()
     }
 }
 
+// Handle basic key presses
 void handleKeyPress( SDL_Keysym *keysym )
 {
     switch ( keysym->sym ) 
@@ -224,6 +228,7 @@ void handleKeyPress( SDL_Keysym *keysym )
     }
 }
 
+// update Funciton. Calls update on which particle is active
 void update( float dt )
 {
     if (currentParticle == ParticleType::original)
@@ -236,6 +241,7 @@ void update( float dt )
     }
 }
 
+// clear the screen and call render on which particle is active
 void render()
 {
     if (currentParticle == ParticleType::original)
@@ -250,6 +256,7 @@ void render()
     }
 }
 
+// close the program
 void close()
 {
     //Destroy window	
@@ -299,6 +306,9 @@ int main( int argc, char* args[] )
                 } 
                 else if ( e.type == SDL_KEYDOWN )
                 {
+                    // Handle the key presses for each particle indiviadully
+                    // Rain has wind and the other dont so I separeted the
+                    // keys based on what particle is active.
                     switch(currentParticle)
                     {
                         case ParticleType::original:
@@ -311,6 +321,7 @@ int main( int argc, char* args[] )
                 }
             }
 
+            // Frame Independent Movement. Can be done in a better way.
             float timeStep = stepTimer.getTicks() / 1000.f;
             stepTimer.start();
             
