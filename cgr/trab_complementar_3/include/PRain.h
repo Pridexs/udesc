@@ -39,6 +39,7 @@ class PRain
 
         float mWidth, mHeight, mMaxHeight;
         float mVelocity_y, mVelocity_x;
+        float mRainAngle;
 
         int mSpawnPointX, mSpawnPointY;
         int mNumParticles;
