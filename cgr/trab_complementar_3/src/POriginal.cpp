@@ -1,6 +1,8 @@
 // Alexandre Maros
 // pridexs.com
 // CGR - Computacao Grafica
+//
+// Particulas originais mostradas em sala.
 
 #include "POriginal.h"
 
@@ -30,6 +32,11 @@ void POriginal::initParticles()
         p.lifetime = mLifetime;
         mParticles.push_back(p);
     }
+}
+
+void POriginal::resetParticles()
+{
+    initParticles();
 }
 
 void POriginal::handleEvent( SDL_Event& e )

@@ -16,6 +16,11 @@ PRain::PRain(int spawnPointX, int spawnPointY,
     mMaxHeight = maxHeight;
     mWidth = width;
 
+    initParticles();
+}
+
+void PRain::initParticles()
+{
     for (int i = 0; i < mNumParticles; i++) 
     {
         struct Particle p;
@@ -26,6 +31,12 @@ PRain::PRain(int spawnPointX, int spawnPointY,
         p.veloc_y = 0.5 + (float)(rand() % 50) / 100.f;
         mParticles.push_back(p);
     }
+}
+
+void PRain::resetParticles()
+{
+    mParticles.clear();
+    initParticles();
 }
 
 void PRain::handleEvent( SDL_Event& e )

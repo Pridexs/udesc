@@ -63,13 +63,13 @@ ParticleType::ParticleType currentParticle = ParticleType::rain;
 float worldGravity = 0.0000;
 
 // FOR RAIN
-float numRainParticles = 500;
+float numRainParticles = 700;
 float rainWidth = SCREEN_WIDTH;
 float rainHeight = SCREEN_HEIGHT;
 float rainVelocity_y = (float)(rand() % 200) / 100.f;
 float rainSpawnPointX = 0.0f;
 float rainSpawnPointY = 0;
-float rainMaxHeight = 0.1;
+float rainMaxHeight = 0.09;
 
 // Original Particles Structure
 const int numOriginalParticles = 5000;
@@ -177,6 +177,16 @@ void handleKeyPress( SDL_Keysym *keysym )
 		case SDLK_F1:
 			// Needs to implement a toggle funciton
 			SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			break;
+		case SDLK_r:
+			//Changes the particle to RAIN
+			currentParticle = ParticleType::rain;
+			rainParticles.resetParticles();
+			break;
+		case SDLK_o:
+			//Changes the particle to Original
+			currentParticle = ParticleType::original;
+			originalParticles.resetParticles();
 			break;
 		default:
 			break;

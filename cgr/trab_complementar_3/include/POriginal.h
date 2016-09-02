@@ -24,6 +24,8 @@ class POriginal
         void render();
         void update(float dt);
 
+        void resetParticles();
+
     private:
         void initParticles();
 
