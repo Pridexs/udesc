@@ -39,7 +39,7 @@ void POriginal::resetParticles()
     initParticles();
 }
 
-void POriginal::handleEvent( SDL_Event& e )
+void POriginal::handleEvent( SDL_Keysym *keysym )
 {
 
 }
