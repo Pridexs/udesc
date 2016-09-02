@@ -19,7 +19,7 @@ class POriginal
         POriginal(unsigned int nParticles, float lifetime,
             float worldGravity);
 
-        void handleEvent( SDL_Event& e );
+        void handleEvent( SDL_Keysym *keysym );
 
         void render();
         void update(float dt);

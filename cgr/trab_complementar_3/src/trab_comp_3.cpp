@@ -48,6 +48,7 @@ SDL_GLContext gContext;
 
 // Main loop flag
 bool quit = false;
+bool isFullScreen = false;
 
 // Variavel para manter o tipo de particula ativa.
 // original = mostrado em sala de aula.
@@ -167,6 +168,37 @@ bool initGL()
     return success;
 }
 
+void toggleFullScreen()
+{
+    if (!isFullScreen)
+    {    
+        SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        // Get current display mode of all displays.
+        SDL_DisplayMode current;
+        for(int i = 0; i < SDL_GetNumVideoDisplays(); ++i){
+            if(SDL_GetCurrentDisplayMode(i, &current) != 0)
+            {
+                SDL_Log("Could not get display mode for video display #%d: %s", i, SDL_GetError());
+            }
+            else
+            {
+                glViewport(0, 0, current.w, current.h);
+                //SDL_Log("Display #%d: current display mode is %dx%dpx @ %dhz.", i, current.w, current.h, current.refresh_rate);
+                isFullScreen = !isFullScreen;
+            }
+            // Breaking because I am only interested in the main display.
+            // I do need to look into finding in whichi display the window is currently at.
+            break;
+        }
+    }
+    else
+    {
+        SDL_SetWindowFullscreen(gWindow, 0);
+        glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        isFullScreen = !isFullScreen;
+    }
+}
+
 void handleKeyPress( SDL_Keysym *keysym )
 {
     switch ( keysym->sym ) 
@@ -175,8 +207,7 @@ void handleKeyPress( SDL_Keysym *keysym )
             quit = true;
             break;
         case SDLK_F1:
-            // Needs to implement a toggle funciton
-            SDL_SetWindowFullscreen(gWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            toggleFullScreen();
             break;
         case SDLK_r:
             //Changes the particle to RAIN
@@ -262,14 +293,16 @@ int main( int argc, char* args[] )
                     quit = true;
                 }
                 //Handle keypress with current mouse position
-                else if( e.type == SDL_KEYDOWN )
+                else if( e.type == SDL_KEYUP )
                 {
                     handleKeyPress( &e.key.keysym );
-
+                } 
+                else if ( e.type == SDL_KEYDOWN )
+                {
                     switch(currentParticle)
                     {
                         case ParticleType::original:
-                            //originalParticles.handleEvent(&e.key.keysym);
+                            originalParticles.handleEvent(&e.key.keysym);
                             break;
                         case ParticleType::rain:
                             rainParticles.handleEvent(&e.key.keysym);

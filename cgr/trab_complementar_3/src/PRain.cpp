@@ -12,6 +12,7 @@ PRain::PRain(int spawnPointX, int spawnPointY,
     mSpawnPointY = spawnPointY;
     mNumParticles = nParticles;
     mVelocity_y = velocity_y;
+    mVelocity_x = 0.0f;
     mHeight = height;
     mMaxHeight = maxHeight;
     mWidth = width;
@@ -26,7 +27,7 @@ void PRain::initParticles()
         struct Particle p;
         p.x1 = 1 - ((rand() % 200) / 100.f);
         p.y1 = 1.0f;
-        p.x2 = p.x1;
+        p.x2 = p.x1 + (mVelocity_x * 0.02);
         p.y2 = p.y1 + (mMaxHeight * ((rand() % 100) / 100.0));
         p.veloc_y = 0.5 + (float)(rand() % 60) / 100.f;
         p.veloc_x = 0;
@@ -46,7 +47,7 @@ void PRain::updateParticles()
     {
         it->veloc_x = mVelocity_x;
         it->x1 = it->x1;
-        it->x2 = it->x1 + (mVelocity_x * 0.2);
+        it->x2 = it->x1 + (mVelocity_x * 0.02);
     }
 }
 
@@ -83,7 +84,7 @@ void PRain::update( float dt )
         {
             it->x1 = 1 - ((rand() % 200) / 100.f);
             it->y1 = 1.0;
-            it->x2 = it->x1 + mVelocity_x;
+            it->x2 = it->x1 + (mVelocity_x * 0.02);
             it->y2 = it->y1 + (mMaxHeight * ((rand() % 100) / 100.0));
             it->veloc_x = mVelocity_x;
         }
