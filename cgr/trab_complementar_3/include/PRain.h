@@ -31,8 +31,11 @@ class PRain
 
         void render();
         void update(float dt);
+        void resetParticles();
 
     private:
+        void initParticles();
+
         float mWidth, mHeight, mMaxHeight;
         float mVelocity_y;
 
