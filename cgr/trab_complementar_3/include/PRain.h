@@ -4,16 +4,9 @@
 // Alexandre Maros
 // pridexs.com
 // CGR - Computacao Grafica
-
 //
-// mWidth - Determinar o tamanho da area em que a chuva podera
-// aparecer
-//
-// mHeight - A altura que a chuva ira cair (ao percorrer x unidades
-// ela some, em que x é o height)
-//
-// mNumParticles - Numero de particulas máximas que podem existir ao
-// mesmo tempo
+// PRain
+// Class to hold the Rain Particles and Logic.mpo
 //
 
 #include <vector>

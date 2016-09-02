@@ -1,13 +1,13 @@
-#ifndef PORIGINAL_HPP
-#define PORIGINAL_HPP
-
 // Alexandre Maros
 // pridexs.com
 // CGR - Computacao Grafica
-
+//
 //
 // Class to hold the information about the
 // original particle system showed in class.
+
+#ifndef PORIGINAL_HPP
+#define PORIGINAL_HPP
 
 #include <vector>
 #include <SDL2/SDL.h>

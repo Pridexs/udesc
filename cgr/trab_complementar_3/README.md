@@ -15,6 +15,9 @@ Just run the Makefile
 1. OpenGL
 2. SDL2
 
+# To Run
+./trab_comp_3
+
 # Functionalities
 | Key              | Function            |
 | ---------------- |:-------------------:|

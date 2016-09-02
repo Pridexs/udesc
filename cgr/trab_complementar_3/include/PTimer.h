@@ -1,3 +1,11 @@
+// Alexandre Maros
+// pridexs.com
+// CGR - Computacao Grafica
+//
+// PTimer.h
+// Class to use as a Timer
+// Implementation by: Lazy Foo
+
 #ifndef TRAB3_PTIMER
 #define TRAB3_PTIMER
 
