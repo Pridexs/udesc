@@ -45,28 +45,72 @@ SDL_Window* gWindow = NULL;
 //OpenGL context
 SDL_GLContext gContext;
 
-//Render flag
-bool gRenderQuad = true;
+// Main loop flag
+bool quit = false;
+
+// Variavel para manter o tipo de particula ativa.
+// original = mostrado em sala de aula.
+
+namespace ParticleType {
+	enum ParticleType {
+		original, rain, TOTAL_TYPE_PARTICLE
+	};
+}
+
+ParticleType::ParticleType currentParticle = ParticleType::rain;
 
 /* for the particles */
-#define NUM_PARTICLES 100000
-#define GRAVITY 0.0000
+float worldGravity = 0.0000;
 
-// Particles Structure
+// FOR RAIN
+struct RainParticle {
+	float x1, y1, veloc_y;
+	float x2, y2;
+	float distanceTraveled;
+};
+
+float numRainParticles = 500;
+float rainWidth = SCREEN_WIDTH;
+float rainHeight = SCREEN_HEIGHT;
+float rainVelocity_y = (float)(rand() % 200) / 100.f;
+float rainSpawnPointX = 0.0f;
+float rainSpawnPointY = 0;
+float rainMaxHeight = 0.1;
+std::list<struct RainParticle> rainParticles;
+
+
+// Initialize Rain Particles
+void initRainParticles()
+{
+	for (int i = 0; i < numRainParticles; i++) 
+    {
+        struct RainParticle p;
+        p.x1 = 1 - ((rand() % 200) / 100.f) ;
+        p.y1 = 1.0;
+		p.x2 = p.x1;
+		p.y2 = p.y1 + (rainMaxHeight * ((rand() % 100) / 100.0));
+        p.veloc_y = 0.5 + (float)(rand() % 50) / 100.f;
+        p.distanceTraveled = 0;
+        rainParticles.push_back(p);
+    }
+}
+
+
+// Original Particles Structure
+const int numOriginalParticles = 5000;
+
 struct s_pf {
   float x, y, veloc_x, veloc_y;
   float lifetime;
-} particles[NUM_PARTICLES];
+} particles[numOriginalParticles];
 
-// Main loop flag
-bool quit = false;
 
 // Initialize the particles
 void InitParticle()
 {
 	int i;
 
-  	for(i=0;i<NUM_PARTICLES;i++) {
+  	for(i=0;i<numOriginalParticles;i++) {
     	float velocity = (float)(rand() % 100) / 100.f;
     	float angle = (rand() % 360) * M_PI / 180.0;
     	particles[i].veloc_x = cos( angle ) * velocity;
@@ -91,7 +135,7 @@ bool init()
 	else
 	{
 		//Create window
-		gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
+		gWindow = SDL_CreateWindow( "Sistemas de Particulas", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN );
 		if( gWindow == NULL )
 		{
 			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -184,37 +228,80 @@ void update( float dt )
 {
 	int i, active_particles = 0;
 
-	for(i=0;i<NUM_PARTICLES;i++)
+	if (currentParticle == ParticleType::original) 
 	{
-		if(particles[i].lifetime > 0) 
+		for(i=0;i<numOriginalParticles;i++)
 		{
-			active_particles++;
-			particles[i].veloc_y -= GRAVITY;
-			particles[i].x += particles[i].veloc_x * dt;
-			particles[i].y += particles[i].veloc_y * dt;
-			particles[i].lifetime -= dt;
+			if(particles[i].lifetime > 0) 
+			{
+				active_particles++;
+				particles[i].veloc_y -= worldGravity;
+				particles[i].x += particles[i].veloc_x * dt;
+				particles[i].y += particles[i].veloc_y * dt;
+				particles[i].lifetime -= dt;
+			}
+		}
+
+		if(!active_particles) InitParticle();
+	}
+	else if (currentParticle == ParticleType::rain)
+	{
+		float dTrav;
+		for (std::list<struct RainParticle>::iterator it = rainParticles.begin(); it != rainParticles.end(); it++) 
+		{
+			//printf("%f %f\n", it->distanceTraveled, mHeight);
+			if (it->y1 > -1.0) 
+			{
+				dTrav = it->veloc_y * dt;
+				it->y1 -= dTrav;
+				it->y2 -=  dTrav;
+			}
+			else
+			{
+				it->x1 = 1 - ((rand() % 200) / 100.f);
+				it->y1 = 1.0;
+				it->x2 = it->x1;
+				it->y2 = it->y1 + (rainMaxHeight * ((rand() % 100) / 100.0));
+				it->distanceTraveled = 0;
+			}
 		}
 	}
 
-	if(!active_particles) InitParticle();
+	
 }
 
 void render()
 {
-	int i, active_particles = 0;
-
-	//Clear color buffer
-	glClear( GL_COLOR_BUFFER_BIT );
+	int i;
 	
-	glBegin(GL_POINTS);
-	for(i=0;i<NUM_PARTICLES;i++)
+	//Clear color buffer
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+	
+	if (currentParticle == ParticleType::original)
 	{
-		if(particles[i].lifetime > 0) 
-		{            
-			glVertex3f( particles[i].x, particles[i].y, 0.0f); // draw pixel
-		}
+		glBegin(GL_POINTS);
+			for(i=0;i<numOriginalParticles;i++)
+			{
+				if(particles[i].lifetime > 0) 
+				{ 
+					glVertex3f( particles[i].x, particles[i].y, 0.0f); // draw pixel
+				}
+			}
+		glEnd();
 	}
-	glEnd();
+	else if (currentParticle == ParticleType::rain)
+	{
+		for (std::list<struct RainParticle>::iterator it = rainParticles.begin(); it != rainParticles.end(); it++) 
+		{
+			glBegin(GL_LINES);
+				glVertex2f( it->x1, it->y1 );
+				glVertex2f( it->x2, it->y2 );
+			glEnd();
+		}
+		
+	}
+	
 }
 
 void close()
@@ -233,6 +320,7 @@ int main( int argc, char* args[] )
     srand(time(NULL));
 
     InitParticle();
+	initRainParticles();
 
 	//Start up SDL and create window
 	if( !init() )
@@ -250,10 +338,6 @@ int main( int argc, char* args[] )
 
         PTimer stepTimer;
         stepTimer.start();
-
-		// Rain Test
-		PRain rainParticles(SCREEN_WIDTH/2, 100, SCREEN_WIDTH, SCREEN_HEIGHT
-			, 100.f, 3000);
 
 		//While application is running
 		while( !quit )
@@ -275,13 +359,10 @@ int main( int argc, char* args[] )
 
 			float timeStep = stepTimer.getTicks() / 1000.f;
             stepTimer.start();
-            rainParticles.update(timeStep);
-			//update(timeStep);
 
-			//Render quad
-			//render();
-			rainParticles.render();
-			
+			update(timeStep);
+			render();
+
 			//Update screen
 			SDL_GL_SwapWindow( gWindow );
 		}
