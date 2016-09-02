@@ -10,7 +10,6 @@
 // original particle system showed in class.
 
 #include <vector>
-#include <list>
 #include <SDL2/SDL.h>
 #include <GL/glu.h>
 
@@ -38,7 +37,7 @@ class POriginal
             float lifetime;
         };
 
-        std::list<struct Particle> mParticles;
+        std::vector<struct Particle> mParticles;
 };
 
 #endif
