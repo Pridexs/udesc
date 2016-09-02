@@ -3,7 +3,7 @@
 // CGR - Computacao Grafica
 
 #include "PRain.h"
-#include <iostream> 
+
 PRain::PRain(int spawnPointX, int spawnPointY, 
     float width, float height, float maxHeight,
      float velocity_y, unsigned int nParticles)
@@ -38,13 +38,11 @@ void PRain::update( float dt )
     float dTrav;
     for (std::list<struct Particle>::iterator it = mParticles.begin(); it != mParticles.end(); it++) 
     {
-        //printf("%f %f\n", it->distanceTraveled, mHeight);
         if (it->y1 > -1.0) 
         {
             dTrav = it->veloc_y * dt;
             it->y1 -= dTrav;
             it->y2 -=  dTrav;
-            printf("%f %f\n", it->y1, it->y2);
         }
         else
         {
