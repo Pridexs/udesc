@@ -265,6 +265,17 @@ int main( int argc, char* args[] )
 				else if( e.type == SDL_KEYDOWN )
 				{
 					handleKeyPress( &e.key.keysym );
+
+					switch(currentParticle)
+					{
+						case ParticleType::original:
+							//originalParticles.handleEvent(&e.key.keysym);
+							break;
+						case ParticleType::rain:
+							rainParticles.handleEvent(&e.key.keysym);
+							break;
+					}
+
 				}
 			}
 

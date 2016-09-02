@@ -27,7 +27,7 @@ class PRain
             float width, float height, float maxHeight,
              float velocity_y, unsigned int nParticles);
 
-        void handleEvent( SDL_Event& e );
+        void handleEvent( SDL_Keysym *keysym );
 
         void render();
         void update(float dt);
@@ -35,16 +35,17 @@ class PRain
 
     private:
         void initParticles();
+        void updateParticles();
 
         float mWidth, mHeight, mMaxHeight;
-        float mVelocity_y;
+        float mVelocity_y, mVelocity_x;
 
         int mSpawnPointX, mSpawnPointY;
         int mNumParticles;
 
         struct Particle {
             float x1, y1, veloc_y;
-            float x2, y2;
+            float x2, y2, veloc_x;
         };
 
         std::vector<struct Particle> mParticles;
