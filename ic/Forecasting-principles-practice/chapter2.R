@@ -28,7 +28,7 @@ plot(dowjones)
 plot(rwf(dowjones, 10, drift=TRUE))
 # 2.8.2.c)
 m <- (dowjones[length(dowjones)] - dowjones[1]) / (length(dowjones) - 1)
-b <- dowjones[1] - (a * 1)
+b <- dowjones[1] - (m * 1)
 abline(b, m, lty=2, col=2, main='abline1')
 
 # 2.8.2.d)
@@ -84,7 +84,8 @@ plot(hsales)
 
 # 2.8.4.b)
 #-.01? vs -.1?
-(hsales_train <- window(hsales, end=1994-.01))
+#(hsales_train <- window(hsales, end=1994-.01))
+(hsales_train <- window(hsales, end=c(1994,12)))
 (hsales_test <- window(hsales, start=1994))
 
 # 2.8.4.c)
