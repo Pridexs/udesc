@@ -13,13 +13,13 @@ plot(BoxCox(dole,lambda))
 data(usdeaths, package="fma")
 plot(usdeaths)
 
-#
-# EXERCICIO 2 DO CAPITULO 2
-#
 # 2.8.1.c)
 data(bricksq, package="fma")
 plot(bricksq)
 
+#
+# EXERCICIO 2 DO CAPITULO 2
+#
 # 2.8.2.a)
 data(dowjones, package="fma")
 plot(dowjones)
