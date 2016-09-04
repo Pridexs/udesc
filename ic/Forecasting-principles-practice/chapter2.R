@@ -148,3 +148,8 @@ accuracy(bricks1_fit4, bricks2)
 res <- residuals(bricks1_fit4)
 plot(res)
 hist(res, breaks="FD")
+
+#
+# Sim, os dados não parecem estar correlacionados e estão normalmente
+# distribuidos, o que leva a crer que o método de forecast é bom.
+#
