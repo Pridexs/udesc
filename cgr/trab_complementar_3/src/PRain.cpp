@@ -121,6 +121,7 @@ void PRain::render()
             glRotatef(mRainAngle, rD, 1.0f, 0.0f);
             glTranslatef(- it->x2, -it->y2, 0.0f);
             glBegin(GL_LINES);
+                glColor3f(0.5f,0.6f,1.0f);
                 glVertex2f( it->x1, it->y1 );
                 glVertex2f( it->x2, it->y2 );
             glEnd();
