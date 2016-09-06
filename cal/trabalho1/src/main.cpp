@@ -31,6 +31,8 @@ void inicializarAleatorio();
 void inicializarAleatorioComElemento100kk();
 
 void executarHeapsort(char const *ordem);
+void executarCountingsort(char const *ordem);
+void executarBucketsort(char const *ordem);
 
 // Global para facil acesso
 int arr25k[25000], arr50k[50000], arr75k[75000];
@@ -69,8 +71,6 @@ int main(int argv, char *argc[])
         fbucket = fopen("csvs/bucket.csv", "w");
         fprintf(fbucket, "ordem;tempo_25k;tempo_50k;tempo_75k;tempo_100k;tempo_1kk\n");
     }
-
-    
 
     // Ordenar
     if (find(args.begin(), args.end(), "heap") != args.end() )
@@ -142,7 +142,6 @@ void executarHeapsort(char const *ordem)
     printf("heapSort 100k: %lf segundos\n", tTime);
     fprintf(fheap, "%lf;", tTime);
 
-
     // 1kk heap
     start = clock();
     heapSort(arr1kk, 1000000);
@@ -151,6 +150,16 @@ void executarHeapsort(char const *ordem)
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("heapSort 1kk: %lf segundos\n\n", tTime);
     fprintf(fheap, "%lf\n", tTime);
+}
+
+void executarCountingsort(char const *ordem)
+{
+
+}
+
+void executarBucketsort(char const *ordem)
+{
+    
 }
 
 void inicializarCrescente()
