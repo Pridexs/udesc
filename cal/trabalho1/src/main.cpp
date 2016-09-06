@@ -1,14 +1,37 @@
 // Alexandre Maros & Nadyan S. Pscheidt
 // CAL - Trabalho 1
+//
+// Como usar
+// ./main <algoritmos de sort>
+//
+// Exemplo (quero executar heap e bucket sort apenas)
+// ./main heap bucket
+//
+// Tags:
+// heap     - heap sort
+// bucket   - bucket sort
+// counting - counting sort
 
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
 
 #include "../include/heapsort.h"
 
-int main()
+using namespace std;
+
+int main(int argv, char *argc[])
 {
+    vector<string> args;
+
+    for (int i = 1; i < argv; i++) {
+        args.push_back(string(argc[i]));
+    }
+
     int arr25k[25000], arr50k[50000], arr75k[75000];
     int arr100k[100000], arr1kk[1000000];
 
@@ -44,6 +67,21 @@ int main()
     }
 
     // Ordenar
+    if (find(args.begin(), args.end(), "heap") != args.end() )
+    {
+        printf("Iniciando heapsort em ordem crescente...\n");
+    }
+
+    if (find(args.begin(), args.end(), "counting") != args.end())
+    {
+        printf("Iniciando counting sort em ordem crescente...\n");
+    }
+
+    if (find(args.begin(), args.end(), "bucket") != args.end())
+    {
+        printf("Iniciando bucket sort em ordem crescente...\n");
+    }
+
 
     // (2) em ordem decrescente
     for (i = 25000-1; i >= 0; i--) {
@@ -67,6 +105,21 @@ int main()
     }
 
     // Ordenar
+    if (find(args.begin(), args.end(), "heap") != args.end() )
+    {
+        printf("Iniciando heapsort em ordem decrescente...\n");
+    }
+
+    if (find(args.begin(), args.end(), "counting") != args.end())
+    {
+        printf("Iniciando counting sort em ordem decrescente...\n");
+    }
+
+    if (find(args.begin(), args.end(), "bucket") != args.end())
+    {
+        printf("Iniciando bucket sort em ordem decrescente...\n");
+    }
+
 
     // (3) em ordem aleatoria
     for (i = 0; i < 25000; i++) {
@@ -90,6 +143,20 @@ int main()
     }
 
     // Ordenar
+    if (find(args.begin(), args.end(), "heap") != args.end() )
+    {
+        printf("Iniciando heapsort em ordem aleatoria...\n");
+    }
+
+    if (find(args.begin(), args.end(), "counting") != args.end())
+    {
+        printf("Iniciando counting sort em ordem aleatoria...\n");
+    }
+
+    if (find(args.begin(), args.end(), "bucket") != args.end())
+    {
+        printf("Iniciando bucket sort em ordem aleatoria...\n");
+    }
 
     // (4) em ordem aleatoria mas com um elemento 100.000.000 (em qualquer posição)
     for (i = 0; i < 25000; i++) {
@@ -118,5 +185,19 @@ int main()
     arr1kk[rand()%1000000] = 100000000;
 
     // Ordenar
+    if (find(args.begin(), args.end(), "heap") != args.end() )
+    {
+        printf("Iniciando heapsort em ordem aleatoria + elemento de 100.000.000...\n");
+    }
+
+    if (find(args.begin(), args.end(), "counting") != args.end())
+    {
+        printf("Iniciando counting sort em ordem aleatoria + elemento de 100.000.000...\n");
+    }
+
+    if (find(args.begin(), args.end(), "bucket") != args.end())
+    {
+        printf("Iniciando bucket sort em ordem aleatoria + elemento de 100.000.000...\n");
+    }
 
 }
