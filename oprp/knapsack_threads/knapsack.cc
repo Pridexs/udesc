@@ -9,10 +9,6 @@
 // the knapsack problem from a parallel programming competition)
 // using threads and see the how much we could speed up the
 // algorithm.
-//
-// This algorithm does give the wrong solution depending on the number
-// of threads. The divison logic is wrong. Just to illustrate
-// the problem of parallelizing a serial algorithm.
 
 #include "knapsack.hh"
 #include <algorithm>
@@ -53,16 +49,21 @@ void *knapsack_worker(void *arg)
 void knapsack2(int tid, int nThreads, const long unsigned int n, const item *items, vector<const item*> &v, bitset<32768> &best, const long unsigned int capacity) {
     int remainder = n % nThreads;
     int aditional = 0;
-    if (remainder)
+    if (remainder) {
         aditional = tid % remainder;
+        if (!aditional)
+            aditional = tid;
+    } 
     int initPos = tid * (n/nThreads) + aditional;
     int limit = initPos + (n/nThreads);
     if (tid < remainder)
         limit++;
     
     v.reserve(limit-initPos);
+    printf("%d: %d->%d\n", tid, initPos, limit);
+    printf("n: %d, nThreads: %d, remainder %d, aditional %d, initpos %d, limit %d\n\n", n, nThreads, remainder, aditional, initPos, limit);
     for (int i = initPos; i < limit; i++) {
-        printf("Thread %d: %d\n", tid, i);
+        //printf("Thread %d: %d\n", tid, i);
         v.push_back(&items[i]);
     }
 
@@ -136,6 +137,8 @@ void knapsack(int argc,char* argv[],long unsigned int* output,const long unsigne
                 v.push_back(args[i].v[j]);
         }
     }
+    free(args);
+
     sort(v.begin(),v.end(),comparator());
     vector<long unsigned int> sum;
     sum.reserve(n);
