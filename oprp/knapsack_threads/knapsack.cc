@@ -36,9 +36,7 @@ class comparator {
         }
 };
 
-/*
- * Funcao executada por uma thread
- */
+//Funcao executada por uma thread
 void *knapsack_worker(void *arg)
 {
    param_t *p = (param_t *) arg;
@@ -46,6 +44,10 @@ void *knapsack_worker(void *arg)
    knapsack2(p->tid, p->nThreads, p->n, p->items, p->v, p->best, p->capacity);
 }
 
+// Funcao executada por uma thread
+// Separa o vetor de items em vetores menores e roda o
+// algoritmo original em cima desses vetores, retirando
+// assim items que nao vao ser uteis para o problema geral.
 void knapsack2(int tid, int nThreads, const long unsigned int n, const item *items, vector<const item*> &v, bitset<32768> &best, const long unsigned int capacity) {
     int remainder = n % nThreads;
     int aditional = 0;
