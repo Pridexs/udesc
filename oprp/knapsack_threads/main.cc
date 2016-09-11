@@ -9,10 +9,6 @@
 // the knapsack problem from a parallel programming competition)
 // using threads and see the how much we could speed up the
 // algorithm.
-//
-// This algorithm does give the wrong solution depending on the number
-// of threads. The divison logic is wrong. Just to illustrate
-// the problem of parallelizing a serial algorithm.
 
 #include <iostream>
 #include <sys/time.h>
