@@ -60,8 +60,8 @@ void knapsack2(int tid, int nThreads, const long unsigned int n, const item *ite
         limit++;
     
     v.reserve(limit-initPos);
-    printf("%d: %d->%d\n", tid, initPos, limit);
-    printf("n: %d, nThreads: %d, remainder %d, aditional %d, initpos %d, limit %d\n\n", n, nThreads, remainder, aditional, initPos, limit);
+    //printf("%d: %d->%d\n", tid, initPos, limit);
+    //printf("n: %d, nThreads: %d, remainder %d, aditional %d, initpos %d, limit %d\n\n", n, nThreads, remainder, aditional, initPos, limit);
     for (int i = initPos; i < limit; i++) {
         //printf("Thread %d: %d\n", tid, i);
         v.push_back(&items[i]);
@@ -131,7 +131,7 @@ void knapsack(int argc,char* argv[],long unsigned int* output,const long unsigne
         //printf("Thread %d:\n", i);
         size_t sizev = args[i].v.size();
         unsigned countb = args[i].best.count();
-        cout << "v.size() " << sizev << " " << "nBitsets " << countb << endl << endl;
+        //cout << "v.size() " << sizev << " " << "nBitsets " << countb << endl << endl;
         for(long unsigned int j=0;j<sizev;j++) {
             if (args[i].best.test(j))
                 v.push_back(args[i].v[j]);
