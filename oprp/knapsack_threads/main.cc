@@ -1,7 +1,25 @@
+// Alexandre Maros
+// pridexs.com
+//
+// This code was done in a rush without thinking too much
+// about code cleaness and all that.
+//
+// This was an assignment for the Parallel Programming class
+// where we had to quickly implement a problem (in this case
+// the knapsack problem from a parallel programming competition)
+// using threads and see the how much we could speed up the
+// algorithm.
+//
+// This algorithm does give the wrong solution depending on the number
+// of threads. The divison logic is wrong. Just to illustrate
+// the problem of parallelizing a serial algorithm.
+
 #include <iostream>
 #include <sys/time.h>
 #include <time.h>
 #include <pthread.h>
+#include <cstdlib>
+#include <cstdio>
 #include "knapsack.hh"
 using namespace std;
 int main(int argc,char* argv[],char* envp) try {
@@ -23,10 +41,10 @@ int main(int argc,char* argv[],char* envp) try {
 
 	int nThreads = 0;
 	if (argc > 1) {
-		nThreads = argv[1];
+		nThreads = atoi(argv[1]);
 	} else {
 		printf("Especifique o numero de threads\n");
-		return;
+		return EXIT_FAILURE;
 	}
 
 	gettimeofday(&timevalA,NULL);
