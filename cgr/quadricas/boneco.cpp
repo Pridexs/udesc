@@ -54,6 +54,7 @@ float dx,dy,dz;
 bool init()
 {
     dx=dy=dz = 0.0f;
+    dy = -20.f;
     //Initialization flag
     bool success = true;
 
@@ -107,6 +108,9 @@ bool init()
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_COLOR_MATERIAL);
+
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE); 
 
     return success;
 }
@@ -208,7 +212,7 @@ void handleKeyPress( SDL_Keysym *keysym )
             dy -= 1;
             break;
         case SDLK_a:
-            dy -= 1;
+            dy += 1;
             break;
         default:
             break;
@@ -229,44 +233,38 @@ void render()
 
     GLUquadricObj *q1, *q2;
     q1 = gluNewQuadric();
-    q2 = gluNewQuadric();
-    gluQuadricNormals(q1, GLU_SMOOTH);
-    gluQuadricNormals(q2, GLU_SMOOTH);
 
+    glColor3f(1.f,1.0f,1.f);
     glPushMatrix();
     glTranslatef (0.0, -0.5, -.5);
-    gluQuadricDrawStyle(q1, GLU_FILL );
     gluSphere( q1 , .4 , 40 , 18 );
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef (0.0, 0.0, -.5f);
-    gluQuadricDrawStyle(q1, GLU_FILL );
     gluSphere( q1 , .3 , 40 , 18 );
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef (0.0, .4f, -.5f);
-    gluQuadricDrawStyle(q1, GLU_FILL );
     gluSphere( q1 , .2 , 40 , 18 );
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef (-.09f, .5f, -.65f);
-    gluQuadricDrawStyle(q1, GLU_FILL );
     gluSphere( q1 , .05 , 40 , 18 );
     glPopMatrix();
 
     glPushMatrix();
     glTranslatef (0.09f, .5f, -.65f);
-    gluQuadricDrawStyle(q1, GLU_FILL );
     gluSphere( q1 , .05 , 40 , 18 );
     glPopMatrix();
 
+    
     glPushMatrix();
-    glTranslatef (0.09f, .5f, -.65f);
-    gluQuadricDrawStyle(q2, GLU_FILL );
-    gluCylinder( q2 , 1.f , 1.f , 1.f, 1, 16 );
+    glTranslatef (0.01f, .45f, -.8f);
+    glColor3f(1.0f,0.3f,0.3f);
+    gluCylinder( q1 , 0.0f , 0.06f , 0.3f, 32, 32 );
     glPopMatrix();
 
 }
