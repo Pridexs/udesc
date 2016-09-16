@@ -214,6 +214,12 @@ void handleKeyPress( SDL_Keysym *keysym )
         case SDLK_a:
             dy += 1;
             break;
+        case SDLK_e:
+            dx += 1;
+            break;
+        case SDLK_r:
+            dx -= 1;
+            break;
         default:
             break;
     }
@@ -226,51 +232,54 @@ void update()
 void render()
 {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gluPerspective(45.0f, 800.f/ 600.f, 1, 300.f);
     glLoadIdentity();
 
-    glRotatef (dz, 0.0f, 0.0f, 30.0f);
-    glRotatef (dy, 0.0f, 30.0f, 0.0f);
+    glRotatef (dz, 0.0f, 0.0f, 1.0f);
+    glRotatef (dy, 0.0f, 1.0f, 0.0f);
+    glRotatef (dx, 1.0f, 0.0f, 0.0f);
 
-    GLUquadricObj *q1, *q2;
+    GLUquadricObj *q1;
     q1 = gluNewQuadric();
 
-    // Corpo
     glColor3f(1.f,1.0f,1.f);
+
+    // Torre 1
     glPushMatrix();
-    glTranslatef (0.0, -0.5, -.5);
-    gluSphere( q1 , .4 , 40 , 18 );
+    glTranslatef(-0.6f, 0.0f, 0.0f);
+    glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+    gluCylinder( q1 , 0.0f , 0.11f , 0.2f, 32, 32 );
+    glTranslatef(0.0f, .0f, 0.2f);
+    gluCylinder( q1 , .1f , 0.1f , 0.3f, 32, 32 );
     glPopMatrix();
 
-    // Corpo
+    // Torre 2
     glPushMatrix();
-    glTranslatef (0.0, 0.0, -.5f);
-    gluSphere( q1 , .3 , 40 , 18 );
+    glTranslatef(0.6f, 0.0f, 0.0f);
+    glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+    gluCylinder( q1 , 0.0f , 0.11f , 0.2f, 32, 32 );
+    glTranslatef(0.0f, .0f, 0.2f);
+    gluCylinder( q1 , .1f , 0.1f , 0.3f, 32, 32 );
     glPopMatrix();
 
-    // Corpo
+    // Torre 3
     glPushMatrix();
-    glTranslatef (0.0, .4f, -.5f);
-    gluSphere( q1 , .2 , 40 , 18 );
+    glTranslatef(-0.6f, 0.0f, 0.0f);
+    glTranslatef(0.0f, 0.0f, +2.f);
+    glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+    gluCylinder( q1 , 0.0f , 0.11f , 0.2f, 32, 32 );
+    glTranslatef(0.0f, .0f, 0.2f);
+    gluCylinder( q1 , .1f , 0.1f , 0.3f, 32, 32 );
     glPopMatrix();
 
-    // Olho 1
+    // Torre 4
     glPushMatrix();
-    glTranslatef (-.09f, .5f, -.65f);
-    gluSphere( q1 , .05 , 40 , 18 );
+    glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
+    gluCylinder( q1 , 0.0f , 0.11f , 0.2f, 32, 32 );
+    glTranslatef(0.0f, .0f, 0.2f);
+    gluCylinder( q1 , .1f , 0.1f , 0.3f, 32, 32 );
     glPopMatrix();
 
-    // Olho 2
-    glPushMatrix();
-    glTranslatef (0.09f, .5f, -.65f);
-    gluSphere( q1 , .05 , 40 , 18 );
-    glPopMatrix();
-
-    // Nariz
-    glPushMatrix();
-    glTranslatef (0.01f, .45f, -.8f);
-    glColor3f(1.0f,0.3f,0.3f);
-    gluCylinder( q1 , 0.0f , 0.06f , 0.3f, 32, 32 );
-    glPopMatrix();
 
 }
 
