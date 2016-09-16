@@ -133,7 +133,7 @@ void knapsack(int argc,char* argv[],long unsigned int* output,const long unsigne
         //printf("Thread %d:\n", i);
         size_t sizev = args[i].v.size();
         unsigned countb = args[i].best.count();
-        //cout << "v.size() " << sizev << " " << "nBitsets " << countb << endl << endl;
+        cout << "v.size() " << sizev << " " << "nBitsets " << countb << endl << endl;
         for(long unsigned int j=0;j<sizev;j++) {
             if (args[i].best.test(j))
                 v.push_back(args[i].v[j]);
