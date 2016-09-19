@@ -3,6 +3,8 @@ library(forecast)
 # EXERCICIO 1 DO CAPITULO 2
 #
 # 2.8.1.a)
+
+
 data(dole, package="fma")
 par(mfrow=c(2,2))
 plot(dole)
@@ -83,7 +85,7 @@ data(hsales, package='fma')
 plot(hsales)
 
 # 2.8.4.b)
-#-.01? vs -.1?
+
 #(hsales_train <- window(hsales, end=1994-.01))
 (hsales_train <- window(hsales, end=c(1994,12)))
 (hsales_test <- window(hsales, start=1994))
