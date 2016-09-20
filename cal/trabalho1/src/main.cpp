@@ -23,7 +23,7 @@
 
 #include "../include/heapsort.h"
 #include "../include/countingsort.h"
-
+#include "../include/bucketsort.h"
 
 using namespace std;
 
@@ -108,7 +108,17 @@ int main(int argv, char *argc[])
 
     if (find(args.begin(), args.end(), "bucket") != args.end())
     {
-        printf("Iniciando bucket sort em ordem crescente...\n");
+        inicializarCrescente();
+        executarBucketsort("crescente");
+
+        inicializarDecrescente();
+        executarBucketsort("decrescente");
+
+        inicializarAleatorio();
+        executarBucketsort("aleatorio");
+
+        inicializarAleatorioComElemento100kk();
+        executarBucketsort("aleatorio100kk");
     }
 
 }
@@ -217,7 +227,53 @@ void executarCountingsort(char const *ordem)
 
 void executarBucketsort(char const *ordem)
 {
+    printf("Iniciando bucket em ordem %s...\n", ordem);
+    fprintf(fbucket, "%s;", ordem);
     
+    // 25k heap
+    start = clock();
+    bucketSort(arr25k, 25000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("bucketSort 25k: %lf segundos\n", tTime);
+    fprintf(fbucket, "%lf;", tTime);
+
+    // 50k heap
+    start = clock();
+    bucketSort(arr50k, 50000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("bucketSort 50k: %lf segundos\n", tTime);
+    fprintf(fbucket, "%lf;", tTime);
+
+    // 75k heap
+    start = clock();
+    bucketSort(arr75k, 75000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("bucketSort 75k: %lf segundos\n", tTime);
+    fprintf(fbucket, "%lf;", tTime);
+
+    // 100k heap
+    start = clock();
+    bucketSort(arr100k, 100000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("bucketSort 100k: %lf segundos\n", tTime);
+    fprintf(fbucket, "%lf;", tTime);
+
+    // 1kk heap
+    start = clock();
+    bucketSort(arr1kk, 1000000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("bucketSort 1kk: %lf segundos\n\n", tTime);
+    fprintf(fbucket, "%lf\n", tTime);
 }
 
 void inicializarCrescente()
