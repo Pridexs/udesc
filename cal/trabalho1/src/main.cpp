@@ -61,17 +61,17 @@ int main(int argv, char *argc[])
     // Abrir apenas os arquivos necessarios
     if (find(args.begin(), args.end(), "heap") != args.end() ) {
         fheap = fopen("csvs/heap.csv", "w");
-        fprintf(fheap, "ordem;tempo_25k;tempo_50k;tempo_75k;tempo_100k;tempo_1kk\n");
+        fprintf(fheap, "ordem,tempo_25k,tempo_50k,tempo_75k,tempo_100k,tempo_1kk\n");
     }
 
     if (find(args.begin(), args.end(), "counting") != args.end()) {
          fcounting = fopen("csvs/counting.csv", "w");
-         fprintf(fcounting, "ordem;tempo_25k;tempo_50k;tempo_75k;tempo_100k;tempo_1kk\n");
+         fprintf(fcounting, "ordem,tempo_25k,tempo_50k,tempo_75k,tempo_100k,tempo_1kk\n");
     }
 
     if (find(args.begin(), args.end(), "bucket") != args.end()) {
         fbucket = fopen("csvs/bucket.csv", "w");
-        fprintf(fbucket, "ordem;tempo_25k;tempo_50k;tempo_75k;tempo_100k;tempo_1kk\n");
+        fprintf(fbucket, "ordem,tempo_25k,tempo_50k,tempo_75k,tempo_100k,tempo_1kk\n");
     }
 
     // Ordenar
@@ -126,7 +126,7 @@ int main(int argv, char *argc[])
 void executarHeapsort(char const *ordem)
 {
     printf("Iniciando heapsort em ordem %s...\n", ordem);
-    fprintf(fheap, "%s;", ordem);
+    fprintf(fheap, "%s,", ordem);
     
     // 25k heap
     start = clock();
@@ -135,7 +135,7 @@ void executarHeapsort(char const *ordem)
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("heapSort 25k: %lf segundos\n", tTime);
-    fprintf(fheap, "%lf;", tTime);
+    fprintf(fheap, "%lf,", tTime);
 
     // 50k heap
     start = clock();
@@ -144,7 +144,7 @@ void executarHeapsort(char const *ordem)
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("heapSort 50k: %lf segundos\n", tTime);
-    fprintf(fheap, "%lf;", tTime);
+    fprintf(fheap, "%lf,", tTime);
 
     // 75k heap
     start = clock();
@@ -153,7 +153,7 @@ void executarHeapsort(char const *ordem)
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("heapSort 75k: %lf segundos\n", tTime);
-    fprintf(fheap, "%lf;", tTime);
+    fprintf(fheap, "%lf,", tTime);
 
     // 100k heap
     start = clock();
@@ -162,7 +162,7 @@ void executarHeapsort(char const *ordem)
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("heapSort 100k: %lf segundos\n", tTime);
-    fprintf(fheap, "%lf;", tTime);
+    fprintf(fheap, "%lf,", tTime);
 
     // 1kk heap
     start = clock();
@@ -177,7 +177,7 @@ void executarHeapsort(char const *ordem)
 void executarCountingsort(char const *ordem)
 {
     printf("Iniciando counting em ordem %s...\n", ordem);
-    fprintf(fcounting, "%s;", ordem);
+    fprintf(fcounting, "%s,", ordem);
     
     // 25k heap
     start = clock();
@@ -186,7 +186,7 @@ void executarCountingsort(char const *ordem)
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("countingSort 25k: %lf segundos\n", tTime);
-    fprintf(fcounting, "%lf;", tTime);
+    fprintf(fcounting, "%lf,", tTime);
 
     // 50k heap
     start = clock();
@@ -195,7 +195,7 @@ void executarCountingsort(char const *ordem)
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("countingSort 50k: %lf segundos\n", tTime);
-    fprintf(fcounting, "%lf;", tTime);
+    fprintf(fcounting, "%lf,", tTime);
 
     // 75k heap
     start = clock();
@@ -204,7 +204,7 @@ void executarCountingsort(char const *ordem)
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("countingSort 75k: %lf segundos\n", tTime);
-    fprintf(fcounting, "%lf;", tTime);
+    fprintf(fcounting, "%lf,", tTime);
 
     // 100k heap
     start = clock();
@@ -213,7 +213,7 @@ void executarCountingsort(char const *ordem)
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("countingSort 100k: %lf segundos\n", tTime);
-    fprintf(fcounting, "%lf;", tTime);
+    fprintf(fcounting, "%lf,", tTime);
 
     // 1kk heap
     start = clock();
@@ -228,47 +228,47 @@ void executarCountingsort(char const *ordem)
 void executarBucketsort(char const *ordem)
 {
     printf("Iniciando bucket em ordem %s...\n", ordem);
-    fprintf(fbucket, "%s;", ordem);
+    fprintf(fbucket, "%s,", ordem);
     
     // 25k heap
     start = clock();
-    bucketSort(arr25k, 25000);
+    bucketSort(arr25k, 25000, 10000);
     end = clock();
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("bucketSort 25k: %lf segundos\n", tTime);
-    fprintf(fbucket, "%lf;", tTime);
+    fprintf(fbucket, "%lf,", tTime);
 
     // 50k heap
     start = clock();
-    bucketSort(arr50k, 50000);
+    bucketSort(arr50k, 50000, 20000);
     end = clock();
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("bucketSort 50k: %lf segundos\n", tTime);
-    fprintf(fbucket, "%lf;", tTime);
+    fprintf(fbucket, "%lf,", tTime);
 
     // 75k heap
     start = clock();
-    bucketSort(arr75k, 75000);
+    bucketSort(arr75k, 75000, 35000);
     end = clock();
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("bucketSort 75k: %lf segundos\n", tTime);
-    fprintf(fbucket, "%lf;", tTime);
+    fprintf(fbucket, "%lf,", tTime);
 
     // 100k heap
     start = clock();
-    bucketSort(arr100k, 100000);
+    bucketSort(arr100k, 100000, 50000);
     end = clock();
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
     printf("bucketSort 100k: %lf segundos\n", tTime);
-    fprintf(fbucket, "%lf;", tTime);
+    fprintf(fbucket, "%lf,", tTime);
 
     // 1kk heap
     start = clock();
-    bucketSort(arr1kk, 1000000);
+    bucketSort(arr1kk, 1000000, 300000);
     end = clock();
 
     tTime = double(end - start) / (double) CLOCKS_PER_SEC;
