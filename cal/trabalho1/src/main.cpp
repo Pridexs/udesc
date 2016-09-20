@@ -22,6 +22,8 @@
 #include <ctime>
 
 #include "../include/heapsort.h"
+#include "../include/countingsort.h"
+
 
 using namespace std;
 
@@ -91,7 +93,17 @@ int main(int argv, char *argc[])
 
     if (find(args.begin(), args.end(), "counting") != args.end())
     {
-        printf("Iniciando counting sort em ordem crescente...\n");
+        inicializarCrescente();
+        executarCountingsort("crescente");
+
+        inicializarDecrescente();
+        executarCountingsort("decrescente");
+
+        inicializarAleatorio();
+        executarCountingsort("aleatorio");
+
+        inicializarAleatorioComElemento100kk();
+        executarCountingsort("aleatorio100kk");
     }
 
     if (find(args.begin(), args.end(), "bucket") != args.end())
@@ -154,7 +166,53 @@ void executarHeapsort(char const *ordem)
 
 void executarCountingsort(char const *ordem)
 {
+    printf("Iniciando counting em ordem %s...\n", ordem);
+    fprintf(fcounting, "%s;", ordem);
+    
+    // 25k heap
+    start = clock();
+    countingSort(arr25k, 25000);
+    end = clock();
 
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("countingSort 25k: %lf segundos\n", tTime);
+    fprintf(fcounting, "%lf;", tTime);
+
+    // 50k heap
+    start = clock();
+    countingSort(arr50k, 50000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("countingSort 50k: %lf segundos\n", tTime);
+    fprintf(fcounting, "%lf;", tTime);
+
+    // 75k heap
+    start = clock();
+    countingSort(arr75k, 75000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("countingSort 75k: %lf segundos\n", tTime);
+    fprintf(fcounting, "%lf;", tTime);
+
+    // 100k heap
+    start = clock();
+    countingSort(arr100k, 100000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("countingSort 100k: %lf segundos\n", tTime);
+    fprintf(fcounting, "%lf;", tTime);
+
+    // 1kk heap
+    start = clock();
+    countingSort(arr1kk, 1000000);
+    end = clock();
+
+    tTime = double(end - start) / (double) CLOCKS_PER_SEC;
+    printf("countingSort 1kk: %lf segundos\n\n", tTime);
+    fprintf(fcounting, "%lf\n", tTime);
 }
 
 void executarBucketsort(char const *ordem)

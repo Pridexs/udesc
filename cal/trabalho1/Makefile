@@ -1,14 +1,14 @@
 CC=g++
-CFLAGS=-lm -I $(IDIR)
+CFLAGS=-lm -I $(IDIR) -g
 
 IDIR = include
 ODIR = obj
 SDIR = src
 
-_DEPS = heapsort.h
+_DEPS = heapsort.h countingsort.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = heapsort.o
+_OBJ = heapsort.o countingsort.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)
