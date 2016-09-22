@@ -1,13 +1,12 @@
-/*
 // Alexandre Maros
-// UDESC - CCT - 2015/1
+// UDESC - CCT - 2015/1 & 2016/2
 //
-// Para compilar no Linux: gcc gauss2.c -o gauss2 -lm
-// Algoritmo de Eliminacao de Gauss com escala sem troca fisica de linhas.
+// gcc gauss2omp.c -o gauss2omp -lm -fopenmp
+//
+// Eliminacao Gaussiana sem troca fisica de linhas implementado
+// com openmp
+//
 
-// Primeiro entre com a matriz A com as instrucoes impressas na tela
-// E em seguida entre com a matriz B.
-*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -51,11 +50,16 @@ int main()
     }
 
     inicio = clock();
-    /* Comeco Eliminacao Gaussiana */
+
+    /*                             *
+     * INICIO Eliminacoa Gaussiana *
+     *                             */
+     
     n = tam;
     L = (int*) calloc(n, sizeof(int));
     s = (double*) calloc(n, sizeof(double));
     
+    #pragma omp paralel for private(i,j,smax) shared(L, s)
     for (i = 0; i < n; i++) {
         L[i] = i;
         smax = 0;
@@ -88,25 +92,15 @@ int main()
             }
         }
     }
-    /* Fim Eliminacao Gaussiana */
 
-    /* Comeco impressao Matrizes */
-    // printf("\n\nA:\n");
-    // for (i = 0; i < n; i++) {
-    //     for (j = 0; j < n; j++)
-    //         printf("%.3f ", matriz[i][j]);
-    //     printf("\n");
-    // }
-    // printf("\nB: ");
-    // for (i = 0; i < n; i++)
-    //     printf("%.3f ", matriz[i][n]);
-    // printf("\nL: ");
-    // for (i = 0; i < n; i++)
-    //     printf("%d ", L[i]);
-    // printf("\n");
-    /* Fim impressao Matrizes */
+    /*                          *
+     * FIM Eliminacao Gaussiana *
+     *                          */
     
-    /* Comeco retrosubstituicao */
+    /*                          *
+     * COMECO retrosubstituicao *
+     *                          */
+
     x = (double *) malloc(sizeof(double) * tam); // Alocacao matriz dos resultados
     x[n-1] = matriz[L[n-1]][n] / matriz[L[n-1]][n-1];
     for (i = n-2; i >= 0; i--)
@@ -118,7 +112,10 @@ int main()
         }
         x[i] = soma / matriz[L[i]][i];
     }
-    /* Fim retrosubstituicao */
+
+    /*                          *
+     * FIM retrosubstituicao    *
+     *                          */
     
     // Impressao dos resultados
     for (i = 0; i < tam; i++) {
