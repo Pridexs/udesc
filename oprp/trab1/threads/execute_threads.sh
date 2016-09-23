@@ -5,16 +5,16 @@ COUNTER_EXECUCAO=0
 TEMPOEXECUCAO=0
 TEMPOEXECUCAOTOTAL=0
 
-if [ -f ./tempos_omp.csv ]; then
-    rm ./tempos_omp.csv
+if [ -f ./tempos_threads.csv ]; then
+    rm ./tempos_threads.csv
 fi
-echo 'nthreads;tempo' >> tempos_omp.csv
+echo 'nthreads;tempo' >> tempos_threads.csv
 
 while [  $COUNTER -lt 17 ]; do
     echo "--INICIANDO GAUSS COM " $COUNTER " THREADS--"
     TEMPOEXECUCAOTOTAL=0
     while [ $COUNTER_EXECUCAO -lt 11 ]; do
-        TEMPOEXECUCAO="$(./gauss_omp $COUNTER < input | tail -1)"
+        TEMPOEXECUCAO="$(./gauss_threads $COUNTER < ../input | tail -1)"
         TEMPOEXECUCAOTOTAL=$(awk "BEGIN {print $TEMPOEXECUCAOTOTAL+$TEMPOEXECUCAO; exit;}")
         echo "Gauss com " $COUNTER " threads: " $TEMPOEXECUCAO " segundos " $COUNTER_EXECUCAO
         let COUNTER_EXECUCAO=COUNTER_EXECUCAO+1
@@ -22,7 +22,7 @@ while [  $COUNTER -lt 17 ]; do
     TEMPOEXECUCAOTOTAL=$(awk "BEGIN {print $TEMPOEXECUCAOTOTAL/11.0; exit;}")
     echo "Media: " $TEMPOEXECUCAOTOTAL
     echo ""
-    echo $COUNTER';'$TEMPOEXECUCAO >> tempos_omp.csv 
+    echo $COUNTER';'$TEMPOEXECUCAO >> tempos_threads.csv 
     let COUNTER=COUNTER+1 
     let COUNTER_EXECUCAO=0
 done
