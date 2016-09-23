@@ -1,7 +1,7 @@
 // Alexandre Maros
 // UDESC - CCT - 2015/1 & 2016/2
 //
-// gcc gauss2omp.c -o gauss2omp -lm -fopenmp
+// gcc gauss_omp.c -o gauss_omp -fopenmp
 //
 // Eliminacao Gaussiana sem troca fisica de linhas implementado
 // com openmp
@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <sys/time.h>
 #include <omp.h>
 
 //Retornar o maior dos dois doubles
@@ -20,13 +21,22 @@ double dmax(double a, double b) {
     return b;
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    int tam, i, j, k, n;
+    int tam, i, j, k, n, nthreads = 0;
     int *L;
     double **matriz, *x,*s;
     double m, soma, temp, smax, r, rmax;
-    clock_t inicio, fim;
+    
+    struct timeval timevalA;
+	struct timeval timevalB;
+
+    if (argc > 1) {
+		nthreads = atoi(argv[1]);
+	} else {
+		printf("Especifique o numero de threads\n");
+		return -1;
+	}
 
     //printf("Entre o tamanho da matriz: ");
     scanf("%d", &tam);
@@ -49,7 +59,7 @@ int main()
         scanf("%lf", &matriz[i][tam]);
     }
 
-    inicio = clock();
+    gettimeofday(&timevalA,NULL);
 
     /*                             *
      * INICIO Eliminacoa Gaussiana *
@@ -59,7 +69,7 @@ int main()
     L = (int*) calloc(n, sizeof(int));
     s = (double*) calloc(n, sizeof(double));
     
-    #pragma omp paralel for private(i,j,smax) shared(L, s)
+    #pragma omp paralel for private(i,j,smax) shared(L, s) num_threads(nthreads)
     for (i = 0; i < n; i++) {
         L[i] = i;
         smax = 0;
@@ -83,7 +93,7 @@ int main()
         L[j] = L[k];
         L[k] = temp;
 
-        #pragma omp parallel for private(i,j, m) shared(k, matriz)
+        #pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
         for (i = k+1; i < n; i++) {
             m = matriz[L[i]][k] / matriz[L[k]][k];
             matriz[L[i]][k] = 0;
@@ -103,8 +113,7 @@ int main()
 
     x = (double *) malloc(sizeof(double) * tam); // Alocacao matriz dos resultados
     x[n-1] = matriz[L[n-1]][n] / matriz[L[n-1]][n-1];
-    for (i = n-2; i >= 0; i--)
-    {
+    for (i = n-2; i >= 0; i--) {
         //printf("L[%d]: %d\n", i, L[i]);
         soma = matriz[L[i]][n];
         for (j = i+1; j < tam; j++) {
@@ -116,16 +125,15 @@ int main()
     /*                          *
      * FIM retrosubstituicao    *
      *                          */
+
+    gettimeofday(&timevalB,NULL);
+    printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
     
     // Impressao dos resultados
-    for (i = 0; i < tam; i++) {
-         printf("x%d = %.5f\n", i, x[i]);
-    }
+    //for (i = 0; i < tam; i++) {
+    //     printf("x%d = %.5f\n", i, x[i]);
+    //}
     
-    // Impressao dos ticks de clock
-    fim = clock();
-    //printf("A operacao demorou %.5f segundos e demorou %d ticks de clock\n", ( (double) fim-inicio)/CLOCKS_PER_SEC , fim-inicio);
-
     //Libera memoria
     free(x); free(L); free(s);
     for (i = 0; i < tam; i++) {
