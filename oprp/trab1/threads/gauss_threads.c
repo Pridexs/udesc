@@ -33,6 +33,11 @@ double dmax(double a, double b);
 void *findMax_worker(void *arg);
 void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz);
 
+//
+//
+void *zerarColuna_worker(void *arg);
+void zerarColuna(int tid, int nthreads, int n, int *L, double **matriz, const int *pk);
+
 int main(int argc, char* argv[])
 {
     int tam, i, j, k = 0, n, nthreads = 0;
@@ -114,14 +119,23 @@ int main(int argc, char* argv[])
         L[j] = L[k];
         L[k] = temp;
 
-        //#pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
-        for (i = k+1; i < n; i++) {
-            m = matriz[L[i]][k] / matriz[L[k]][k];
-            matriz[L[i]][k] = 0;
-            for (j = k+1; j < n+1; j++) {
-                matriz[L[i]][j] = matriz[L[i]][j] - (m * matriz[L[k]][j]);
-            }
+        for (i = 0; i < nthreads; i++) {
+            args[i].tid = i;
+            pthread_create(&threads[i], NULL, zerarColuna_worker, (void *) (args+i));
         }
+
+        for (i = 0; i < nthreads; i++) {
+            pthread_join(threads[i], NULL);
+        }
+
+        // //#pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
+        // for (i = k+1; i < n; i++) {
+        //     m = matriz[L[i]][k] / matriz[L[k]][k];
+        //     matriz[L[i]][k] = 0;
+        //     for (j = k+1; j < n+1; j++) {
+        //         matriz[L[i]][j] = matriz[L[i]][j] - (m * matriz[L[k]][j]);
+        //     }
+        // }
     }
 
     /*                          *
@@ -204,5 +218,57 @@ void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz) {
             smax = dmax(smax, abs(matriz[i][j]));
         }
         s[i] = smax;
+    }
+}
+
+void *zerarColuna_worker(void *arg) {
+    param_t *p = (param_t *) arg;
+    zerarColuna(p->tid, p->nthreads, p->n, p->L, p->matriz, p->k);
+}
+
+void zerarColuna(int tid, int nthreads, int n, int *L, double **matriz, const int *pk) {
+    const int k = *pk;
+    const int qtdElementos = n - (k + 1);
+    int threadsAtivas;
+    int remainder, aditional, limit, initPos;
+    int i, j;
+    double m;
+
+    // Se tiver mais threads do que trabalho
+    if (qtdElementos < nthreads ) {
+        if (tid >= qtdElementos ) {
+            printf("quitei\n");
+            return;
+        }
+        threadsAtivas = qtdElementos;
+    } else {
+        threadsAtivas = nthreads;
+    }
+
+    // Essa parte ta feia mas foi o que veio na hora.
+    // Arrumar depois
+    remainder = qtdElementos % threadsAtivas;
+    aditional = 0;
+    if (remainder) {
+        aditional = tid % remainder;
+        if (!aditional)
+            aditional = tid;
+    } 
+    initPos = (tid * (qtdElementos/threadsAtivas)) + aditional + k + 1;
+    limit = initPos + (qtdElementos/threadsAtivas);
+    if (tid < remainder)
+        limit++;
+    // End parte feia
+
+
+    printf("%d %d %d %d\n", tid, initPos, limit, qtdElementos);
+    for (i = initPos; i < limit; i++) {
+        //printf("%d %d %d %d\n", i, k, initPos, limit);
+        m = matriz[L[i]][k] / matriz[L[k]][k];
+        //printf("Nao segmentei\n");
+        matriz[L[i]][k] = 0;
+        for (j = k+1; j < n+1; j++) {
+            matriz[L[i]][j] = matriz[L[i]][j] - (m * matriz[L[k]][j]);
+        }
     }
 }
