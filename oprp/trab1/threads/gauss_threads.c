@@ -1,7 +1,7 @@
 // Alexandre Maros
 // UDESC - CCT - 2015/1 & 2016/2
 //
-// gcc gauss_omp.c -o gauss_omp -fopenmp
+// gcc gauss_threads.c -o gauss_threads -pthread
 //
 // Eliminacao Gaussiana sem troca fisica de linhas implementado
 // com openmp
@@ -13,23 +13,39 @@
 #include <time.h>
 #include <sys/time.h>
 #include <omp.h>
+#include <pthread.h>
+
+typedef struct {
+      int tid;
+      int nthreads;
+      int *L;
+      int *k;
+      double *s;
+      double **matriz;
+      int n;
+} param_t;
 
 //Retornar o maior dos dois doubles
-double dmax(double a, double b) {
-    if (a > b)
-        return a;
-    return b;
-}
+double dmax(double a, double b);
+
+// Funcao executada por uma Thread
+// Inicializa o vetor L e tambem acha o maior valor de cada linha
+void *findMax_worker(void *arg);
+void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz);
 
 int main(int argc, char* argv[])
 {
-    int tam, i, j, k, n, nthreads = 0;
+    int tam, i, j, k = 0, n, nthreads = 0;
     int *L;
     double **matriz, *x,*s;
     double m, soma, temp, smax, r, rmax;
     
     struct timeval timevalA;
 	struct timeval timevalB;
+
+    pthread_t *threads  = (pthread_t *) malloc(nthreads * sizeof(pthread_t));
+    param_t *args       = (param_t *)   malloc(nthreads * sizeof(param_t));
+
 
     if (argc > 1) {
 		nthreads = atoi(argv[1]);
@@ -68,15 +84,20 @@ int main(int argc, char* argv[])
     n = tam;
     L = (int*) calloc(n, sizeof(int));
     s = (double*) calloc(n, sizeof(double));
-    
-    #pragma omp paralel for private(i,j,smax) shared(L, s) num_threads(nthreads)
-    for (i = 0; i < n; i++) {
-        L[i] = i;
-        smax = 0;
-        for (j = 0; j < n; j++) {
-            smax = dmax(smax, abs(matriz[i][j]));
-        }
-        s[i] = smax;
+
+    for (i = 0; i < nthreads; i++) {
+        args[i].tid = i;
+        args[i].nthreads = nthreads;
+        args[i].L = L;
+        args[i].s = s;
+        args[i].matriz = matriz;
+        args[i].k = &k;
+        args[i].n = n;
+        pthread_create(&threads[i], NULL, findMax_worker, (void *) (args+i));
+    }
+
+    for (i = 0; i < nthreads; i++) {
+        pthread_join(threads[i], NULL);
     }
     
     for (k = 0; k < n-1; k++) {
@@ -93,7 +114,7 @@ int main(int argc, char* argv[])
         L[j] = L[k];
         L[k] = temp;
 
-        #pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
+        //#pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
         for (i = k+1; i < n; i++) {
             m = matriz[L[i]][k] / matriz[L[k]][k];
             matriz[L[i]][k] = 0;
@@ -127,12 +148,12 @@ int main(int argc, char* argv[])
      *                          */
 
     gettimeofday(&timevalB,NULL);
-    printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
+    //printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
     
     // Impressao dos resultados
-    //for (i = 0; i < tam; i++) {
-    //     printf("x%d = %.5f\n", i, x[i]);
-    //}
+    for (i = 0; i < tam; i++) {
+         printf("x%d = %.5f\n", i, x[i]);
+    }
     
     //Libera memoria
     free(x); free(L); free(s);
@@ -144,3 +165,44 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+//Retornar o maior dos dois doubles
+double dmax(double a, double b) {
+    if (a > b)
+        return a;
+    return b;
+}
+
+void *findMax_worker(void *arg) {
+    param_t *p = (param_t *) arg;
+    findMax(p->tid, p->nthreads, p->n, p->L, p->s, p->matriz);
+}
+
+void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz) {
+    int i,j,k;
+    int initPos, limit, aditional, remainder;
+    int smax;
+
+    // Essa parte ta feia mas foi o que veio na hora.
+    // Arrumar depois
+    remainder = n % nthreads;
+    aditional = 0;
+    if (remainder) {
+        aditional = tid % remainder;
+        if (!aditional)
+            aditional = tid;
+    } 
+    initPos = tid * (n/nthreads) + aditional;
+    limit = initPos + (n/nthreads);
+    if (tid < remainder)
+        limit++;
+    // End parte feia
+    
+    for(i = initPos; i < limit; i++) {
+        L[i] = i;
+        smax = 0;
+        for (j = 0; j < n; j++) {
+            smax = dmax(smax, abs(matriz[i][j]));
+        }
+        s[i] = smax;
+    }
+}
