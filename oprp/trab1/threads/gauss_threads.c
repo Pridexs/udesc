@@ -4,7 +4,7 @@
 // gcc gauss_threads.c -o gauss_threads -pthread
 //
 // Eliminacao Gaussiana sem troca fisica de linhas implementado
-// com openmp
+// com threads
 //
 
 #include <stdio.h>
@@ -33,8 +33,6 @@ double dmax(double a, double b);
 void *findMax_worker(void *arg);
 void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz);
 
-//
-//
 void *zerarColuna_worker(void *arg);
 void zerarColuna(int tid, const int nthreads, int n, int *L, double **matriz, const int k);
 
@@ -119,38 +117,22 @@ int main(int argc, char* argv[])
         L[k] = temp;
 
         for (i = 0; i < nthreads; i++) {
-            args[i].tid = i;
-            args[i].nthreads = nthreads;
-            args[i].L = L;
-            args[i].s = s;
-            args[i].matriz = matriz;
             args[i].k = k;
-            args[i].n = n;
             pthread_create(&threads[i], NULL, zerarColuna_worker, (void *) (args+i));
         }
 
         for (i = 0; i < nthreads; i++) {
             pthread_join(threads[i], NULL);
         }
-
-        // //#pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
-        // for (i = k+1; i < n; i++) {
-        //     m = matriz[L[i]][k] / matriz[L[k]][k];
-        //     matriz[L[i]][k] = 0;
-        //     for (j = k+1; j < n+1; j++) {
-        //         matriz[L[i]][j] = matriz[L[i]][j] - (m * matriz[L[k]][j]);
-        //     }
-        // }
     }
-
     /*                          *
      * FIM Eliminacao Gaussiana *
      *                          */
     
+
     /*                          *
      * COMECO retrosubstituicao *
      *                          */
-
     x = (double *) malloc(sizeof(double) * tam); // Alocacao matriz dos resultados
     x[n-1] = matriz[L[n-1]][n] / matriz[L[n-1]][n-1];
     for (i = n-2; i >= 0; i--) {
@@ -167,12 +149,12 @@ int main(int argc, char* argv[])
      *                          */
 
     gettimeofday(&timevalB,NULL);
-    //printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
+    printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
     
     // Impressao dos resultados
-    for (i = 0; i < tam; i++) {
-         printf("x%d = %.5f\n", i, x[i]);
-    }
+    // for (i = 0; i < tam; i++) {
+    //      printf("x%d = %.5f\n", i, x[i]);
+    // }
     
     //Libera memoria
     free(x); free(L); free(s);
@@ -242,9 +224,7 @@ void zerarColuna(int tid, const int nthreads, int n, int *L, double **matriz, co
 
     // Se tiver mais threads do que trabalho
     if (qtdElementos < nthreads ) {
-        printf("%d %d\n", qtdElementos, nthreads);
         if (tid >= qtdElementos ) {
-            printf("quitei\n");
             return;
         }
         threadsAtivas = qtdElementos;
