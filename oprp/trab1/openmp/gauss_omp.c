@@ -130,9 +130,9 @@ int main(int argc, char* argv[])
     printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
     
     // Impressao dos resultados
-    //for (i = 0; i < tam; i++) {
-    //     printf("x%d = %.5f\n", i, x[i]);
-    //}
+    // for (i = 0; i < tam; i++) {
+    //      printf("x%d = %.5f\n", i, x[i]);
+    // }
     
     //Libera memoria
     free(x); free(L); free(s);

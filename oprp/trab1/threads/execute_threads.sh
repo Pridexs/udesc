@@ -13,16 +13,16 @@ echo 'nthreads;tempo' >> tempos_threads.csv
 while [  $COUNTER -lt 17 ]; do
     echo "--INICIANDO GAUSS COM " $COUNTER " THREADS--"
     TEMPOEXECUCAOTOTAL=0
-    while [ $COUNTER_EXECUCAO -lt 11 ]; do
+    while [ $COUNTER_EXECUCAO -lt 7 ]; do
         TEMPOEXECUCAO="$(./gauss_threads $COUNTER < ../input | tail -1)"
         TEMPOEXECUCAOTOTAL=$(awk "BEGIN {print $TEMPOEXECUCAOTOTAL+$TEMPOEXECUCAO; exit;}")
         echo "Gauss com " $COUNTER " threads: " $TEMPOEXECUCAO " segundos " $COUNTER_EXECUCAO
         let COUNTER_EXECUCAO=COUNTER_EXECUCAO+1
     done
-    TEMPOEXECUCAOTOTAL=$(awk "BEGIN {print $TEMPOEXECUCAOTOTAL/11.0; exit;}")
+    TEMPOEXECUCAOTOTAL=$(awk "BEGIN {print $TEMPOEXECUCAOTOTAL/7.0; exit;}")
     echo "Media: " $TEMPOEXECUCAOTOTAL
     echo ""
-    echo $COUNTER';'$TEMPOEXECUCAO >> tempos_threads.csv 
+    echo $COUNTER';'$TEMPOEXECUCAOTOTAL >> tempos_threads.csv 
     let COUNTER=COUNTER+1 
     let COUNTER_EXECUCAO=0
 done
