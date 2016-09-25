@@ -48,16 +48,15 @@ int main(int argc, char* argv[])
     struct timeval timevalA;
 	struct timeval timevalB;
 
-    pthread_t *threads  = (pthread_t *) malloc(nthreads * sizeof(pthread_t));
-    param_t *args       = (param_t *)   malloc(nthreads * sizeof(param_t));
-
-
     if (argc > 1) {
 		nthreads = atoi(argv[1]);
 	} else {
 		printf("Especifique o numero de threads\n");
 		return -1;
 	}
+
+    pthread_t *threads  = (pthread_t *) malloc(nthreads * sizeof(pthread_t));
+    param_t *args       = (param_t *)   malloc(nthreads * sizeof(param_t));
 
     //printf("Entre o tamanho da matriz: ");
     scanf("%d", &tam);
@@ -89,12 +88,6 @@ int main(int argc, char* argv[])
     n = tam;
     L = (int*) calloc(n, sizeof(int));
     s = (double*) calloc(n, sizeof(double));
-
-
-    free(threads);
-    free(args);
-    threads  = (pthread_t *) malloc(nthreads * sizeof(pthread_t));
-    args       = (param_t *)   malloc(nthreads * sizeof(param_t));
 
     for (i = 0; i < nthreads; i++) {
         args[i].tid = i;
@@ -223,9 +216,6 @@ void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz) {
     if (tid < remainder) {
         limit++;
     }
-
-    printf("%d %d %d %d\n", tid, aditional, initPos, limit);
-
     
     for(i = initPos; i < limit; i++) {
         L[i] = i;
@@ -275,11 +265,8 @@ void zerarColuna(int tid, const int nthreads, int n, int *L, double **matriz, co
         limit++;
     }
 
-    //printf("tqqid: %d initPos: %d limit: %d qtd: %d k: %d remain: %d threads: %d\n", tid, initPos, limit, qtdElementos, k, remainder, threadsAtivas);
     for (i = initPos; i < limit; i++) {
-        //printf("%d %d %d %d\n", i, k, initPos, limit);
         m = matriz[L[i]][k] / matriz[L[k]][k];
-        //printf("Nao segmentei\n");
         matriz[L[i]][k] = 0;
         for (j = k+1; j < n+1; j++) {
             matriz[L[i]][j] = matriz[L[i]][j] - (m * matriz[L[k]][j]);
