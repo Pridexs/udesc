@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <sys/time.h>
 #include <omp.h>
 
 //Retornar o maior dos dois doubles
@@ -28,6 +29,9 @@ int main()
     double **matriz, *x,*s;
     double m, soma, temp, smax, r, rmax;
     clock_t inicio, fim;
+
+    struct timeval timevalA;
+	struct timeval timevalB;
 
     //printf("Entre o tamanho da matriz: ");
     scanf("%d", &tam);
@@ -51,6 +55,7 @@ int main()
     }
 
     inicio = clock();
+    gettimeofday(&timevalA,NULL);
     /* Comeco Eliminacao Gaussiana */
     n = tam;
     L = (int*) calloc(n, sizeof(int));
@@ -119,11 +124,14 @@ int main()
         x[i] = soma / matriz[L[i]][i];
     }
     /* Fim retrosubstituicao */
+
+    gettimeofday(&timevalB,NULL);
+    printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
     
     // Impressao dos resultados
-    for (i = 0; i < tam; i++) {
-         printf("x%d = %.5f\n", i, x[i]);
-    }
+    // for (i = 0; i < tam; i++) {
+    //      printf("x%d = %.5f\n", i, x[i]);
+    // }
     
     // Impressao dos ticks de clock
     fim = clock();
