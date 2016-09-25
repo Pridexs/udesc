@@ -19,7 +19,7 @@ typedef struct {
       int tid;
       int nthreads;
       int *L;
-      int *k;
+      int k;
       double *s;
       double **matriz;
       int n;
@@ -36,7 +36,7 @@ void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz);
 //
 //
 void *zerarColuna_worker(void *arg);
-void zerarColuna(int tid, int nthreads, int n, int *L, double **matriz, const int *pk);
+void zerarColuna(int tid, const int nthreads, int n, int *L, double **matriz, const int k);
 
 int main(int argc, char* argv[])
 {
@@ -90,13 +90,19 @@ int main(int argc, char* argv[])
     L = (int*) calloc(n, sizeof(int));
     s = (double*) calloc(n, sizeof(double));
 
+
+    free(threads);
+    free(args);
+    threads  = (pthread_t *) malloc(nthreads * sizeof(pthread_t));
+    args       = (param_t *)   malloc(nthreads * sizeof(param_t));
+
     for (i = 0; i < nthreads; i++) {
         args[i].tid = i;
         args[i].nthreads = nthreads;
         args[i].L = L;
         args[i].s = s;
         args[i].matriz = matriz;
-        args[i].k = &k;
+        args[i].k = k;
         args[i].n = n;
         pthread_create(&threads[i], NULL, findMax_worker, (void *) (args+i));
     }
@@ -121,6 +127,12 @@ int main(int argc, char* argv[])
 
         for (i = 0; i < nthreads; i++) {
             args[i].tid = i;
+            args[i].nthreads = nthreads;
+            args[i].L = L;
+            args[i].s = s;
+            args[i].matriz = matriz;
+            args[i].k = k;
+            args[i].n = n;
             pthread_create(&threads[i], NULL, zerarColuna_worker, (void *) (args+i));
         }
 
@@ -189,27 +201,31 @@ double dmax(double a, double b) {
 void *findMax_worker(void *arg) {
     param_t *p = (param_t *) arg;
     findMax(p->tid, p->nthreads, p->n, p->L, p->s, p->matriz);
+    pthread_exit((void*) arg);
 }
 
 void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz) {
     int i,j,k;
-    int initPos, limit, aditional, remainder;
+    int initPos, limit, aditional = 0, remainder;
     int smax;
 
-    // Essa parte ta feia mas foi o que veio na hora.
-    // Arrumar depois
     remainder = n % nthreads;
-    aditional = 0;
     if (remainder) {
-        aditional = tid % remainder;
-        if (!aditional)
+        if (tid > remainder)
+            aditional = remainder ;
+        else 
             aditional = tid;
-    } 
-    initPos = tid * (n/nthreads) + aditional;
+    }
+
+    initPos = (tid * (n/nthreads)) + aditional; 
     limit = initPos + (n/nthreads);
-    if (tid < remainder)
+
+    if (tid < remainder) {
         limit++;
-    // End parte feia
+    }
+
+    printf("%d %d %d %d\n", tid, aditional, initPos, limit);
+
     
     for(i = initPos; i < limit; i++) {
         L[i] = i;
@@ -224,44 +240,42 @@ void findMax(int tid, int nthreads, int n, int *L, double *s, double **matriz) {
 void *zerarColuna_worker(void *arg) {
     param_t *p = (param_t *) arg;
     zerarColuna(p->tid, p->nthreads, p->n, p->L, p->matriz, p->k);
+    pthread_exit((void*) arg);
 }
 
-void zerarColuna(int tid, int nthreads, int n, int *L, double **matriz, const int *pk) {
-    const int k = *pk;
-    const int qtdElementos = n - (k + 1);
-    int threadsAtivas;
-    int remainder, aditional, limit, initPos;
+void zerarColuna(int tid, const int nthreads, int n, int *L, double **matriz, const int k) {
+    const int qtdElementos = n - (k+1);
+    int threadsAtivas = nthreads;
+    int remainder, aditional = 0, limit, initPos;
     int i, j;
     double m;
 
     // Se tiver mais threads do que trabalho
     if (qtdElementos < nthreads ) {
+        printf("%d %d\n", qtdElementos, nthreads);
         if (tid >= qtdElementos ) {
             printf("quitei\n");
             return;
         }
         threadsAtivas = qtdElementos;
-    } else {
-        threadsAtivas = nthreads;
     }
 
-    // Essa parte ta feia mas foi o que veio na hora.
-    // Arrumar depois
     remainder = qtdElementos % threadsAtivas;
-    aditional = 0;
     if (remainder) {
-        aditional = tid % remainder;
-        if (!aditional)
+        if (tid > remainder)
+            aditional = remainder;
+        else 
             aditional = tid;
-    } 
-    initPos = (tid * (qtdElementos/threadsAtivas)) + aditional + k + 1;
+    }
+
+    initPos = (tid * (qtdElementos/threadsAtivas)) + (k + 1) + aditional;
     limit = initPos + (qtdElementos/threadsAtivas);
-    if (tid < remainder)
+    
+    if (tid < remainder) {
         limit++;
-    // End parte feia
+    }
 
-
-    printf("%d %d %d %d\n", tid, initPos, limit, qtdElementos);
+    //printf("tqqid: %d initPos: %d limit: %d qtd: %d k: %d remain: %d threads: %d\n", tid, initPos, limit, qtdElementos, k, remainder, threadsAtivas);
     for (i = initPos; i < limit; i++) {
         //printf("%d %d %d %d\n", i, k, initPos, limit);
         m = matriz[L[i]][k] / matriz[L[k]][k];
