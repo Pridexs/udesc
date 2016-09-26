@@ -1,9 +1,10 @@
 // Alexandre Maros
 // pridexs.com
 // CGR - Computacao Grafica
-// Trabalho complementar 3
+// Quadricas
 //
-// Sistema de Particulas
+// Boneco de Neve
+// gcc boneco.cpp -o boneco -lSDL2 -lGLU -lGL
 //
 
 #include <SDL2/SDL.h>

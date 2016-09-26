@@ -1,9 +1,10 @@
 // Alexandre Maros
 // pridexs.com
 // CGR - Computacao Grafica
-// Trabalho complementar 3
+// Quadricas
 //
-// Sistema de Particulas
+// Castelo
+// gcc castelo.cpp -o castelo -lSDL2 -lGLU -lGL
 //
 
 #include <SDL2/SDL.h>
@@ -232,8 +233,9 @@ void update()
 void render()
 {
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    gluPerspective(45.0f, 800.f/ 600.f, 1, 300.f);
     glLoadIdentity();
+    
+
 
     glRotatef (dz, 0.0f, 0.0f, 1.0f);
     glRotatef (dy, 0.0f, 1.0f, 0.0f);
@@ -246,7 +248,7 @@ void render()
 
     // Torre 1
     glPushMatrix();
-    glTranslatef(-0.6f, 0.0f, 0.0f);
+    glTranslatef(-0.6f, 0.0f, -0.7f);
     glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
     gluCylinder( q1 , 0.0f , 0.11f , 0.2f, 32, 32 );
     glTranslatef(0.0f, .0f, 0.2f);
@@ -255,7 +257,7 @@ void render()
 
     // Torre 2
     glPushMatrix();
-    glTranslatef(0.6f, 0.0f, 0.0f);
+    glTranslatef(0.6f, 0.0f, -0.7f);
     glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
     gluCylinder( q1 , 0.0f , 0.11f , 0.2f, 32, 32 );
     glTranslatef(0.0f, .0f, 0.2f);
@@ -265,7 +267,7 @@ void render()
     // Torre 3
     glPushMatrix();
     glTranslatef(-0.6f, 0.0f, 0.0f);
-    glTranslatef(0.0f, 0.0f, +2.f);
+    glTranslatef(0.0f, 0.0f, +0.5f);
     glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
     gluCylinder( q1 , 0.0f , 0.11f , 0.2f, 32, 32 );
     glTranslatef(0.0f, .0f, 0.2f);
@@ -274,6 +276,8 @@ void render()
 
     // Torre 4
     glPushMatrix();
+    glTranslatef(+0.6f, 0.0f, 0.0f);
+    glTranslatef(0.0f, 0.0f, +0.5f);
     glRotatef (90.0f, 1.0f, 0.0f, 0.0f);
     gluCylinder( q1 , 0.0f , 0.11f , 0.2f, 32, 32 );
     glTranslatef(0.0f, .0f, 0.2f);
