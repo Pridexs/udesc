@@ -256,18 +256,21 @@ void render()
 
     // Olho 1
     glPushMatrix();
+    glColor3f(0.2f, 0.2f, 0.2f);
     glTranslatef (-.09f, .5f, -.65f);
     gluSphere( q1 , .05 , 40 , 18 );
     glPopMatrix();
 
     // Olho 2
     glPushMatrix();
+    glColor3f(0.2f, 0.2f, 0.2f);
     glTranslatef (0.09f, .5f, -.65f);
     gluSphere( q1 , .05 , 40 , 18 );
     glPopMatrix();
 
     // Nariz
     glPushMatrix();
+    glColor3f(0.0f, 0.0f, 0.0f);
     glTranslatef (0.01f, .45f, -.8f);
     glColor3f(1.0f,0.3f,0.3f);
     gluCylinder( q1 , 0.0f , 0.06f , 0.3f, 32, 32 );
