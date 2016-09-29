@@ -52,7 +52,7 @@ void display(void)
     
     GLUquadricObj *q1;
     
-    //Torre1 -> CENTRO
+    // torre centro
     glPushMatrix();
         q1 = gluNewQuadric();      
         glRotatef(-157.0, 5.0 , 5.0 , 5.0);
@@ -65,7 +65,7 @@ void display(void)
         glutSolidCone (0.7, 1.0, 20, 16);
     glPopMatrix();
 
-    //Torre2 -> DIREITA
+    // torre direita
     glPushMatrix();        
         glRotatef(-157.0, 5.0 , 5.0 , 5.0);
         glTranslatef(0.0, 4.0, 0.0);    
@@ -77,7 +77,7 @@ void display(void)
         glutSolidCone (0.7, 1.0, 20, 16);
     glPopMatrix(); 
 
-    //Torre3 -> FUNDO ESQUERDA
+    //torre fundo esquerda
     glPushMatrix();        
         glRotatef(-157.0, 5.0 , 5.0 , 5.0);
         glTranslatef(-4.0, 0.0, 0.0);    
@@ -89,7 +89,7 @@ void display(void)
         glutSolidCone (0.7, 1.0, 20, 16);
     glPopMatrix();
 
-    //Torre4 -> FUNDO DIREITA
+    // parede fundo direita
     glPushMatrix();        
         glRotatef(-157.0, 5.0 , 5.0 , 5.0);
         glTranslatef(-4.0, 4.0, 0.0);    
@@ -101,7 +101,7 @@ void display(void)
         glutSolidCone (0.7, 1.0, 20, 16);
     glPopMatrix();
 
-    //Parede do Portão
+    // parede portao
     glPushMatrix();
         glRotatef(-157.0, 5.0, 5.0, 5.0);
         glTranslatef(0.0, 0.8, 0.4);
@@ -123,7 +123,7 @@ void display(void)
         glutSolidCube(0.8);
     glPopMatrix();
 
-    //TORRE CENTRAL
+    // torre
     glPushMatrix();
         glRotatef(-157.0, 5.0, 5.0, 5.0);
         glTranslatef(0.0, 2.0, 1.2);
@@ -135,7 +135,7 @@ void display(void)
         glutSolidCone (0.7, 1.0, 20, 16);
     glPopMatrix(); 
 
-    //PAREDE LADO ESQUERDO
+    // parede esquerda
     glPushMatrix();
         glRotatef(-157.0, 5.0, 5.0, 5.0);
         glTranslatef(-3.2, 0.0, 0.4);
@@ -157,7 +157,7 @@ void display(void)
         glutSolidCube(0.8);
     glPopMatrix();
 
-   //PAREDE LADO DIREITO
+   // parede lado direito
     glPushMatrix();
         glRotatef(-157.0, 5.0, 5.0, 5.0);
         glTranslatef(-3.2, 4.0, 0.4);
@@ -179,7 +179,7 @@ void display(void)
         glutSolidCube(0.8);
     glPopMatrix();
 
-    //PAREDE DO FUNDO
+    // parede fundo
     glPushMatrix();
         glRotatef(-157.0, 5.0, 5.0, 5.0);
         glTranslatef(-4.0, 0.8, 0.4);
@@ -201,7 +201,7 @@ void display(void)
         glutSolidCube(0.8);
     glPopMatrix();
     
-    //PORTAO
+    // portao
     glPushMatrix();
         glRotatef(-157.0, 5.0, 5.0, 5.0);
         glTranslatef(0.0,+2.0f,gatePos);
