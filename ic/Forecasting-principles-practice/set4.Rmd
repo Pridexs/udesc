@@ -1,0 +1,96 @@
+---
+title: "set4"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(fpp)
+```
+
+#### 2.The data below represent the monthly sales (in thousands) of product A for a plastics manufacturer for years 1 through 5 (data set plastics)
+
+```{r}
+data(plastics)
+plastics
+```
+
+> (a) Plot the time series of sales of product A. Can you identify seasonal fluctuations and/or a
+trend?
+
+```{r}
+plot(plastics)
+```
+
+Temos uma trend que está aumentando conforme os anos e uma sazonalidade anual.
+
+> (b) Use an STL decomposition to calculate the trend-cycle and seasonal indices. (Experiment with having fixed or changing seasonality.)
+
+```{r}
+plastics.fit <- stl(plastics, s.window="periodic")
+plot(plastics.fit)
+plastics.fit <- stl(plastics, s.window=5)
+plot(plastics.fit)
+plastics.fit <- stl(plastics, s.window=7)
+plot(plastics.fit)
+```
+
+Restos e trend sofreram grandes alterações, mas qual o melhor?
+
+> (c) Do the results support the graphical interpretation from part (a)?
+
+Sim!
+
+> (d) Compute and plot the seasonally adjusted data
+
+```{r}
+plastics.fit.adj <- seasadj(plastics.fit)
+plot(plastics.fit.adj)
+```
+
+> (e) Change one observation to be an outlier (e.g., add 500 to one observation), and recompute the seasonally adjusted data. What is the effect of the outlier
+
+```{r} 
+plastics2 <- plastics
+plastics2[20] <- plastics2[10] + 500
+plastics2.fit <- stl(plastics2, s.window="periodic")
+plastics2.fit.adj <- seasadj(plastics2.fit)
+plot(plastics2.fit.adj)
+```
+
+---
+
+> (f) Does the outlier have an effect if you use robust=TRUE with the stl function?
+
+```{r} 
+plastics3 <- plastics
+plastics3[20] <- plastics3[10] + 500
+plastics3.fit <- stl(plastics3, s.window="periodic", robust=TRUE)
+plastics3.fit.adj <- seasadj(plastics3.fit)
+plot(plastics3.fit.adj)
+```
+
+Não (?)
+
+> (g) Does it make any difference if the outlier is near the end rather than in the middle of the time series?
+
+```{r} 
+plastics3 <- plastics
+plastics3[59] <- plastics3[59] + 500
+plastics3.fit <- stl(plastics3, s.window="periodic", robust=TRUE)
+plastics3.fit.adj <- seasadj(plastics3.fit)
+plot(plastics3.fit.adj)
+```
+
+> (h) Use a random walk to produce forecasts of the seasonally adjusted data.
+
+```{r} 
+plot(naive(plastics.fit.adj))
+```
+
+> (i) Reseasonalize the results to give forecasts on the original scale.
+
+```{r} 
+plastics.fcast <- forecast(plastics.fit, method="naive")
+plot(plastics.fcast)
+```
