@@ -88,27 +88,20 @@ int main(int argc, char **argv)
         len = sizeof(cliaddr);
         connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
         inet_ntop(AF_INET, &cliaddr.sin_addr, cliIp, sizeof(cliIp));
-        printf("1\n");
-        printf("1\n");
         args[threadCounter].tid     = threadCounter;
         args[threadCounter].connfd  = connfd;
         //args[threadCounter].logins  = logins;
         args[threadCounter].cliaddr = cliaddr;
-        printf("1\n");
         pthread_create(&threads[threadCounter], &attr, handleConnection_worker, (void *) (args + threadCounter) );
         threadCounter++;
-        printf("1\n");
     }
     return 0;
 }
 
 void *handleConnection_worker(void *arg)
 {
-    printf("2\n");
     param_t *p = (param_t *) arg;
-    printf("2\n");
     handleConnection(p->tid, p->connfd, p->cliaddr);
-    printf("2\n");
     pthread_exit((void*) arg);
 }
 
