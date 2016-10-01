@@ -38,6 +38,10 @@ typedef struct {
 // Vector to hold the usernames & passwords.
 vector<pair<string, string> > logins;
 
+// Mutex to ensure that only one thread can use
+// the login vector at the same time
+pthread_mutex_t mutex;
+
 int main(int argc, char **argv)
 {
     int                 listenfd, connfd, n;
@@ -50,10 +54,11 @@ int main(int argc, char **argv)
     pthread_attr_t      attr;
 
     pthread_t *threads = (pthread_t *) malloc(100 * sizeof(pthread_t));
-    param_t   *args   = (param_t *)   malloc(100 * sizeof(param_t));
+    param_t   *args    = (param_t *)   malloc(100 * sizeof(param_t));
 
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    pthread_mutex_init(&mutex, NULL);
 
     logins.push_back(make_pair("admin","pass"));
 
@@ -87,7 +92,7 @@ int main(int argc, char **argv)
     {
         len = sizeof(cliaddr);
         connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
-        inet_ntop(AF_INET, &cliaddr.sin_addr, cliIp, sizeof(cliIp));
+
         args[threadCounter].tid     = threadCounter;
         args[threadCounter].connfd  = connfd;
         //args[threadCounter].logins  = logins;
@@ -107,16 +112,16 @@ void *handleConnection_worker(void *arg)
 
 void handleConnection(int tid, const int connfd, struct sockaddr_in cliaddr)
 {
-    char    in_buff[MAXLINE];
-    char    out_buff[MAXLINE];
-    char    user[64], pass[64];
-    char    cliIp[MAXLINE];
-    int     n;
-    //struct sockaddr_in  cliaddr;
+    char                    in_buff[MAXLINE];
+    char                    out_buff[MAXLINE];
+    char                    user[64], pass[64];
+    char                    cliIp[MAXLINE];
+    int                     n;
+    pair<string, string>    pair_user;
+
+    inet_ntop(AF_INET, &cliaddr.sin_addr, cliIp, sizeof(cliIp));
 
     printf("Thread %d initializing\n", tid);
-
-    
 
     while( (n = read(connfd, in_buff, MAXLINE)) > 0)
     {
@@ -132,7 +137,24 @@ void handleConnection(int tid, const int connfd, struct sockaddr_in cliaddr)
     }
 
     sscanf(in_buff, "username: %s password: %s", user, pass);
-    if (strcmp(user, "admin") == 0 && strcmp(pass, "pass") == 0)
+    string sUser = string(user);
+    string sPass = string(pass);
+
+    // !!! BEGIN CRITICAL AREA !!! //
+    pthread_mutex_lock(&mutex);
+
+    for (int i = 0; i < logins.size(); i++)
+    {
+        if (logins[i].first == user)
+        {
+            pair_user = logins[i]; 
+        }
+    }
+
+    pthread_mutex_unlock(&mutex);
+    // !!! END CRITICAL AREA !!! //
+
+    if ( sUser == pair_user.first && sPass == pair_user.second)
     {
         snprintf(out_buff, sizeof(out_buff),
             "PROCEED, Your IP Address is: %s and your Port Number is: %d\r\n",
