@@ -68,8 +68,8 @@ int main(int argc, char **argv)
 
     while ( (n = read(sockfd, recvline, MAXLINE)) > 0)
     {
-		counter++; /* number of loops completed */
-		recvline[n] = 0; /*null terminate */
+		counter++;
+		recvline[n] = 0;
 		if (fputs(recvline, stdout) == EOF)
         {
             printf("Error fputs\n");
@@ -83,7 +83,7 @@ int main(int argc, char **argv)
         return -1;
     }
 		
-	printf("counter = %d\n", counter);
+    close(sockfd);
 
-	exit(0);
+    return 0;
 }

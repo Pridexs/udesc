@@ -4,9 +4,10 @@
 // Trabalho 1 - TCP
 //
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+
+#include <pthread.h>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -15,27 +16,47 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 
+#include <vector>
+#include <utility>
+#include <cstring>
+#include <string>
+
+using namespace std;
+
 #define MAXLINE 512
+
+void handleConnection_worker(void *arg);
+void handleConnection(int tid, vector<pair<string, std::string> > &logins);
+
+typedef struct {
+      int tid;
+      int connfd;
+      vector<pair<string, string> > &logins;
+} param_t;
 
 int main(int argc, char **argv)
 {
     int                 listenfd, connfd, n;
     struct sockaddr_in  servaddr;
+    struct sockaddr_in  cliaddr;
+    socklen_t           len;
     char                in_buff[MAXLINE];
     char                out_buff[MAXLINE];
     char                user[64], pass[64];
     char                cliIp[MAXLINE];
-    struct sockaddr_in  cliaddr;
-    socklen_t           len;
+
+    // Vector to hold the usernames & passwords.
+    vector<pair<string, string> > login;
 
     if (argc != 2) {
-        printf("Usage: ./x <PortNumber>");
+        printf("Usage: ./authserver <PortNumber>");
         return -1;
     }
 
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     
-    if (listenfd < 0) {
+    if (listenfd < 0) 
+    {
         printf("Error opening socket\n");
         return -1;
     }
@@ -46,7 +67,8 @@ int main(int argc, char **argv)
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port        = htons(atoi(argv[1]));
 
-    if(bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr))) {
+    if(bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr))) 
+    {
         printf("Error on binding\n");
         return -1;
     }
@@ -92,4 +114,16 @@ int main(int argc, char **argv)
         close(connfd);
     }
     return 0;
+}
+
+void handleConnection_worker(void *arg)
+{
+    param_t *p = (param_t *) arg;
+    handleConnection(p->tid, p->logins);
+    pthread_exit((void*) arg);
+}
+
+void handleConnection(int tid, vector<pair<string, string> > &logins)
+{
+
 }
