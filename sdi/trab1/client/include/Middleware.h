@@ -19,7 +19,7 @@ class Middleware
         Middleware(char *ip, char *port);
 
         // Se existe um login com nome u
-        int loginExists(std::string id);
+        int idExists(char *id);
         
         // Criar usuario
         int createUser(char *id, char *pass);

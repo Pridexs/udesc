@@ -32,6 +32,7 @@ void *handleConnection_worker(void *arg);
 void handleConnection(int tid, const int connfd, struct sockaddr_in cliaddr);
 
 int handleLogin(int connfd, char *out_buff, string id, string pass);
+int handleIdExists(int connfd, char *out_buff, string id);
 
 typedef struct {
       int tid;
@@ -193,8 +194,11 @@ void handleConnection(int tid, const int connfd, struct sockaddr_in cliaddr)
         }
         else if (request[0] == "login")
         {
-            printf("Handling Login\n");
             handleLogin(connfd, out_buff, request[1], request[2]);
+        }
+        else if (request[0] == "idexists")
+        {
+            handleIdExists(connfd, out_buff, request[1]);
         }
 
         request.clear();
@@ -245,4 +249,44 @@ int handleLogin(int connfd, char *out_buff, string id, string pass)
         printf("Error writing\n");
     }
 
+    return 1;
+}
+
+int handleIdExists(int connfd, char *out_buff, string id)
+{
+    pair<string, string> user;
+    bool found = false;
+    
+    // !!! BEGIN CRITICAL AREA !!! //
+    pthread_mutex_lock(&mutex);
+
+    for (int i = 0; i < logins.size(); i++)
+    {
+        if (logins[i].first == id)
+        {
+            user = logins[i];
+            found = true;
+            break; 
+        }
+    }
+
+    pthread_mutex_unlock(&mutex);
+    // !!! END CRITICAL AREA !!! //
+
+    if (found)
+    {
+        snprintf(out_buff, sizeof(char) * MAXLINE, "true");
+    }
+    else
+    {
+        snprintf(out_buff, sizeof(char) * MAXLINE, "false");
+    }
+
+    int n = write(connfd, out_buff, strlen(out_buff));
+    if (n < 0)
+    {
+        printf("Error writing\n");
+    }
+
+    return 1;
 }

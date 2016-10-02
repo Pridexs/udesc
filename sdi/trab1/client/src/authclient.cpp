@@ -34,12 +34,12 @@ int main(int argc, char **argv)
 
     Middleware server(argv[1], argv[2]);
 	
-    while(option != 4)
+    while(option != 5)
     {
         printf("\nChoose what you want to do:\n"
-                "1. Login\n2. Create user\n"
-                "3. Show all variables on server\n"
-                "4. Close connection and exit\n\n"
+                "1. Login\n2. Check if user exists\n3. Create user\n"
+                "4. Show all variables on server\n"
+                "5. Close connection and exit\n\n"
                 "> ");
         
         scanf("%d", &option);
@@ -54,9 +54,22 @@ int main(int argc, char **argv)
         }
         else if (option == 2)
         {
-
+            printf("Enter the id you want to check: ");
+            scanf("%s", id);
+            if (server.idExists(id)) 
+            {
+                printf("Yes, that id already exists on the server\n");
+            }
+            else
+            {
+                printf("No that id does not exist on the server\n");
+            }
         }
         else if (option == 3)
+        {
+
+        }
+        else if (option == 4)
         {
 
         }

@@ -76,9 +76,35 @@ Middleware::Middleware(char *ip, char *port)
     // close(sockfd);
 }
 
-int Middleware::loginExists(std::string id)
+int Middleware::idExists(char *id)
 {
+    snprintf(sendline, sizeof(sendline), "idexists;%s\r\n\r\n", id);
+    n = write(sockfd, sendline, strlen(sendline));
 
+    if (n <  0)
+    {
+        printf("Error writing\n");
+        exit(-1);
+    }
+
+    n = read(sockfd, recvline, MAXLINE);
+
+    if (n < 0)
+    {
+        printf("Error reading\n");
+        exit(-1);
+    }
+
+    recvline[n] = '\0';
+    
+    if (strcmp(recvline, "true") == 0)
+    {
+        return 1;
+    }
+    else 
+    {
+        return 0;
+    }
 }
 
 // Criar usuario
@@ -109,7 +135,7 @@ int Middleware::login(char *id, char *pass)
     
     if (n < 0)
     {
-        printf("Error reding\n");
+        printf("Error reading\n");
         exit(-1);
     }
 
