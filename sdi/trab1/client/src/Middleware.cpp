@@ -1,3 +1,14 @@
+// Alexandre Maros
+// 
+// SDI - Distributed Systems
+// Goal: Make a kind of shared-variable server using TCP
+// In this case we are making a client-server application
+// to allow registering of users with passwords and allow
+// them to "login" in the system.
+//
+// Middleware.
+//
+
 #include "Middleware.h"
 
 #include <cstdio>
@@ -5,6 +16,7 @@
 #include <cstdlib>
 #include <iostream>
 
+// Constructor, its job is to set up the initial connection
 Middleware::Middleware(char *ip, char *port)
 {
     this->ip = std::string(ip);
@@ -45,6 +57,7 @@ Middleware::Middleware(char *ip, char *port)
 	printf("%s", recvline);
 }
 
+// Check if the id exists in the server or not
 int Middleware::idExists(char *id)
 {
     snprintf(sendline, sizeof(sendline), "idexists;%s\r\n\r\n", id);

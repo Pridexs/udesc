@@ -2,6 +2,9 @@
 // 
 // SDI - Distributed Systems
 // Goal: Make a kind of shared-variable server using TCP
+// In this case we are making a client-server application
+// to allow registering of users with passwords and allow
+// them to "login" in the system.
 //
 // Server Side.
 //
@@ -65,6 +68,7 @@ int main(int argc, char **argv)
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
     pthread_mutex_init(&mutex, NULL);
 
+    // Adding a default login to the logins pool
     logins.push_back(make_pair("admin","pass"));
 
     if (argc != 2) {
@@ -72,6 +76,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
+    // Making a TCP socket
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     
     if (listenfd < 0) 
@@ -93,8 +98,10 @@ int main(int argc, char **argv)
 
     listen(listenfd, 32);
 
+    // Run forever
     for(;;)
     {
+        // Accept a connection and create a thread to handle the connection
         len = sizeof(cliaddr);
         connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
 
@@ -110,6 +117,7 @@ int main(int argc, char **argv)
     return 0;
 }
 
+// Default function for a thread
 void *handleConnection_worker(void *arg)
 {
     param_t *p = (param_t *) arg;
@@ -176,12 +184,13 @@ void handleConnection(int tid, const int connfd, struct sockaddr_in cliaddr)
             token = strtok_r(NULL, ";", &saveptr);
         }
 
-        cout << "tokens:" << endl;
-        for (int i = 0; i < request.size(); i++)
-        {
-            cout << request[i] << endl;
-        }
-        cout << endl;
+        // FOR DEBUG ONLY - TOKENS
+        // cout << "tokens:" << endl;
+        // for (int i = 0; i < request.size(); i++)
+        // {
+        //     cout << request[i] << endl;
+        // }
+        // cout << endl;
 
         if (request.size() == 0)
         {

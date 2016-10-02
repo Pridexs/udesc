@@ -2,8 +2,11 @@
 // 
 // SDI - Distributed Systems
 // Goal: Make a kind of shared-variable server using TCP
+// In this case we are making a client-server application
+// to allow registering of users with passwords and allow
+// them to "login" in the system.
 //
-// Client Side.
+// Server Side.
 //
 
 #include <cstdio>

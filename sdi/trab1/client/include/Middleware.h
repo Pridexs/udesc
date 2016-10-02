@@ -1,3 +1,14 @@
+// Alexandre Maros
+// 
+// SDI - Distributed Systems
+// Goal: Make a kind of shared-variable server using TCP
+// In this case we are making a client-server application
+// to allow registering of users with passwords and allow
+// them to "login" in the system.
+//
+//  Middleware.
+//
+
 #ifndef MIDDLEWARE_HPP
 #define MIDDLEWARE
 
