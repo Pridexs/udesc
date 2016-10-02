@@ -43,38 +43,6 @@ Middleware::Middleware(char *ip, char *port)
 
     recvline[n] = '\0';
 	printf("%s", recvline);
-
-    // printf("Entre com o usuario: ");
-    // scanf("%s", username);
-    // printf("Entre com a senha: ");
-    // scanf("%s", password);
-
-    // snprintf(sendline, sizeof(sendline), "username: %s password: %s\r\n\r\n", username, password);
-    // n = write(sockfd, sendline, strlen(sendline));
-
-    // if (n < 0)
-    // {
-    //     printf("Read error\n");
-    // }
-
-    // while ( (n = read(sockfd, recvline, MAXLINE)) > 0)
-    // {
-	// 	counter++;
-	// 	recvline[n] = 0;
-	// 	if (fputs(recvline, stdout) == EOF)
-    //     {
-    //         printf("Error fputs\n");
-    //         return;
-    //     }
-	// }
-
-	// if(n < 0)
-    // {
-    //     printf("Read error\n");
-    //     return;
-    // }
-		
-    // close(sockfd);
 }
 
 int Middleware::idExists(char *id)

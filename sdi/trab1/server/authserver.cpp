@@ -61,9 +61,6 @@ int main(int argc, char **argv)
 
     pthread_attr_t      attr;
 
-    pthread_t *threads = (pthread_t *) malloc(100 * sizeof(pthread_t));
-    param_t   *args    = (param_t *)   malloc(100 * sizeof(param_t));
-
     pthread_attr_init(&attr);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
     pthread_mutex_init(&mutex, NULL);
@@ -101,12 +98,14 @@ int main(int argc, char **argv)
         len = sizeof(cliaddr);
         connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &len);
 
-        args[threadCounter].tid     = threadCounter;
-        args[threadCounter].connfd  = connfd;
-        //args[threadCounter].logins  = logins;
-        args[threadCounter].cliaddr = cliaddr;
-        pthread_create(&threads[threadCounter], &attr, handleConnection_worker, (void *) (args + threadCounter) );
-        threadCounter++;
+        pthread_t newConn;
+        param_t   newConnParam;
+
+        newConnParam.tid        = threadCounter++;
+        newConnParam.connfd     = connfd;
+        newConnParam.cliaddr    = cliaddr;
+        pthread_create(&newConn, &attr, handleConnection_worker, (void *) (&newConnParam) );
+
     }
     return 0;
 }
