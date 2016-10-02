@@ -6,9 +6,11 @@
 // Client Side.
 //
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <vector>
+#include <iostream>
 
 #include "Middleware.h"
 
@@ -46,7 +48,7 @@ int main(int argc, char **argv)
 
         if (option == 1)
         {
-            printf("Enter the id: ");
+            printf("\nEnter the id: ");
             scanf("%s", id);
             printf("Enter the password: ");
             scanf("%s", pass);
@@ -54,7 +56,7 @@ int main(int argc, char **argv)
         }
         else if (option == 2)
         {
-            printf("Enter the id you want to check: ");
+            printf("\nEnter the id you want to check: ");
             scanf("%s", id);
             if (server.idExists(id)) 
             {
@@ -67,11 +69,37 @@ int main(int argc, char **argv)
         }
         else if (option == 3)
         {
-
+            printf("\nEnter the id for the user you want to create: ");
+            scanf("%s", id);
+            printf("Enter the password for the user you want to create: ");
+            scanf("%s", pass);
+            
+            int returnCode = server.createUser(id, pass);
+            if (returnCode == 1)
+            {
+                printf("User created successfully\n");
+            }
+            else if (returnCode == 0)
+            {
+                printf("Unknown error while creating new user\n");
+            }
+            else if (returnCode == 2)
+            {
+                printf("User with id %s already exists\n", id);
+            }
         }
         else if (option == 4)
         {
+            std::vector<std::string> ids;
+            ids = server.listUsers();
+            printf("\nUsers registered:\n");
 
+            for (std::vector<std::string>::iterator it = ids.begin(); it != ids.end(); it++)
+            {
+                std::cout << *it << std::endl;
+            }
+
+            printf("\n");
         }
     }
 

@@ -33,6 +33,8 @@ void handleConnection(int tid, const int connfd, struct sockaddr_in cliaddr);
 
 int handleLogin(int connfd, char *out_buff, string id, string pass);
 int handleIdExists(int connfd, char *out_buff, string id);
+int handleCreateUser(int connfd, char *out_buff, string id, string pass);
+int handleListIds(int connfd, char *out_buff);
 
 typedef struct {
       int tid;
@@ -200,6 +202,14 @@ void handleConnection(int tid, const int connfd, struct sockaddr_in cliaddr)
         {
             handleIdExists(connfd, out_buff, request[1]);
         }
+        else if (request[0] == "createuser")
+        {
+            handleCreateUser(connfd, out_buff, request[1], request[2]);
+        }
+        else if(request[0] == "listids")
+        {
+            handleListIds(connfd, out_buff);
+        }
 
         request.clear();
 
@@ -282,6 +292,83 @@ int handleIdExists(int connfd, char *out_buff, string id)
         snprintf(out_buff, sizeof(char) * MAXLINE, "false");
     }
 
+    int n = write(connfd, out_buff, strlen(out_buff));
+    if (n < 0)
+    {
+        printf("Error writing\n");
+    }
+
+    return 1;
+}
+
+int handleCreateUser(int connfd, char *out_buff, string id, string pass)
+{
+    pair<string, string> user;
+    bool found = false;
+    
+    // !!! BEGIN CRITICAL AREA !!! //
+    pthread_mutex_lock(&mutex);
+
+    for (int i = 0; i < logins.size(); i++)
+    {
+        if (logins[i].first == id)
+        {
+            user = logins[i];
+            found = true;
+            break; 
+        }
+    }
+
+    if (!found)
+    {
+        logins.push_back(make_pair(id, pass));
+    }
+
+    pthread_mutex_unlock(&mutex);
+    // !!! END CRITICAL AREA !!! //
+
+    if (found)
+    {
+        snprintf(out_buff, sizeof(char) * MAXLINE, "error;id_exists");
+    }
+    else
+    {
+        snprintf(out_buff, sizeof(char) * MAXLINE, "success");
+    }
+
+    int n = write(connfd, out_buff, strlen(out_buff));
+    if (n < 0)
+    {
+        printf("Error writing\n");
+    }
+
+    return 1;
+}
+
+int handleListIds(int connfd, char *out_buff)
+{
+    vector<pair<string, string> > logins_copy;
+    // !!! BEGIN CRITICAL AREA !!! //
+    pthread_mutex_lock(&mutex);
+
+    // COPYING LOGINS TO LOGINS_COPY
+    logins_copy = logins;
+
+    pthread_mutex_unlock(&mutex);
+    // !!! END CRITICAL AREA !!! //
+
+    for (int i = 0; i < logins_copy.size(); i++)
+    {
+        snprintf(out_buff, sizeof(char) * MAXLINE, "%s;", logins_copy[i].first.c_str());
+        int n = write(connfd, out_buff, strlen(out_buff));
+        if (n < 0)
+        {
+            printf("Error writing\n");
+            return 0;
+        }
+    }
+    
+    snprintf(out_buff, sizeof(char) * MAXLINE, "\r\n\r\n");
     int n = write(connfd, out_buff, strlen(out_buff));
     if (n < 0)
     {
