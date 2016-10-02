@@ -7,6 +7,12 @@
 // them to "login" in the system.
 //
 // Server Side.
+// 
+// To compile: 
+//  - Go to the /client/ folder and run 'make' to compile it.
+// 
+// To run:
+//  - ./authclient <IPaddress> <Port>
 //
 
 #include <cstdio>

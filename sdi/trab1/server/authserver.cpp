@@ -8,6 +8,12 @@
 //
 // Server Side.
 //
+// To compile:
+//  - g++ authserver.cpp -o authserver -pthread
+//
+// To run:
+//  - ./authserver <Port>
+//
 
 #include <cstdio>
 #include <cstdlib>
