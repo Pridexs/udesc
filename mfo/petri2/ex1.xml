@@ -1,0 +1,890 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><pnml>
+<net id="Net-One" type="P/T net">
+<token id="Default" enabled="true" red="0" green="0" blue="0"/>
+<place id="adam lado direito ponte">
+<graphics>
+<position x="915.0" y="480.0"/>
+</graphics>
+<name>
+<value>adam lado direito ponte</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="adam lado esquerdo ponte">
+<graphics>
+<position x="240.0" y="480.0"/>
+</graphics>
+<name>
+<value>adam lado esquerdo ponte</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="bono lado direito ponte">
+<graphics>
+<position x="915.0" y="150.0"/>
+</graphics>
+<name>
+<value>bono lado direito ponte</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="bono lado esquerdo ponte">
+<graphics>
+<position x="240.0" y="150.0"/>
+</graphics>
+<name>
+<value>bono lado esquerdo ponte</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="edge lado direito ponte">
+<graphics>
+<position x="915.0" y="315.0"/>
+</graphics>
+<name>
+<value>edge lado direito ponte</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="edge lado esquerdo ponte">
+<graphics>
+<position x="240.0" y="315.0"/>
+</graphics>
+<name>
+<value>edge lado esquerdo ponte</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="flag1">
+<graphics>
+<position x="90.0" y="225.0"/>
+</graphics>
+<name>
+<value>flag1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="flag2">
+<graphics>
+<position x="1020.0" y="225.0"/>
+</graphics>
+<name>
+<value>flag2</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="flag3">
+<graphics>
+<position x="90.0" y="390.0"/>
+</graphics>
+<name>
+<value>flag3</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="flag4">
+<graphics>
+<position x="1020.0" y="405.0"/>
+</graphics>
+<name>
+<value>flag4</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="flag5">
+<graphics>
+<position x="90.0" y="570.0"/>
+</graphics>
+<name>
+<value>flag5</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="lanterna lado esquerdo">
+<graphics>
+<position x="240.0" y="30.0"/>
+</graphics>
+<name>
+<value>lanterna lado esquerdo</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="larry lado direito ponte">
+<graphics>
+<position x="915.0" y="645.0"/>
+</graphics>
+<name>
+<value>larry lado direito ponte</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="larry lado esquerdo ponte">
+<graphics>
+<position x="240.0" y="645.0"/>
+</graphics>
+<name>
+<value>larry lado esquerdo ponte</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="laterna lado direito">
+<graphics>
+<position x="915.0" y="30.0"/>
+</graphics>
+<name>
+<value>laterna lado direito</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<transition id="atravessa adam e larry">
+<graphics>
+<position x="555.0" y="360.0"/>
+</graphics>
+<name>
+<value>atravessa adam e larry</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="atravessa bono e edge">
+<graphics>
+<position x="555.0" y="630.0"/>
+</graphics>
+<name>
+<value>atravessa bono e edge</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="atravessar bono e edge">
+<graphics>
+<position x="555.0" y="120.0"/>
+</graphics>
+<name>
+<value>atravessar bono e edge</value>
+<graphics>
+<offset x="4.0" y="32.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="volta edge">
+<graphics>
+<position x="555.0" y="480.0"/>
+</graphics>
+<name>
+<value>volta edge</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="voltar bono">
+<graphics>
+<position x="555.0" y="255.0"/>
+</graphics>
+<name>
+<value>voltar bono</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<arc id="adam lado esquerdo ponte to atravessa adam e larry" source="adam lado esquerdo ponte" target="atravessa adam e larry">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="266" y="486" curvePoint="false"/>
+<arcpath id="001" x="561" y="375" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessa adam e larry to adam lado direito ponte" source="atravessa adam e larry" target="adam lado direito ponte">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="571" y="375" curvePoint="false"/>
+<arcpath id="001" x="912" y="487" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessa adam e larry to flag4" source="atravessa adam e larry" target="flag4">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="572" y="369" curvePoint="false"/>
+<arcpath id="001" x="1017" y="415" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessa adam e larry to larry lado direito ponte" source="atravessa adam e larry" target="larry lado direito ponte">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="571" y="381" curvePoint="false"/>
+<arcpath id="001" x="915" y="647" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessa adam e larry to laterna lado direito" source="atravessa adam e larry" target="laterna lado direito">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="572" y="363" curvePoint="false"/>
+<arcpath id="001" x="915" y="52" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessa bono e edge to bono lado direito ponte" source="atravessa bono e edge" target="bono lado direito ponte">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="572" y="641" curvePoint="false"/>
+<arcpath id="001" x="918" y="174" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessa bono e edge to edge lado direito ponte" source="atravessa bono e edge" target="edge lado direito ponte">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="571" y="648" curvePoint="false"/>
+<arcpath id="001" x="915" y="337" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessa bono e edge to laterna lado direito" source="atravessa bono e edge" target="laterna lado direito">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="572" y="634" curvePoint="false"/>
+<arcpath id="001" x="919" y="54" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessar bono e edge to bono lado direito ponte" source="atravessar bono e edge" target="bono lado direito ponte">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="572" y="129" curvePoint="false"/>
+<arcpath id="001" x="912" y="160" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessar bono e edge to edge lado direito ponte" source="atravessar bono e edge" target="edge lado direito ponte">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="571" y="141" curvePoint="false"/>
+<arcpath id="001" x="913" y="320" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessar bono e edge to flag2" source="atravessar bono e edge" target="flag2">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="571" y="135" curvePoint="false"/>
+<arcpath id="001" x="1017" y="233" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="atravessar bono e edge to laterna lado direito" source="atravessar bono e edge" target="laterna lado direito">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="572" y="123" curvePoint="false"/>
+<arcpath id="001" x="912" y="45" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="bono lado direito ponte to voltar bono" source="bono lado direito ponte" target="voltar bono">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="912" y="166" curvePoint="false"/>
+<arcpath id="001" x="572" y="266" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="bono lado esquerdo ponte to atravessa bono e edge" source="bono lado esquerdo ponte" target="atravessa bono e edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="260" y="174" curvePoint="false"/>
+<arcpath id="001" x="562" y="636" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="bono lado esquerdo ponte to atravessar bono e edge" source="bono lado esquerdo ponte" target="atravessar bono e edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="266" y="160" curvePoint="false"/>
+<arcpath id="001" x="562" y="129" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="edge lado direito ponte to volta edge" source="edge lado direito ponte" target="volta edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="913" y="333" curvePoint="false"/>
+<arcpath id="001" x="572" y="491" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="edge lado esquerdo ponte to atravessa bono e edge" source="edge lado esquerdo ponte" target="atravessa bono e edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="262" y="337" curvePoint="false"/>
+<arcpath id="001" x="561" y="643" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="edge lado esquerdo ponte to atravessar bono e edge" source="edge lado esquerdo ponte" target="atravessar bono e edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="264" y="319" curvePoint="false"/>
+<arcpath id="001" x="561" y="141" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="flag1 to atravessar bono e edge" source="flag1" target="atravessar bono e edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="116" y="233" curvePoint="false"/>
+<arcpath id="001" x="561" y="135" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="flag2 to voltar bono" source="flag2" target="voltar bono">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="1017" y="238" curvePoint="false"/>
+<arcpath id="001" x="571" y="273" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="flag3 to atravessa adam e larry" source="flag3" target="atravessa adam e larry">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="116" y="400" curvePoint="false"/>
+<arcpath id="001" x="562" y="369" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="flag4 to volta edge" source="flag4" target="volta edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="1017" y="419" curvePoint="false"/>
+<arcpath id="001" x="571" y="498" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="flag5 to atravessa bono e edge" source="flag5" target="atravessa bono e edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="116" y="584" curvePoint="false"/>
+<arcpath id="001" x="561" y="650" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="lanterna lado esquerdo to atravessa adam e larry" source="lanterna lado esquerdo" target="atravessa adam e larry">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="262" y="52" curvePoint="false"/>
+<arcpath id="001" x="562" y="363" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="lanterna lado esquerdo to atravessa bono e edge" source="lanterna lado esquerdo" target="atravessa bono e edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="259" y="55" curvePoint="false"/>
+<arcpath id="001" x="567" y="627" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="lanterna lado esquerdo to atravessar bono e edge" source="lanterna lado esquerdo" target="atravessar bono e edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="266" y="45" curvePoint="false"/>
+<arcpath id="001" x="562" y="123" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="larry lado esquerdo ponte to atravessa adam e larry" source="larry lado esquerdo ponte" target="atravessa adam e larry">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="263" y="647" curvePoint="false"/>
+<arcpath id="001" x="561" y="381" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="laterna lado direito to volta edge" source="laterna lado direito" target="volta edge">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="917" y="53" curvePoint="false"/>
+<arcpath id="001" x="572" y="484" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="laterna lado direito to voltar bono" source="laterna lado direito" target="voltar bono">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="914" y="49" curvePoint="false"/>
+<arcpath id="001" x="572" y="259" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="volta edge to edge lado esquerdo ponte" source="volta edge" target="edge lado esquerdo ponte">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="561" y="493" curvePoint="false"/>
+<arcpath id="001" x="265" y="334" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="volta edge to flag5" source="volta edge" target="flag5">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="561" y="500" curvePoint="false"/>
+<arcpath id="001" x="116" y="579" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="volta edge to lanterna lado esquerdo" source="volta edge" target="lanterna lado esquerdo">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="562" y="486" curvePoint="false"/>
+<arcpath id="001" x="260" y="54" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="voltar bono to bono lado esquerdo ponte" source="voltar bono" target="bono lado esquerdo ponte">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="561" y="268" curvePoint="false"/>
+<arcpath id="001" x="266" y="166" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="voltar bono to flag3" source="voltar bono" target="flag3">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="561" y="275" curvePoint="false"/>
+<arcpath id="001" x="116" y="398" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="voltar bono to lanterna lado esquerdo" source="voltar bono" target="lanterna lado esquerdo">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="562" y="261" curvePoint="false"/>
+<arcpath id="001" x="264" y="50" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+</net>
+</pnml>

@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><pnml>
+<net id="Net-One" type="P/T net">
+<token id="Default" enabled="true" red="0" green="0" blue="0"/>
+<place id="p1_etapa1">
+<graphics>
+<position x="192.27272727272762" y="208.63636363636368"/>
+</graphics>
+<name>
+<value>p1_etapa1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="p1_etapa2">
+<graphics>
+<position x="432.27272727272737" y="140.45454545454547"/>
+</graphics>
+<name>
+<value>p1_etapa2</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="p1_etapa3">
+<graphics>
+<position x="687.2727272727275" y="140.45454545454547"/>
+</graphics>
+<name>
+<value>p1_etapa3</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="p1_tarefa4">
+<graphics>
+<position x="954.5454545454545" y="222.2727272727273"/>
+</graphics>
+<name>
+<value>p1_tarefa4</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="p2_etapa1">
+<graphics>
+<position x="195.00000000000014" y="300.0"/>
+</graphics>
+<name>
+<value>p2_etapa1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="p2_etapa2">
+<graphics>
+<position x="435.00000000000006" y="395.45454545454544"/>
+</graphics>
+<name>
+<value>p2_etapa2</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="p2_etapa3">
+<graphics>
+<position x="690.0000000000001" y="395.45454545454544"/>
+</graphics>
+<name>
+<value>p2_etapa3</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="p2_tarefa4">
+<graphics>
+<position x="951.8181818181822" y="301.3636363636363"/>
+</graphics>
+<name>
+<value>p2_tarefa4</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,0</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<place id="semaforo">
+<graphics>
+<position x="582.2727272727275" y="275.4545454545455"/>
+</graphics>
+<name>
+<value>semaforo</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</name>
+<initialMarking>
+<value>Default,1</value>
+<graphics>
+<offset x="0.0" y="0.0"/>
+</graphics>
+</initialMarking>
+<capacity>
+<value>0</value>
+</capacity>
+</place>
+<transition id="p1_tarefa1">
+<graphics>
+<position x="312.27272727272725" y="140.45454545454547"/>
+</graphics>
+<name>
+<value>p1_tarefa1</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="p1_tarefa2_critica">
+<graphics>
+<position x="582.2727272727275" y="140.45454545454547"/>
+</graphics>
+<name>
+<value>p1_tarefa2_critica</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="p1_tarefa3">
+<graphics>
+<position x="822.2727272727274" y="140.45454545454547"/>
+</graphics>
+<name>
+<value>p1_tarefa3</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="p2_tarefa1">
+<graphics>
+<position x="315.0" y="395.45454545454544"/>
+</graphics>
+<name>
+<value>p2_tarefa1</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="p2_tarefa2_critica">
+<graphics>
+<position x="585.0" y="395.45454545454544"/>
+</graphics>
+<name>
+<value>p2_tarefa2_critica</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<transition id="p2_tarefa3">
+<graphics>
+<position x="824.9999999999999" y="395.45454545454544"/>
+</graphics>
+<name>
+<value>p2_tarefa3</value>
+<graphics>
+<offset x="-5.0" y="35.0"/>
+</graphics>
+</name>
+<orientation>
+<value>0</value>
+</orientation>
+<rate>
+<value>1.0</value>
+</rate>
+<timed>
+<value>false</value>
+</timed>
+<infiniteServer>
+<value>false</value>
+</infiniteServer>
+<priority>
+<value>1</value>
+</priority>
+</transition>
+<arc id="p1_etapa1 to p1_tarefa1" source="p1_etapa1" target="p1_tarefa1">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="217" y="212" curvePoint="false"/>
+<arcpath id="001" x="318" y="152" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="p1_etapa2 to p1_tarefa2_critica" source="p1_etapa2" target="p1_tarefa2_critica">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="458" y="151" curvePoint="false"/>
+<arcpath id="001" x="588" y="152" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="p1_etapa3 to p1_tarefa3" source="p1_etapa3" target="p1_tarefa3">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="713" y="150" curvePoint="false"/>
+<arcpath id="001" x="829" y="147" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="p1_tarefa1 to p1_etapa2" source="p1_tarefa1" target="p1_etapa2">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="328" y="151" curvePoint="false"/>
+<arcpath id="001" x="429" y="151" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="p1_tarefa2_critica to p1_etapa3" source="p1_tarefa2_critica" target="p1_etapa3">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="598" y="151" curvePoint="false"/>
+<arcpath id="001" x="683" y="151" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="p1_tarefa3 to p1_tarefa4" source="p1_tarefa3" target="p1_tarefa4">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="838" y="151" curvePoint="false"/>
+<arcpath id="001" x="953" y="225" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="p1_tarefa3 to semaforo" source="p1_tarefa3" target="semaforo">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="828" y="157" curvePoint="false"/>
+<arcpath id="001" x="606" y="280" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="p2_tarefa3 to p2_tarefa4" source="p2_tarefa3" target="p2_tarefa4">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="840" y="407" curvePoint="false"/>
+<arcpath id="001" x="950" y="321" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="P4 to T3" source="p2_etapa1" target="p2_tarefa1">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="218" y="320" curvePoint="false"/>
+<arcpath id="001" x="320" y="407" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="P5 to T4" source="p2_etapa2" target="p2_tarefa2_critica">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="460" y="407" curvePoint="false"/>
+<arcpath id="001" x="590" y="407" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="P6 to T5" source="p2_etapa3" target="p2_tarefa3">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="716" y="407" curvePoint="false"/>
+<arcpath id="001" x="830" y="412" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="semaforo to p1_tarefa2_critica" source="semaforo" target="p1_tarefa2_critica">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="595" y="271" curvePoint="false"/>
+<arcpath id="001" x="593" y="167" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="semaforo to T4" source="semaforo" target="p2_tarefa2_critica">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="596" y="301" curvePoint="false"/>
+<arcpath id="001" x="597" y="391" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="T3 to P5" source="p2_tarefa1" target="p2_etapa2">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="330" y="407" curvePoint="false"/>
+<arcpath id="001" x="431" y="406" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="T4 to P6" source="p2_tarefa2_critica" target="p2_etapa3">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="600" y="407" curvePoint="false"/>
+<arcpath id="001" x="686" y="406" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+<arc id="T5 to semaforo" source="p2_tarefa3" target="semaforo">
+<graphics/>
+<inscription>
+<value>Default,1</value>
+<graphics/>
+</inscription>
+<tagged>
+<value>false</value>
+</tagged>
+<arcpath id="000" x="831" y="402" curvePoint="false"/>
+<arcpath id="001" x="607" y="293" curvePoint="false"/>
+<type value="normal"/>
+</arc>
+</net>
+</pnml>
