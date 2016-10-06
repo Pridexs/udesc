@@ -1,0 +1,1 @@
+for node in `cat f306.txt`; do scp mpi2 $node:~/; done
