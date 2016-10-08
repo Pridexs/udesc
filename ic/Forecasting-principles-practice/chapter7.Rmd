@@ -1,0 +1,98 @@
+---
+title: "chapter7"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+require(fpp)
+require(fma)
+```
+
+#### 1. Data set books contains the daily sales of paperback and hardcover books at the same store. The task is to forecast the next four days’ sales for paperback and hardcover books (data set books).
+
+> a) Plot the series and discuss the main features of the data.
+
+A série apresenta uma trend linear, nenhuma sazonalidade ou ciclos. (Gabarito diz que há uma "cyclic structure")
+
+```{r}
+data(books)
+plot(books)
+```
+
+> b) Use simple exponential smoothing with the ses function (setting initial="simple") and explore different values of αα for the paperback series. Record the within-sample SSE for the one-step forecasts. Plot SSE against αα and find which value of αα works best. What is the effect of αα on the forecasts?
+
+Testamos o ses com alpha em 0.3, 0.5, 0.8 e por fim sem um alpha fixo, deixando a função escolher. Foram separados em 2 gráficos para melhor visualização.
+
+```{r}
+books.paper.fit1 <- ses(books[,"Paperback"], alpha=0.3, initial="simple", h=4)
+books.paper.fit2 <- ses(books[,"Paperback"], alpha=0.5, initial="simple", h=4)
+books.paper.fit3 <- ses(books[,"Paperback"], alpha=0.8, initial="simple", h=4)
+books.paper.fit4 <- ses(books[,"Paperback"], initial="simple", h=4)
+
+plot(books.paper.fit1, plot.conf=FALSE, main="", xlab="sales", ylab="day", fcol="white", type="o")
+lines(fitted(books.paper.fit1), col="blue", type="o")
+lines(fitted(books.paper.fit2), col="red", type="o")
+lines(books.paper.fit1$mean, col="blue", type="o")
+lines(books.paper.fit2$mean, col="red", type="o")
+legend("topleft",lty=1, col=c(1,"blue","red"), 
+  c("data", expression(alpha == 0.3), expression(alpha == 0.5),pch=1))
+
+plot(books.paper.fit1, plot.conf=FALSE, main="", xlab="sales", ylab="day", fcol="white", type="o")
+lines(fitted(books.paper.fit3), col="green", type="o")
+lines(fitted(books.paper.fit4), col="deeppink2", type="o")
+lines(books.paper.fit3$mean, col="green", type="o")
+lines(books.paper.fit4$mean, col="deeppink2", type="o")
+legend("topleft",lty=1, col=c(1,"green","deeppink2"), 
+  c("data", expression(alpha == 0.8), expression(alpha == 0.2125)),pch=1)
+```
+
+O alpha escolhido pelo ses foi 0.2125, o aumento do alpha deixa a funcao com mais variações e diminui a acurácia do modelo.
+
+> d) Repeat but with initial="optimal". How much difference does an optimal initial level make?
+
+```{r}
+books.paper.fit1 <- ses(books[,"Paperback"], alpha=0.3, initial="optimal", h=4)
+books.paper.fit.simple <- ses(books[,"Paperback"], initial="simple", h=4)
+books.paper.fit.opt <- ses(books[,"Paperback"], initial="optimal", h=4)
+plot(books.paper.fit1, plot.conf=FALSE, main="", xlab="sales", ylab="day", fcol="white", type="o")
+lines(fitted(books.paper.fit.simple), col="blue", type="o")
+lines(fitted(books.paper.fit.opt), col="red", type="o")
+lines(books.paper.fit.simple$mean, col="blue", type="o")
+lines(books.paper.fit.opt$mean, col="red", type="o")
+legend("topleft",lty=1, col=c(1,"blue","red"), 
+  c("data", expression(alpha == 0.2125), expression(alpha == 0.1685),pch=1))
+```
+
+O alpha escolhido com initial=optimal foi 0.1685. Os valores iniciais foram consideravelmente alterados mas após 10 dias os valores dos dois modelos se aproximaram.
+
+#### 2. Apply Holt’s linear method to the paperback and hardback series and compute four-day forecasts in each case.
+
+```{r}
+books.paper.holt1 <- holt(books[,"Paperback"], damped=TRUE, initial="optimal", h=4)
+plot(books.paper.holt1)
+
+```
+
+> a) Compare the SSE measures of Holt’s method for the two series to those of simple exponential smoothing in the previous question. Discuss the merits of the two forecasting methods for these data sets.
+
+```{r}
+SSEPaperOpt = sum(books.paper.fit.opt$residual^2)
+SSEPaperHolt = sum(books.paper.holt1$residuals^2)
+SSEPaperOpt
+SSEPaperHolt
+```
+
+Holt teve um resultado melhor, já que ele leva em conta a trend da série.
+
+> b) Compare the forecasts for the two series using both methods. Which do you think is best?
+
+```{r}
+plot(books.paper.holt1, plot.conf=FALSE, main="", xlab="sales", ylab="day", fcol="white", type="o")
+lines(books.paper.holt1$mean, col="red", type="o")
+lines(books.paper.fit.opt$mean, col="blue", type="o")
+legend("topleft",lty=1, col=c(1,"red","blue"), 
+  c("data", "holt", "ses optimal"))
+```
+
+Holt já que ele leva em consideração a trend.
