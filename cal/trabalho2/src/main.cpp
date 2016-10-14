@@ -88,7 +88,6 @@ int main(int argv, char *argc[])
 
 void executarVector()
 {
-    //vector<pair<string, string> > nomes;
     vector<pair<unsigned, string> > nomes;
     unsigned int ordem;
     int nElementos, nPesquisas, sizeNomes;
@@ -99,9 +98,7 @@ void executarVector()
     for (i = 0; i < nElementos; i++)
     {
         cin >> ordem >> e1 >> e2;
-        //nomes.pusb_back(make_pair(e1, e2));
         nomes.push_back(make_pair(ordem, e1+"-"+e2));
-        //cout << nomes[i] << endl;
     }
 
     start = clock();
@@ -163,8 +160,12 @@ void executarArvore()
 
 void executarHash()
 {
-    //vector<pair<string, string> > nomes;
+    // unordered_map com hash custom
     unordered_map<string, int, CustomHash, ComparadorStrings> nomes;
+    
+    // unordered_map com hash do c++
+    //unordered_map<string, int> nomes;
+    
     unsigned int ordem;
     int nElementos, nPesquisas, sizeNomes;
     int i,j;
@@ -192,16 +193,4 @@ void executarHash()
     clockEnd = clock();
     tTime = double(clockEnd - start) / (double) CLOCKS_PER_SEC;
     printf("Tempo: %lf\n", tTime);
-}
-
-size_t customHash(string nome)
-{
-    size_t num = 0;
-
-    return num;
-}
-
-bool comparacaoNome(string n1, string n2)
-{
-    return n1 == n2;
 }
