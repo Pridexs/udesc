@@ -41,9 +41,9 @@ public:
         
         size_t nSize = key.size();
 
-        for (int i = 1; i < nSize; i++)
+        for (int i = 0; i < nSize; i++)
         {
-            hash += key[i-1] * i;
+            hash += key[i] * (i+1);
         }
 
         return hash;
