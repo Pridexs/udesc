@@ -20,6 +20,7 @@
 #include <ctime>
 #include <map>
 #include <unordered_map>
+#include <functional>
 
 using namespace std;
 
@@ -27,11 +28,36 @@ void executarVector();
 void executarArvore();
 void executarHash();
 
-FILE *fvector, *ftree, *fhash;
-
 clock_t start, clockEnd;
 
 double tTime;
+
+class CustomHash
+{
+public:
+    size_t operator() (string const& key) const
+    {
+        size_t hash = 0;
+        
+        size_t nSize = key.size();
+
+        for (int i = 1; i < nSize; i++)
+        {
+            hash += key[i-1] * i;
+        }
+
+        return hash;
+    }
+};
+
+class ComparadorStrings
+{
+public:
+    bool operator() (string const& n1, string const& n2) const
+    {
+        return n1 == n2;
+    }
+};
 
 int main(int argv, char *argc[])
 {
@@ -47,8 +73,6 @@ int main(int argv, char *argc[])
 
     if (find(args.begin(), args.end(), "vector") != args.end() )
     {
-        fvector = fopen("csvs/vector.csv", "w");
-        //fprintf(fvector, "ordem,tempo_25k,tempo_50k,tempo_75k,tempo_100k,tempo_1kk\n");
         executarVector();
     }
     else if (find(args.begin(), args.end(), "tree") != args.end()) 
@@ -140,7 +164,7 @@ void executarArvore()
 void executarHash()
 {
     //vector<pair<string, string> > nomes;
-    unordered_map<string, int> nomes;
+    unordered_map<string, int, CustomHash, ComparadorStrings> nomes;
     unsigned int ordem;
     int nElementos, nPesquisas, sizeNomes;
     int i,j;
@@ -168,4 +192,16 @@ void executarHash()
     clockEnd = clock();
     tTime = double(clockEnd - start) / (double) CLOCKS_PER_SEC;
     printf("Tempo: %lf\n", tTime);
+}
+
+size_t customHash(string nome)
+{
+    size_t num = 0;
+
+    return num;
+}
+
+bool comparacaoNome(string n1, string n2)
+{
+    return n1 == n2;
 }
