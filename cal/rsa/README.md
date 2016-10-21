@@ -1,3 +1,3 @@
-# rsa
+# RSA - 2016/2
 
-RSA Algorithm implemented in Java for the Algorithm Complexity class.
+Simple RSA Algorithm implemented in Java for the Algorithm Complexity class.
