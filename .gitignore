@@ -5,10 +5,14 @@
 *.aux
 *.dvi
 *.log
-/cal/rsa/RSA/nbproject/private/
-/cal/rsa/RSA/build/
-/cal/rsa/RSA/dist/
 
 # java
 *.class
 *.jar
+/cal/rsa/RSA/nbproject/private/
+/cal/rsa/RSA/build/
+/cal/rsa/RSA/dist/
+
+# oprp/trab1_mpi
+/oprp/trab1_mpi/input
+/oprp/trab1_mpi/gauss
