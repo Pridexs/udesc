@@ -23,14 +23,16 @@ public class RSA {
             System.out.println("4. Brute force attack");
             System.out.println("0. Sair");
             
-            
             option = in.nextInt();
             in.nextLine();
             
             if (option == 1) {
-                
+                System.out.print("Digite quantos bytes a chave privada terá: ");
+                int nBytes = in.nextInt();
+                in.nextLine();
+                grsa = new GeradorRSA(nBytes);
             } else if (option == 2) {
-                
+                grsa.imprimirChaves();
             } else if (option == 3) {
                 System.out.println("\nDigite a string para criptografar:");
                 String s = in.nextLine();
@@ -45,7 +47,7 @@ public class RSA {
                 System.out.println(grsa.descriptografarString(c));
                 System.out.println("");
             } else if (option == 4) {
-                
+                grsa.ataqueForcaBruta();
             }
             
         } while(option != 0);

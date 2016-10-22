@@ -15,6 +15,7 @@ public class GeradorRSA {
     GeradorRSA(int nBits) {
         random = new Random();
         this.nBits = nBits;
+
         
         mP = primoProvavel();
         mQ = primoProvavel();
@@ -29,20 +30,14 @@ public class GeradorRSA {
         
         mD = inversoModular(mE, x);
         
-        System.out.println("============= RSA =============");
-        System.out.println("Chave publica:");
-        System.out.println("e: " + mE.toString());
-        System.out.println("n: " + mN.toString());
-        System.out.println("Chave privada:");
-        System.out.println("d: " + mD.toString());
-        System.out.println("============= RSA =============\n");
+        imprimirChaves();
     }
     
     int geraPrimoPequeno() {
-        // Pega um dos ultimos 5000 primos gerados no cravo erastotenes
+        // Pega um dos ultimos 20% primos gerados no cravo erastotenes
         ArrayList<Integer> primos = crivoErastotenes(1000000);
         Random rnd = new Random();
-        int index = rnd.nextInt(5000) + 1;
+        int index = rnd.nextInt( (int) (0.2 * primos.size()) ) + 1;
 
         return primos.get(primos.size() - index);
     }
@@ -203,8 +198,64 @@ public class GeradorRSA {
         return  mensagem;
     }
     
-    String ataqueForcaBruta(String msg, int e, BigInteger n) {
+    String ataqueForcaBruta() {
+        
+        long tStart = System.nanoTime();
+        
+        BigInteger publicN = mN;
+        
+        BigInteger bruteforceP = new BigInteger("1");
+        BigInteger bruteforceQ;
+        BigInteger bruteforceD;
+                
+        BigInteger nbytwo = publicN.divide(new BigInteger("2"));
+        
+        if (nbytwo.mod(new BigInteger("2")).compareTo(BigInteger.ZERO) == 0) {
+            nbytwo = nbytwo.subtract(BigInteger.ONE);
+        }
+        
+        for (BigInteger i = nbytwo; i.compareTo(BigInteger.ZERO) > 0; i = i.subtract(new BigInteger("2"))) {
+            if (publicN.mod(i).compareTo(BigInteger.ZERO) == 0) {
+                bruteforceP = i;
+                break;
+            }
+        }
+        
+        bruteforceQ = publicN.divide(bruteforceP);
+        
+        System.out.println(publicN);
+        System.out.println(mE);
+        System.out.println(bruteforceP);
+        System.out.println(bruteforceQ);
+        bruteforceD = inversoModular(mE, bruteforceP.subtract(BigInteger.ONE)
+            .multiply(bruteforceQ.subtract(BigInteger.ONE)));
+        
+        long tEnd = System.nanoTime();
+        System.out.println("\nDemorou " + ( ((tEnd - tStart) / 1000000)) + " milisegundos para completar" );
+        
+        if (bruteforceD.compareTo(mD) == 0) {
+            
+            System.out.println("Ataque forca bruta: ");
+            System.out.println("p: " + bruteforceP);
+            System.out.println("q: " + bruteforceQ);
+            System.out.println("d: " + bruteforceD);
+            System.out.println("");
+        } else {
+            System.out.println("Ataque de forca bruta não sucedidio.\n");
+        }
+        
+        
         return "a";
+    }
+    
+    void imprimirChaves() {
+        System.out.println("============= RSA =============");
+        System.out.println("Chave publica:");
+        System.out.println("e: " + mE.toString());
+        System.out.println("n: " + mN.toString());
+        System.out.println("Chave privada:");
+        System.out.println("d: " + mD.toString());
+        System.out.println("============= RSA =============\n");
     }
 
     /*
