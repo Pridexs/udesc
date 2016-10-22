@@ -38,7 +38,11 @@ public class RSA {
                 String s = in.nextLine();
                 System.out.println("");
                 
+                long tStart = System.nanoTime();
                 ArrayList<BigInteger> c = grsa.criptografarString(s, 8);
+                long tEnd = System.nanoTime();
+                System.out.println("Demorou " + ( ((tEnd - tStart) / 1000000)) + " milisegundos para criptografar" );
+                
                 System.out.println("A array de bytes criptografada: ");
                 System.out.println(c.toString());
                 System.out.println("");
@@ -47,7 +51,12 @@ public class RSA {
                 System.out.println(grsa.descriptografarString(c));
                 System.out.println("");
             } else if (option == 4) {
+                long tStart = System.nanoTime();
+                
                 grsa.ataqueForcaBruta();
+                
+                long tEnd = System.nanoTime();
+                System.out.println("\nDemorou " + ( ((tEnd - tStart) / 1000000)) + " milisegundos para completar o ataque" );
             }
             
         } while(option != 0);

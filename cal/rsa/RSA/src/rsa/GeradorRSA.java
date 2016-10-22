@@ -200,7 +200,7 @@ public class GeradorRSA {
     
     String ataqueForcaBruta() {
         
-        long tStart = System.nanoTime();
+        
         
         BigInteger publicN = mN;
         
@@ -230,8 +230,7 @@ public class GeradorRSA {
         bruteforceD = inversoModular(mE, bruteforceP.subtract(BigInteger.ONE)
             .multiply(bruteforceQ.subtract(BigInteger.ONE)));
         
-        long tEnd = System.nanoTime();
-        System.out.println("\nDemorou " + ( ((tEnd - tStart) / 1000000)) + " milisegundos para completar" );
+       
         
         if (bruteforceD.compareTo(mD) == 0) {
             
