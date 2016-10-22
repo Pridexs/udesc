@@ -1,5 +1,6 @@
 package rsa;
 
+import java.math.BigInteger;
 import java.util.Scanner;
 
 /**
@@ -31,6 +32,9 @@ public class RSA {
                 case 2:
                     break;
                 case 3:
+                    BigInteger c = grsa.criptografarString("alexandre maros uhuhudsug");
+                    System.out.println(c.toString());
+                    System.out.println(grsa.descriptografarString(c));
                     break;
                 case 4:
                     break;

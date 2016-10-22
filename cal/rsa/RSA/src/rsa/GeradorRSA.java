@@ -1,6 +1,7 @@
 package rsa;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Vector;
 
@@ -18,16 +19,55 @@ public class GeradorRSA {
         mP = primoProvavel();
         mQ = primoProvavel();
         
-        System.out.println("p: " + mP.toString());
-        System.out.println("q: " + mQ.toString());
+        mN = mP.multiply(mQ);
+        
+        mE = new BigInteger(Integer.toString(geraPrimoPequeno()));
+        BigInteger x = mP.subtract(BigInteger.ONE).multiply(mQ.subtract(BigInteger.ONE));
+        while (mE.gcd(x).compareTo(BigInteger.ONE) != 0) {
+            mE = new BigInteger(Integer.toString(geraPrimoPequeno()));
+        }
+        
+        mD = inversoModular(mE, x);
+        
+        System.out.println("============= RSA =============");
+        System.out.println("Chave publica:");
+        System.out.println("e: " + mE.toString());
+        System.out.println("n: " + mN.toString());
+        System.out.println("Chave privada:");
+        System.out.println("d: " + mD.toString());
+        System.out.println("============= RSA =============\n");
     }
     
     int geraPrimoPequeno() {
-        return 65537;
+        // Pega um dos ultimos 5000 primos gerados no cravo erastotenes
+        ArrayList<Integer> primos = crivoErastotenes(1000000);
+        Random rnd = new Random();
+        int index = rnd.nextInt(5000) + 1;
+
+        return primos.get(primos.size() - index);
     }
     
-    void crivoErastotenes() {
+    ArrayList<Integer> crivoErastotenes(int limite) {
+        ArrayList<Integer> primos = new ArrayList<Integer>();
+        boolean[] ehComposto = new boolean[limite];
+        int sqrtLimite = (int) Math.sqrt(limite);
         
+        for (int i = 2; i <= sqrtLimite; i++) {
+            if (!ehComposto[i]) {
+                primos.add(i);
+                for (int j = i*i; j < limite; j += i) {
+                    ehComposto[j] = true;
+                }
+            }
+        }
+        
+        for (int i = sqrtLimite + 1; i < limite; i++) {
+            if (!ehComposto[i]) {
+                primos.add(i);
+            }
+        }
+        
+        return primos;
     }
     
     BigInteger primoProvavel() {
@@ -120,6 +160,15 @@ public class GeradorRSA {
             rlinha.x.subtract( a.divide(b).multiply(rlinha.y) ));
         
         return r;
+    }
+    
+    BigInteger criptografarString(String m) {
+        BigInteger mbi = new BigInteger(m.getBytes());
+        return  expModular(mbi, mE, mN);
+    }
+    
+    String descriptografarString(BigInteger cbi) {
+        return  new String(expModular(cbi, mD, mN).toByteArray());
     }
     
     String ataqueForcaBruta(String msg, int e, BigInteger n) {
