@@ -162,13 +162,45 @@ public class GeradorRSA {
         return r;
     }
     
-    BigInteger criptografarString(String m) {
-        BigInteger mbi = new BigInteger(m.getBytes());
-        return  expModular(mbi, mE, mN);
+    ArrayList<BigInteger> criptografarString(String m, int nBytes) {
+        // Quebra a string em blocos de nBytes
+        ArrayList<byte[]> bytes = new ArrayList<byte[]>();
+        ArrayList<BigInteger> crip = new ArrayList<BigInteger>();
+        byte[] mbytes = m.getBytes();
+        int count = 0;
+        
+        int nBlocks = (int) Math.ceil( ((double) mbytes.length) / ((double) nBytes));
+        
+        for (int i = 0; i < nBlocks; i++) {
+            int tamanhoBloco;
+            if (nBlocks == 1) {
+                tamanhoBloco = mbytes.length;
+            } else {
+                tamanhoBloco = nBytes - (((nBytes*(i+1)) % mbytes.length) % nBytes);
+            }
+            byte[] bloco = new byte[tamanhoBloco];
+            count = 0;
+            for (int j = nBytes*i; j < nBytes*i + tamanhoBloco; j++ ) {
+                bloco[count++] = mbytes[j];
+            }
+            bytes.add(bloco);
+        }
+        
+        for (int i = 0; i < nBlocks; i++) {
+            crip.add(expModular(new BigInteger(bytes.get(i)), mE, mN));
+        }
+
+        return crip;
     }
     
-    String descriptografarString(BigInteger cbi) {
-        return  new String(expModular(cbi, mD, mN).toByteArray());
+    String descriptografarString(ArrayList<BigInteger> crip) {
+        String mensagem = "";
+        
+        for (int i = 0; i < crip.size(); i++) {
+            mensagem += new String(expModular(crip.get(i), mD, mN).toByteArray());
+        }
+       
+        return  mensagem;
     }
     
     String ataqueForcaBruta(String msg, int e, BigInteger n) {

@@ -1,6 +1,7 @@
 package rsa;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -18,31 +19,37 @@ public class RSA {
         do {
             System.out.println("1. Gerar novas chaves publicas e privadas");
             System.out.println("2. Mostrar chaves publicas e privadas");
-            System.out.println("3. Criptografar mensagem");
-            System.out.println("4. Descriptografar mensagem");
-            System.out.println("5. Brute force attack");
+            System.out.println("3. Criptografar/ Descriptografar mensagem");
+            System.out.println("4. Brute force attack");
             System.out.println("0. Sair");
             
             
             option = in.nextInt();
+            in.nextLine();
             
-            switch (option) {
-                case 1:
-                    break;
-                case 2:
-                    break;
-                case 3:
-                    BigInteger c = grsa.criptografarString("alexandre maros uhuhudsug");
-                    System.out.println(c.toString());
-                    System.out.println(grsa.descriptografarString(c));
-                    break;
-                case 4:
-                    break;
-                case 5:
-                    break;
+            if (option == 1) {
+                
+            } else if (option == 2) {
+                
+            } else if (option == 3) {
+                System.out.println("\nDigite a string para criptografar:");
+                String s = in.nextLine();
+                System.out.println("");
+                
+                ArrayList<BigInteger> c = grsa.criptografarString(s, 8);
+                System.out.println("A array de bytes criptografada: ");
+                System.out.println(c.toString());
+                System.out.println("");
+                
+                System.out.println("Descriptografando: ");
+                System.out.println(grsa.descriptografarString(c));
+                System.out.println("");
+            } else if (option == 4) {
+                
             }
             
         } while(option != 0);
     }
+   
     
 }
