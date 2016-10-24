@@ -66,35 +66,6 @@ int main(int argc, char* argv[])
             s[i] = smax;
         }
 
-        /*
-         * (eu acho) que essa parte e inutil.
-         * nao e necessario enviar a matriz inteira
-         * os processos nao precisam saber da matriz.
-         */
-        // // send n, matriz, s, 
-        // position = 0;
-        // size_t tBuffer = sizeof(int) + (sizeof(double) * tam * (tam+1)) 
-        //     + (sizeof(double) * tam);
-
-        // void *output = (void*) malloc(tBuffer);
-
-        // MPI_Pack(&tam, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
-        // for (i = 0; i < tam; i++) {
-        //     MPI_Pack(&matriz[i][0], tam+1, MPI_DOUBLE, output, tBuffer, &position, MPI_COMM_WORLD);
-        // }
-        // MPI_Pack(&s[0], tam, MPI_DOUBLE, output, tBuffer, &position, MPI_COMM_WORLD);
-
-        // // Envio para todos assincronamente e so checo se todos receberam
-        // // apois a primeira troca de linhas
-        // for (i = 1; i < size; i++) {
-        //     MPI_Isend(output, position, MPI_PACKED, i, MSG_TAG, MPI_COMM_WORLD, &requests[i-1]);
-        // }
-        // Espera todos receberem e libera buffer
-        // for (i = 1; i < size; i++) {
-        //     MPI_Wait(&requests[i-1], &status);
-        // }
-        // free(output);
-
         size_t tBuffer = (sizeof(int) * 2) + (sizeof(double) * (tam+1)) + (sizeof(double) * qtdLinhas * (tam+1));
         size_t s_inBuffer = (sizeof(double) * tam * (tam+1));
         input = (void*) malloc(s_inBuffer);
@@ -123,6 +94,16 @@ int main(int argc, char* argv[])
             // matriz m
 
             if (nLinhas < size-1) {
+
+                // Uma ideia p/ rapida implementacao: Se tem menos linhas do que processos
+                // para enviar, deixe o mestre calcular e terminar
+                for (i = k+1; i < n; i++) {
+                    m = matriz[L[i]][k] / matriz[L[k]][k];
+                    matriz[L[i]][k] = 0;
+                    for (j = k+1; j < n+1; j++) {
+                        matriz[L[i]][j] = matriz[L[i]][j] - (m * matriz[L[k]][j]);
+                    }
+                }
 
             } else {
                 // Quanto vamos mandar para cada processos 
@@ -175,61 +156,56 @@ int main(int argc, char* argv[])
                              MPI_DOUBLE, MPI_COMM_WORLD);
                     }
                 }
-                
             }
 
-            // //#pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
-            // for (i = k+1; i < n; i++) {
-            //     m = matriz[L[i]][k] / matriz[L[k]][k];
-            //     matriz[L[i]][k] = 0;
-            //     for (j = k+1; j < n+1; j++) {
-            //         matriz[L[i]][j] = matriz[L[i]][j] - (m * matriz[L[k]][j]);
-            //     }
+            // E necessario enviar nLinhas = 0 para os outros processos terminarem
+            position = 0;
+            qtdLinhas = 0;
+            k = 0;
+            MPI_Pack(&qtdLinhas, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
+            MPI_Pack(&k, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
+
+            for ( z = 1; z < size; z++) {
+                MPI_Send(output, position, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD)
+            }
+
+            /*                          *
+             * FIM Eliminacao Gaussiana *
+             *                          */
+            
+            /*                          *
+             * COMECO retrosubstituicao *
+             *                          */
+
+            x = (double *) malloc(sizeof(double) * tam); // Alocacao matriz dos resultados
+            x[n-1] = matriz[L[n-1]][n] / matriz[L[n-1]][n-1];
+            for (i = n-2; i >= 0; i--) {
+                //printf("L[%d]: %d\n", i, L[i]);
+                soma = matriz[L[i]][n];
+                for (j = i+1; j < tam; j++) {
+                    soma -= (matriz[L[i]][j] * x[j]);
+                }
+                x[i] = soma / matriz[L[i]][i];
+            }
+
+            /*                          *
+             * FIM retrosubstituicao    *
+             *                          */
+            
+            // Impressao dos resultados
+            // for (i = 0; i < tam; i++) {
+            //      printf("x%d = %.5f\n", i, x[i]);
             // }
+            
+            Libera memoria
+            free(x);
+            free(L); free(s);
         }
 
 
     } else {
         // preciso pegar tam de algum outro lugar (linha de comanod, etc)
         n = tam = 1000;
-
-        /*
-         * (eu acho) que essa parte e inutil.
-         * nao e necessario enviar a matriz inteira
-         * os processos nao precisam saber da matriz.
-         */
-        // // receber matriz
-        // position = 0;
-        // size_t tBuffer = sizeof(int) + (sizeof(double) * tam * (tam+1)) 
-        //     + (sizeof(double) * tam);
-        
-        // void *input = (void*) malloc(tBuffer); 
-        // //printf("[%d]: Esperando receber\n", rank);
-        // MPI_Recv(input, tBuffer, MPI_PACKED, 0, MSG_TAG, MPI_COMM_WORLD, &status);
-        // //printf("[%d]: Recebi\n", rank);
-        // MPI_Unpack(input, tBuffer, &position, &tam, 1, MPI_INT, MPI_COMM_WORLD);
-        // n = tam;
-
-        // //printf("[%d]: n: %d\n", rank, n);
-        // matriz = (double **) malloc(sizeof(double*) * tam);
-        // for (i = 0; i < tam; i++) {
-        //     matriz[i] = (double *) malloc(sizeof(double) * (tam+1));
-        // }
-        // L = (int*) calloc(n, sizeof(int));
-        // s = (double*) calloc(n, sizeof(double));
-
-        // for (i = 0; i < tam; i++) {
-        //     MPI_Unpack(input, tBuffer, &position, &matriz[i][0], tam+1,
-        //          MPI_DOUBLE, MPI_COMM_WORLD);
-        // }
-        // MPI_Unpack(input, tBuffer, &position, &s[0], tam,
-        //          MPI_DOUBLE, MPI_COMM_WORLD);
-        
-        // // inicializar L
-        // for (int i = 0; i < n; i++) {
-        //     L[i] = i;
-        // }
-        //free(input);
 
         // Inicializa matriz
         matriz = (double **) malloc(sizeof(double*) * tam);
@@ -286,62 +262,6 @@ int main(int argc, char* argv[])
         }
     }
     
-    
-    // for (k = 0; k < n-1; k++) {
-    //     rmax = 0;
-    //     for (i = k; i < n; i++) {
-    //         r = abs(matriz[L[i]][k]) / s[L[i]];
-    //         if (r > rmax) {
-    //             rmax = r;
-    //             j = i;
-    //         }
-    //     }
-    //     // Troca de L[j] por L[k]
-    //     temp = L[j];
-    //     L[j] = L[k];
-    //     L[k] = temp;
-
-    //     //#pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
-    //     for (i = k+1; i < n; i++) {
-    //         m = matriz[L[i]][k] / matriz[L[k]][k];
-    //         matriz[L[i]][k] = 0;
-    //         for (j = k+1; j < n+1; j++) {
-    //             matriz[L[i]][j] = matriz[L[i]][j] - (m * matriz[L[k]][j]);
-    //         }
-    //     }
-    // }
-
-    // /*                          *
-    //  * FIM Eliminacao Gaussiana *
-    //  *                          */
-    
-    // /*                          *
-    //  * COMECO retrosubstituicao *
-    //  *                          */
-
-    // x = (double *) malloc(sizeof(double) * tam); // Alocacao matriz dos resultados
-    // x[n-1] = matriz[L[n-1]][n] / matriz[L[n-1]][n-1];
-    // for (i = n-2; i >= 0; i--) {
-    //     //printf("L[%d]: %d\n", i, L[i]);
-    //     soma = matriz[L[i]][n];
-    //     for (j = i+1; j < tam; j++) {
-    //         soma -= (matriz[L[i]][j] * x[j]);
-    //     }
-    //     x[i] = soma / matriz[L[i]][i];
-    // }
-
-    // /*                          *
-    //  * FIM retrosubstituicao    *
-    //  *                          */
-    
-    // // Impressao dos resultados
-    // // for (i = 0; i < tam; i++) {
-    // //      printf("x%d = %.5f\n", i, x[i]);
-    // // }
-    
-    //Libera memoria
-    //free(x);
-    free(L); free(s);
     for (i = 0; i < tam; i++) {
         free(matriz[i]);
     }
@@ -351,3 +271,80 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
+
+// PARTES EXPERIMENTAIS QUE FORAM TIRADAS DO CODIGO
+
+// RECEBER MATRIZ INTEIRA DO MESTRE
+/*
+    * (eu acho) que essa parte e inutil.
+    * nao e necessario enviar a matriz inteira
+    * os processos nao precisam saber da matriz.
+    */
+// // receber matriz
+// position = 0;
+// size_t tBuffer = sizeof(int) + (sizeof(double) * tam * (tam+1)) 
+//     + (sizeof(double) * tam);
+
+// void *input = (void*) malloc(tBuffer); 
+// //printf("[%d]: Esperando receber\n", rank);
+// MPI_Recv(input, tBuffer, MPI_PACKED, 0, MSG_TAG, MPI_COMM_WORLD, &status);
+// //printf("[%d]: Recebi\n", rank);
+// MPI_Unpack(input, tBuffer, &position, &tam, 1, MPI_INT, MPI_COMM_WORLD);
+// n = tam;
+
+// //printf("[%d]: n: %d\n", rank, n);
+// matriz = (double **) malloc(sizeof(double*) * tam);
+// for (i = 0; i < tam; i++) {
+//     matriz[i] = (double *) malloc(sizeof(double) * (tam+1));
+// }
+// L = (int*) calloc(n, sizeof(int));
+// s = (double*) calloc(n, sizeof(double));
+
+// for (i = 0; i < tam; i++) {
+//     MPI_Unpack(input, tBuffer, &position, &matriz[i][0], tam+1,
+//          MPI_DOUBLE, MPI_COMM_WORLD);
+// }
+// MPI_Unpack(input, tBuffer, &position, &s[0], tam,
+//          MPI_DOUBLE, MPI_COMM_WORLD);
+
+// // inicializar L
+// for (int i = 0; i < n; i++) {
+//     L[i] = i;
+// }
+//free(input);
+
+
+// ==========================================
+
+
+
+// EVNIAR MATRIZ INTEIRA PARA TODOS OS PROCESSOS
+/*
+    * (eu acho) que essa parte e inutil.
+    * nao e necessario enviar a matriz inteira
+    * os processos nao precisam saber da matriz.
+    */
+// // send n, matriz, s, 
+// position = 0;
+// size_t tBuffer = sizeof(int) + (sizeof(double) * tam * (tam+1)) 
+//     + (sizeof(double) * tam);
+
+// void *output = (void*) malloc(tBuffer);
+
+// MPI_Pack(&tam, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
+// for (i = 0; i < tam; i++) {
+//     MPI_Pack(&matriz[i][0], tam+1, MPI_DOUBLE, output, tBuffer, &position, MPI_COMM_WORLD);
+// }
+// MPI_Pack(&s[0], tam, MPI_DOUBLE, output, tBuffer, &position, MPI_COMM_WORLD);
+
+// // Envio para todos assincronamente e so checo se todos receberam
+// // apois a primeira troca de linhas
+// for (i = 1; i < size; i++) {
+//     MPI_Isend(output, position, MPI_PACKED, i, MSG_TAG, MPI_COMM_WORLD, &requests[i-1]);
+// }
+// Espera todos receberem e libera buffer
+// for (i = 1; i < size; i++) {
+//     MPI_Wait(&requests[i-1], &status);
+// }
+// free(output);
