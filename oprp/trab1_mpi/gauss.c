@@ -80,6 +80,7 @@ int main(int argc, char* argv[])
                     j = i;
                 }
             }
+            
             // Troca de L[j] por L[k]
             temp = L[j];
             L[j] = L[k];
@@ -108,7 +109,7 @@ int main(int argc, char* argv[])
             } else {
                 // Quanto vamos mandar para cada processos 
                 // Eh necesasrio mandar + as que faltaram se a divisao nao for perfeita
-                int qtdLinhas = (size_t) floor(nLinhas / (size-1));
+                int qtdLinhas = (size_t) (nLinhas / (size-1));
                 int linhasAdicionais = 0;
                 int pInicial = 0;
 
@@ -147,17 +148,30 @@ int main(int argc, char* argv[])
                     }
                     pInicial = k+1 + ((z-1)*qtdLinhas);
                     
-                    printf("[0]: Recebendo. k=%d qtdLinhas=%d pInicial=%d\n", k, qtdLinhas+linhasAdicionais, pInicial);
+                    printf("[0]: Recebendo. k=%d qtdLinhas=%d pInicial=%d\n", k,
+                        qtdLinhas+linhasAdicionais, pInicial);
 
                     MPI_Recv(input, s_inBuffer, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &status);
 
                     // colocar as linhas nos lugares originais
                     position = 0;
                     for (count = 0; count < qtdLinhas+linhasAdicionais; count++) {
+                        printf("%d ", pInicial+count);
                         MPI_Unpack(input, s_inBuffer, &position, &matriz[L[pInicial+count]][0],
                              tam+1, MPI_DOUBLE, MPI_COMM_WORLD);
                     }
+                    printf("\n");
                 }
+                printf("Going back\n");
+                
+                for (i = 1; i <= nLinhas; i++) {
+                    //printf("%d\n\n", i);
+                    for (j = k+1; j < n+1; j++) {
+                        //printf("%lf ", matriz[L[i]][j]);
+                    }
+                    //printf("0\n");
+                }
+            
             }
 
             // E necessario enviar nLinhas = 0 para os outros processos terminarem
@@ -244,19 +258,35 @@ int main(int argc, char* argv[])
             for (z = 1; z <= nLinhas; z++) {
                 MPI_Unpack(input, tBuffer, &position, &matriz[z][0], tam+1,
                     MPI_DOUBLE, MPI_COMM_WORLD);
+                
             }
 
-            for (i = 0; i < nLinhas; i++) {
+            printf("[%d]: Recebendo nLihas: %d k: %d\n", rank, nLinhas, k);
+
+            for (i = 1; i <= nLinhas; i++) {
                 m = matriz[i][k] / matriz[0][k];
                 matriz[i][k] = 0;
                 for (j = k+1; j < n+1; j++) {
                     matriz[i][j] = matriz[i][j] - (m * matriz[0][j]);
                 }
+                
             }
 
+            if (rank == size-1) {
+                for (i = 1; i <= nLinhas; i++) {
+                    printf("%d\n\n", i);
+                    for (j = k+1; j < n+1; j++) {
+                        printf("%lf ", matriz[i][j]);
+                    }
+                    printf("0\n");
+                }
+            }
+            
             // Enviar resultados p/ mestre
             position = 0;
             //MPI_Pack(&nLinhas, 1, MPI_INT, output, t_outBuff, &position, MPI_COMM_WORLD);
+            
+            printf("[%d]: Enviando para mestre\n", rank);
             for (z = 1; z <= nLinhas; z++) {
                 MPI_Pack(&matriz[z][0], tam+1, MPI_DOUBLE, output, s_outBuff, &position, MPI_COMM_WORLD);
             }
