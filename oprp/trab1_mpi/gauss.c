@@ -16,7 +16,7 @@ double dmax(double a, double b) {
 
 int main(int argc, char* argv[])
 {
-    int tam, i, j, k, n;
+    int tam, i, j, k, z, n, count, linhasEnviadas;
     int rank, size, position;
     int *L;
     double **matriz, *x,*s;
@@ -33,6 +33,9 @@ int main(int argc, char* argv[])
 
     // Se o rank for 0, inicialize e mande para todas os processos
     if (rank == 0) {
+        int nLinhas;
+        int qtdBlocos;
+
         scanf("%d", &tam);
 
         matriz = (double **) malloc(sizeof(double*) * tam);
@@ -69,26 +72,17 @@ int main(int argc, char* argv[])
 
         void *output = (void*) malloc(tBuffer);
 
-        //printf("[%d]: Packing tam\n", rank);
         MPI_Pack(&tam, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
-        //printf("[%d]: Finished packing tam\n", rank);
-        //printf("[%d]: Packing matriz\n", rank);
         for (i = 0; i < tam; i++) {
             MPI_Pack(&matriz[i][0], tam+1, MPI_DOUBLE, output, tBuffer, &position, MPI_COMM_WORLD);
         }
-        //printf("[%d]: Finished packing matriz\n", rank);
-        //printf("[%d]: Packing s\n", rank);
         MPI_Pack(&s[0], tam, MPI_DOUBLE, output, tBuffer, &position, MPI_COMM_WORLD);
-        //printf("[%d]: Finished packing s\n", rank);
 
         // Envio para todos assincronamente e so checo se todos receberam
         // apois a primeira troca de linhas
         for (i = 1; i < size; i++) {
-            //printf("[%d]: Enviando para %d\n", rank, i);
             MPI_Isend(output, position, MPI_PACKED, i, MSG_TAG, MPI_COMM_WORLD, &requests[i-1]);
-            //printf("[%d]: Enviei para %d\n", rank, i);
         }
-        //printf("[%d]: Terminei enviar!\n", rank);
 
         for (k = 0; k < n-1; k++) {
             rmax = 0;
@@ -104,9 +98,50 @@ int main(int argc, char* argv[])
             L[j] = L[k];
             L[k] = temp;
 
-            // Espera todos receberem
+            // Espera todos receberem e libera buffer
             for (i = 1; i < size; i++) {
                 MPI_Wait(&requests[i-1], &status);
+            }
+            free(output);
+
+            nLinhas = n - k+1;
+            
+
+            // O que eu preciso enviar
+            // j, k (para cada processo trocar seu proprio L)
+            // nLinhasEnviadas 
+            // matriz m
+
+            if (nLinhas < size-1) {
+
+            } else {
+                // Quanto vamos mandar para cada processos 
+                // Eh necesasrio mandar + as que faltaram se a divisao nao for perfeita
+                int qtdLinhas = ((int) (nLinhas / (size-1)));
+                int linhasAdicionais = 0;
+
+                size_t tBuffer = (sizeof(int)*3) + (sizeof(double) * qtdLinhas * (tam+1));
+                output = (void*) malloc(tBuffer);
+                z = 0;
+                for (z = 1; z < size; z++) {
+                    if (z == size-1) {
+                        // O ultimo processo recebe mais linhas (o restante da divisao)
+                        linhasAdicionais = nLinhas % (size-1);
+                    }
+                    int pInicial = k+1 + ((z-1)*qtdLinhas);
+
+                    printf("k=%d\nqtdLinhas=%d\npInicial=%d\n", k, qtdLinhas, pInicial)
+
+                    position = 0;
+                    MPI_Pack(&j, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
+                    MPI_Pack(&k, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
+                    MPI_Pack(&qtdLinhas, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
+                    for (count = 0; i < qtdLinhas+linhasAdicionais; i++) {
+                        MPI_Pack(&matriz[pInicial+count][0], tam+1, MPI_DOUBLE, output,
+                            tBuffer, &position, MPI_COMM_WORLD);
+                    }
+                }                
+                
             }
 
             // //#pragma omp parallel for private(i,j, m) shared(k, matriz) num_threads(nthreads)
@@ -155,6 +190,41 @@ int main(int argc, char* argv[])
         for (int i = 0; i < n; i++) {
             L[i] = i;
         }
+
+        free(input);
+        tBuffer = (sizeof(int)*3) + (sizeof(double) * tam * (tam+1));
+        input = (void*) malloc(tBuffer);
+
+        int nLinhas;
+
+        while(true)
+        {
+            MPI_Recv(input, tBuffer, MPI_PACKED, 0, MSG_TAG, MPI_COMM_WORLD, &status);
+            MPI_Unpack(input, tBuffer, &j, &tam, 1, MPI_INT, MPI_COMM_WORLD);
+            MPI_Unpack(input, tBuffer, &k, &tam, 1, MPI_INT, MPI_COMM_WORLD);
+            MPI_Unpack(input, tBuffer, &nLinhas, &tam, 1, MPI_INT, MPI_COMM_WORLD);
+            
+            // Se o mestre enviar j = 0, k = 0 e nLinhas = 0
+            // e por que o programa terminou.
+            if (!j && !k && !nLinhas) {
+                break;
+            }
+
+            // Se nao tem nenhuma linha para calcular, continue.
+            // provavelmente se um processo nao recebeu a linha ele 
+            // nunca mais vai receber. rever isso daqui depois.
+            if ( !nLinhas ) {
+                continue;
+            }
+
+            for (z = 0; z < nLinhas; z++) {
+                MPI_Unpack(input, tBuffer, &position, &matriz[k+1+z][0], tam+1,
+                 MPI_DOUBLE, MPI_COMM_WORLD);
+            }
+
+        }
+        
+        
 
 
 
