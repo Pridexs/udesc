@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
     if (rank == 0) {
         int nLinhas;
         int qtdBlocos;
+        void *input;
 
         scanf("%d", &tam);
 
@@ -94,6 +95,11 @@ int main(int argc, char* argv[])
         // }
         // free(output);
 
+        size_t tBuffer = (sizeof(int) * 2) + (sizeof(double) * (tam+1)) + (sizeof(double) * qtdLinhas * (tam+1));
+        size_t s_inBuffer = (sizeof(double) * tam * (tam+1));
+        input = (void*) malloc(s_inBuffer);
+        output = (void*) malloc(tBuffer);
+
         for (k = 0; k < n-1; k++) {
             rmax = 0;
             for (i = k; i < n; i++) {
@@ -123,18 +129,17 @@ int main(int argc, char* argv[])
                 // Eh necesasrio mandar + as que faltaram se a divisao nao for perfeita
                 int qtdLinhas = ((int) (nLinhas / (size-1)));
                 int linhasAdicionais = 0;
+                int pInicial = 0;
 
-                size_t tBuffer = (sizeof(int) * 2) + (sizeof(double) * (tam+1)) + (sizeof(double) * qtdLinhas * (tam+1));
-                output = (void*) malloc(tBuffer);
                 z = 0;
                 for (z = 1; z < size; z++) {
                     if (z == size-1) {
                         // O ultimo processo recebe mais linhas (o restante da divisao)
                         linhasAdicionais = nLinhas % (size-1);
                     }
-                    int pInicial = k+1 + ((z-1)*qtdLinhas);
+                    pInicial = k+1 + ((z-1)*qtdLinhas);
 
-                    printf("k=%d\nqtdLinhas=%d\npInicial=%d\n", k, qtdLinhas, pInicial)
+                    printf("[0]: Enviando. k=%d\nqtdLinhas=%d\npInicial=%d\n", k, qtdLinhas, pInicial);
 
                     position = 0;
                     MPI_Pack(&qtdLinhas, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
@@ -146,7 +151,30 @@ int main(int argc, char* argv[])
                         MPI_Pack(&matriz[L[pInicial+count]][0], tam+1, MPI_DOUBLE, output,
                             tBuffer, &position, MPI_COMM_WORLD);
                     }
-                }                
+
+                    // Mudar pra ISend depois
+                    MPI_Send(output, position, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD)
+                }
+
+                // Mudar para IReceive depois
+                linhasAdicionais = 0;
+                for (z = 1; z < size; z++) {
+                    if (z == size-1) {
+                        linhasAdicionais = nLinhas % (size-1);
+                    }
+                    pInicial = k+1 + ((z-1)*qtdLinhas);
+                    
+                    printf("[0]: Recebendo. k=%d\nqtdLinhas=%d\npInicial=%d\n", k, qtdLinhas, pInicial)
+
+                    MPI_Receive(input, s_inBuffer, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &status);
+
+                    // colocar as linhas nos lugares originais
+                    position = 0;
+                    for (count = 0; count < qtdLinhas+linhasAdicionais; count++) {
+                        MPI_Unpack(input, s_inBuffer, &position, &matriz[L[pInicial+count][0],
+                             MPI_DOUBLE, MPI_COMM_WORLD);
+                    }
+                }
                 
             }
 
@@ -163,7 +191,7 @@ int main(int argc, char* argv[])
 
     } else {
         // preciso pegar tam de algum outro lugar (linha de comanod, etc)
-        tam = 1000;
+        n = tam = 1000;
 
         /*
          * (eu acho) que essa parte e inutil.
@@ -212,15 +240,21 @@ int main(int argc, char* argv[])
         tBuffer = (sizeof(int)*2) + (sizeof(double) * tam * (tam+1));
         input = (void*) malloc(tBuffer);
         int nLinhas;
-        double mkk;
 
-        while(true)
+        // Alocar espaco para toda a matriz.
+        // Nunca um processo vai enviar mais a matriz inteira.
+
+        // size output buffer
+        size_t t_outBuff = (sizeof(double) * tam * (tam+1));
+        void *output = (void*) malloc(s_outBuff);
+
+        while(1)
         {
+            position = 0;
             MPI_Recv(input, tBuffer, MPI_PACKED, 0, MSG_TAG, MPI_COMM_WORLD, &status);
-            MPI_Unpack(input, tBuffer, &nLinhas, &tam, 1, MPI_INT, MPI_COMM_WORLD);
-            MPI_Unpack(input, tBuffer, &mkk, &tam, 1, MPI_DOUBLE, MPI_COMM_WORLD);
+            MPI_Unpack(input, tBuffer, &position,  &nLinhas, 1, MPI_INT, MPI_COMM_WORLD);
+            MPI_Unpack(input, tBuffer, &position, &k, 1, MPI_INT, MPI_COMM_WORLD);
             
-
             // Se nao tem nenhuma linha para calcular, termine a execucao.
             if ( !nLinhas ) {
                 breal;
@@ -241,6 +275,14 @@ int main(int argc, char* argv[])
                     matriz[i][j] = matriz[i][j] - (m * matriz[0][j]);
                 }
             }
+
+            // Enviar resultados p/ mestre
+            position = 0;
+            //MPI_Pack(&nLinhas, 1, MPI_INT, output, t_outBuff, &position, MPI_COMM_WORLD);
+            for (z = 1; z <= nLinhas; z++) {
+                MPI_Pack(&matriz[z][0], tam+1, MPI_DOUBLE, output, t_outBuff, &position, MPI_COMM_WORLD);
+            }
+            MPI_Send(output, position, MPI_PACKED, 0, MSG_TAG, MPI_COMM_WORLD);
         }
     }
     
