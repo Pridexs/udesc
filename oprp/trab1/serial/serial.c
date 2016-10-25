@@ -71,6 +71,12 @@ int main()
     }
     
     for (k = 0; k < n-1; k++) {
+	int aaa = 0;
+        for ( aaa =0; aaa < tam+1; aaa++) {
+            printf("%lf ", matriz[39][aaa]);
+        }
+        printf("\n\n");
+
         rmax = 0;
         for (i = k; i < n; i++) {
             r = abs(matriz[L[i]][k]) / s[L[i]];
@@ -129,9 +135,9 @@ int main()
     printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
     
     // Impressao dos resultados
-    // for (i = 0; i < tam; i++) {
-    //      printf("x%d = %.5f\n", i, x[i]);
-    // }
+    for (i = 0; i < tam; i++) {
+         printf("x%d = %.5f\n", i, x[i]);
+    }
     
     // Impressao dos ticks de clock
     fim = clock();

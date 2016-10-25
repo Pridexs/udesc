@@ -35,7 +35,6 @@ int main(int argc, char* argv[])
     if (rank == 0) {
         int nLinhas;
         int qtdBlocos;
-        void *input;
 
         scanf("%d", &tam);
 
@@ -68,10 +67,16 @@ int main(int argc, char* argv[])
 
         size_t tBuffer = (sizeof(int) * 2) + (sizeof(double) * (tam+1)) + (sizeof(double) * tam * (tam+1));
         size_t s_inBuffer = (sizeof(double) * tam * (tam+1));
-        input = (void*) malloc(s_inBuffer);
+        void *input = (void*) malloc(s_inBuffer);
         void *output = (void*) malloc(tBuffer);
 
         for (k = 0; k < n-1; k++) {
+            int aaa = 0;
+            for ( aaa =0; aaa < tam+1; aaa++) {
+                printf("%lf ", matriz[39][aaa]);
+            }
+            printf("\n\n");
+
             rmax = 0;
             for (i = k; i < n; i++) {
                 r = abs(matriz[L[i]][k]) / s[L[i]];
@@ -85,6 +90,8 @@ int main(int argc, char* argv[])
             temp = L[j];
             L[j] = L[k];
             L[k] = temp;
+
+            
 
             nLinhas = n - (k+1);
 
@@ -113,7 +120,7 @@ int main(int argc, char* argv[])
                 int linhasAdicionais = 0;
                 int pInicial = 0;
 
-                printf("qtdLinhas: %d\n", qtdLinhas);
+                printf("qtdLinhas: %d tam: %d\n", qtdLinhas, tam);
 
                 z = 0;
                 for (z = 1; z < size; z++) {
@@ -152,76 +159,71 @@ int main(int argc, char* argv[])
                         qtdLinhas+linhasAdicionais, pInicial);
 
                     MPI_Recv(input, s_inBuffer, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &status);
+                    
 
                     // colocar as linhas nos lugares originais
                     position = 0;
                     for (count = 0; count < qtdLinhas+linhasAdicionais; count++) {
-                        printf("%d ", pInicial+count);
                         MPI_Unpack(input, s_inBuffer, &position, &matriz[L[pInicial+count]][0],
                              tam+1, MPI_DOUBLE, MPI_COMM_WORLD);
                     }
                     printf("\n");
                 }
+
                 printf("Going back\n");
-                
-                for (i = 1; i <= nLinhas; i++) {
-                    //printf("%d\n\n", i);
-                    for (j = k+1; j < n+1; j++) {
-                        //printf("%lf ", matriz[L[i]][j]);
-                    }
-                    //printf("0\n");
-                }
+                printf("z = %d count = %d\n", z, count);
+
             
             }
-
-            // E necessario enviar nLinhas = 0 para os outros processos terminarem
-            position = 0;
-            int qtdLinhas = 0;
-            k = 0;
-            MPI_Pack(&qtdLinhas, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
-            MPI_Pack(&k, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
-
-            for ( z = 1; z < size; z++) {
-                MPI_Send(output, position, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD);
-            }
-
-            /*                          *
-             * FIM Eliminacao Gaussiana *
-             *                          */
-            
-            /*                          *
-             * COMECO retrosubstituicao *
-             *                          */
-
-            x = (double *) malloc(sizeof(double) * tam); // Alocacao matriz dos resultados
-            x[n-1] = matriz[L[n-1]][n] / matriz[L[n-1]][n-1];
-            for (i = n-2; i >= 0; i--) {
-                //printf("L[%d]: %d\n", i, L[i]);
-                soma = matriz[L[i]][n];
-                for (j = i+1; j < tam; j++) {
-                    soma -= (matriz[L[i]][j] * x[j]);
-                }
-                x[i] = soma / matriz[L[i]][i];
-            }
-
-            /*                          *
-             * FIM retrosubstituicao    *
-             *                          */
-            
-            // Impressao dos resultados
-            // for (i = 0; i < tam; i++) {
-            //      printf("x%d = %.5f\n", i, x[i]);
-            // }
-            
-            // Libera memoria
-            free(x);
-            free(L); free(s);
         }
+
+        // E necessario enviar nLinhas = 0 para os outros processos terminarem
+        position = 0;
+        int qtdLinhas = 0;
+        k = 0;
+        MPI_Pack(&qtdLinhas, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
+        MPI_Pack(&k, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
+
+        for ( z = 1; z < size; z++) {
+            MPI_Send(output, position, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD);
+        }
+
+        /*                          *
+            * FIM Eliminacao Gaussiana *
+            *                          */
+        
+        /*                          *
+            * COMECO retrosubstituicao *
+            *                          */
+
+        x = (double *) malloc(sizeof(double) * tam); // Alocacao matriz dos resultados
+        x[n-1] = matriz[L[n-1]][n] / matriz[L[n-1]][n-1];
+        for (i = n-2; i >= 0; i--) {
+            //printf("L[%d]: %d\n", i, L[i]);
+            soma = matriz[L[i]][n];
+            for (j = i+1; j < tam; j++) {
+                soma -= (matriz[L[i]][j] * x[j]);
+            }
+            x[i] = soma / matriz[L[i]][i];
+        }
+
+        /*                          *
+            * FIM retrosubstituicao    *
+            *                          */
+        
+        //Impressao dos resultados
+        for (i = 0; i < tam; i++) {
+             printf("x%d = %.5f\n", i, x[i]);
+        }
+        
+        // Libera memoria
+        free(x);
+        free(L); free(s);
 
 
     } else {
         // preciso pegar tam de algum outro lugar (linha de comanod, etc)
-        n = tam = 1000;
+        n = tam = 40;
 
         // Inicializa matriz
         matriz = (double **) malloc(sizeof(double*) * tam);
@@ -272,16 +274,6 @@ int main(int argc, char* argv[])
                 
             }
 
-            if (rank == size-1) {
-                for (i = 1; i <= nLinhas; i++) {
-                    printf("%d\n\n", i);
-                    for (j = k+1; j < n+1; j++) {
-                        printf("%lf ", matriz[i][j]);
-                    }
-                    printf("0\n");
-                }
-            }
-            
             // Enviar resultados p/ mestre
             position = 0;
             //MPI_Pack(&nLinhas, 1, MPI_INT, output, t_outBuff, &position, MPI_COMM_WORLD);
