@@ -150,14 +150,10 @@ int main(int argc, char* argv[])
                             tBuffer, &position, MPI_COMM_WORLD);
                     }
 
-                    // Mudar pra ISend depois
                     //MPI_Send(output, position, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD);
                     MPI_Isend(&output[z-1][0], position, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &sendRequests[z-1]);
                 }
                 
-                
-
-                // Mudar para IReceive depois
                 int flag = 0;
                 int countSize = size-1;
 
