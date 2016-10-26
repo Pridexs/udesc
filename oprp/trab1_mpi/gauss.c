@@ -75,7 +75,6 @@ int main(int argc, char* argv[])
         size_t s_inBuffer = (sizeof(double) * tam * (tam+1));
 
         int *jaCalculado = (int*) malloc(sizeof(int) * (size-1));
-        memset(jaCalculado, 0, sizeof(int) * (size-1));
         
         // Eu preciso enviar/receber size-1 buffers diferentes pois estamos
         // usando isend e irecv
@@ -166,6 +165,7 @@ int main(int argc, char* argv[])
                     MPI_Irecv(&input[z-1][0], s_inBuffer, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &recvRequests[z-1]);
                 }
 
+                memset(jaCalculado, 0, sizeof(int) * (size-1));    
                 while (countSize) {
                     for (z = 1; z < size; z++) {
                         if (!jaCalculado[z-1]) {
@@ -192,33 +192,6 @@ int main(int argc, char* argv[])
                         }
                     }
                 }
-                memset(jaCalculado, 0, sizeof(int) * (size-1));
-
-                // linhasAdicionais = 0;
-                // for (z = 1; z < size; z++) {
-                //     if (z == size-1) {
-                //         linhasAdicionais = nLinhas % (size-1);
-                //     }
-                //     pInicial = k+1 + ((z-1)*qtdLinhas);
-                    
-                //     do {
-                //         MPI_Test(&sendRequests[z-1], &flag, &status);
-                //     } while(!flag);
-
-                //     MPI_Recv(input, s_inBuffer, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &status);
-                    
-                //     // colocar as linhas nos lugares originais
-                //     position = 0;
-                //     for (count = 0; count < qtdLinhas+linhasAdicionais; count++) {
-                //         MPI_Unpack(input, s_inBuffer, &position, &matriz[L[pInicial+count]][0],
-                //              tam+1, MPI_DOUBLE, MPI_COMM_WORLD);
-                //     }
-                // }
-
-                
-                //printf("Going back\n");
-
-            
             }
         }
 
