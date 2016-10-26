@@ -71,12 +71,6 @@ int main()
     }
     
     for (k = 0; k < n-1; k++) {
-	int aaa = 0;
-        for ( aaa =0; aaa < tam+1; aaa++) {
-            printf("%lf ", matriz[39][aaa]);
-        }
-        printf("\n\n");
-
         rmax = 0;
         for (i = k; i < n; i++) {
             r = abs(matriz[L[i]][k]) / s[L[i]];
