@@ -22,17 +22,19 @@ int main(int argc, char* argv[])
     double **matriz, *x,*s;
     double m, soma, temp, smax, r, rmax;
     MPI_Status status;
-    MPI_Request *requests;
+    MPI_Request *sendRequests, *recvRequests;
 
     MPI_Init(&argc, &argv);
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    requests = (MPI_Request*) malloc(sizeof(MPI_Request) * size);
-
     // Se o rank for 0, inicialize e mande para todas os processos
     if (rank == 0) {
+        
+        sendRequests = (MPI_Request*) malloc(sizeof(MPI_Request) * size);
+        recvRequests = (MPI_Request*) malloc(sizeof(MPI_Request) * size);
+
         int nLinhas;
         int qtdBlocos;
 
@@ -55,6 +57,10 @@ int main(int argc, char* argv[])
         L = (int*) calloc(n, sizeof(int));
         s = (double*) calloc(n, sizeof(double));
         
+        for (i = 1; i < size; i++) {
+            MPI_Send(&tam, 1, MPI_INT, i, MSG_TAG, MPI_COMM_WORLD);
+        }
+
         // #pragma omp aqui?
         for (i = 0; i < n; i++) {
             L[i] = i;
@@ -67,8 +73,21 @@ int main(int argc, char* argv[])
 
         size_t tBuffer = (sizeof(int) * 2) + (sizeof(double) * (tam+1)) + (sizeof(double) * tam * (tam+1));
         size_t s_inBuffer = (sizeof(double) * tam * (tam+1));
-        void *input = (void*) malloc(s_inBuffer);
-        void *output = (void*) malloc(tBuffer);
+
+        int *jaCalculado = (int*) malloc(sizeof(int) * (size-1));
+        memset(jaCalculado, 0, sizeof(int) * (size-1));
+        
+        // Eu preciso enviar/receber size-1 buffers diferentes pois estamos
+        // usando isend e irecv
+        void **input = (void**) malloc(sizeof(void*) * (size-1));
+        for (i = 0; i < size-1; i++) {
+            input[i] = (void*) malloc(s_inBuffer);
+        }
+
+        void **output = (void**) malloc(sizeof(void*) * (size-1));
+        for (i = 0; i < size-1; i++) {
+            output[i] = (void*) malloc(tBuffer);
+        }
 
         for (k = 0; k < n-1; k++) {
             rmax = 0;
@@ -123,38 +142,80 @@ int main(int argc, char* argv[])
                     int nLinhasEnviadas = qtdLinhas + linhasAdicionais;
 
                     position = 0;
-                    MPI_Pack(&nLinhasEnviadas, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
-                    MPI_Pack(&k, 1, MPI_INT, output, tBuffer, &position, MPI_COMM_WORLD);
-                    MPI_Pack(&matriz[L[k]][0], tam+1, MPI_DOUBLE, output, tBuffer, &position, MPI_COMM_WORLD);
+                    MPI_Pack(&nLinhasEnviadas, 1, MPI_INT, &output[z-1][0], tBuffer, &position, MPI_COMM_WORLD);
+                    MPI_Pack(&k, 1, MPI_INT, &output[z-1][0], tBuffer, &position, MPI_COMM_WORLD);
+                    MPI_Pack(&matriz[L[k]][0], tam+1, MPI_DOUBLE, &output[z-1][0], tBuffer, &position, MPI_COMM_WORLD);
 
                     for (count = 0; count < qtdLinhas+linhasAdicionais; count++) {
-                        MPI_Pack(&matriz[L[pInicial+count]][0], tam+1, MPI_DOUBLE, output,
+                        MPI_Pack(&matriz[L[pInicial+count]][0], tam+1, MPI_DOUBLE, &output[z-1][0],
                             tBuffer, &position, MPI_COMM_WORLD);
                     }
 
                     // Mudar pra ISend depois
                     //MPI_Send(output, position, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD);
-                    MPI_Ise
+                    MPI_Isend(&output[z-1][0], position, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &sendRequests[z-1]);
                 }
+                
+                
 
                 // Mudar para IReceive depois
-                linhasAdicionais = 0;
-                for (z = 1; z < size; z++) {
-                    if (z == size-1) {
-                        linhasAdicionais = nLinhas % (size-1);
-                    }
-                    pInicial = k+1 + ((z-1)*qtdLinhas);
+                int flag = 0;
+                int countSize = size-1;
 
-                    MPI_Recv(input, s_inBuffer, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &status);
-                    
-                    // colocar as linhas nos lugares originais
-                    position = 0;
-                    for (count = 0; count < qtdLinhas+linhasAdicionais; count++) {
-                        MPI_Unpack(input, s_inBuffer, &position, &matriz[L[pInicial+count]][0],
-                             tam+1, MPI_DOUBLE, MPI_COMM_WORLD);
-                    }
+                for (z = 1; z < size; z++) {
+                    MPI_Irecv(&input[z-1][0], s_inBuffer, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &recvRequests[z-1]);
                 }
 
+                while (countSize) {
+                    for (z = 1; z < size; z++) {
+                        if (!jaCalculado[z-1]) {
+                            // Eu nao testo sendRequets, pois se eu ja recebi ele tambem ja enviou
+                            MPI_Test(&recvRequests[z-1], &flag, &status);
+                            linhasAdicionais = 0;
+                            if (flag) {
+                                if (z == size-1) {
+                                    linhasAdicionais = nLinhas % (size-1);
+                                }
+                                pInicial = k+1 + ((z-1)*qtdLinhas);
+                                
+                                // colocar as linhas nos lugares originais
+                                position = 0;
+                                for (count = 0; count < qtdLinhas+linhasAdicionais; count++) {
+                                    MPI_Unpack(&input[z-1][0], s_inBuffer, &position, &matriz[L[pInicial+count]][0],
+                                        tam+1, MPI_DOUBLE, MPI_COMM_WORLD);
+                                        int kkk = 0;
+                                }
+                                
+                                jaCalculado[z-1] = 1;
+                                countSize--;
+                            }
+                        }
+                    }
+                }
+                memset(jaCalculado, 0, sizeof(int) * (size-1));
+
+                // linhasAdicionais = 0;
+                // for (z = 1; z < size; z++) {
+                //     if (z == size-1) {
+                //         linhasAdicionais = nLinhas % (size-1);
+                //     }
+                //     pInicial = k+1 + ((z-1)*qtdLinhas);
+                    
+                //     do {
+                //         MPI_Test(&sendRequests[z-1], &flag, &status);
+                //     } while(!flag);
+
+                //     MPI_Recv(input, s_inBuffer, MPI_PACKED, z, MSG_TAG, MPI_COMM_WORLD, &status);
+                    
+                //     // colocar as linhas nos lugares originais
+                //     position = 0;
+                //     for (count = 0; count < qtdLinhas+linhasAdicionais; count++) {
+                //         MPI_Unpack(input, s_inBuffer, &position, &matriz[L[pInicial+count]][0],
+                //              tam+1, MPI_DOUBLE, MPI_COMM_WORLD);
+                //     }
+                // }
+
+                
                 //printf("Going back\n");
 
             
@@ -206,8 +267,8 @@ int main(int argc, char* argv[])
 
 
     } else {
-        // preciso pegar tam de algum outro lugar (linha de comanod, etc)
-        n = tam = 3500;
+        MPI_Recv(&tam, 1, MPI_INT, 0, MSG_TAG, MPI_COMM_WORLD, &status);
+        n = tam;
 
         // Inicializa matriz
         matriz = (double **) malloc(sizeof(double*) * tam);
