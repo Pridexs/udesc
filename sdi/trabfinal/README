@@ -1,0 +1,7 @@
+Compilando:
+    1. javac -d ./ Conta.java Banco.java ImplementacaoBanco.java Servidor.java Cliente.java
+
+Rodando:
+    1. Inicie o rmiregistry na pasta src onde esse README esta localizado (ou configure o classpath)
+    2. [Servidor]: java -classpath ./ -Djava.rmi.server.codebase=file:./ sdi.trabfinal.Servidor
+    3. [Cliente]: java -classpath ./ sdi.trabfinal.Cliente
