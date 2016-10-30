@@ -20,7 +20,7 @@ public class Servidor {
             // Em um programa real eu teria um dominio especifico para
             // hostear o servideo de nameservice para abstrair essa
             // parte do cliente.
-            System.out.println("Execute com o ip do nameservice!");
+            System.out.println("Execute passando o ip do servidor de nameservice!");
             return;
         } else { 
             host = args[0];

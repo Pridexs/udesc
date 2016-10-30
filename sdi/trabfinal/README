@@ -1,7 +1,8 @@
 Compilando:
-    1. javac -d ./ Conta.java Banco.java ImplementacaoBanco.java Servidor.java Cliente.java
+    1. javac -d ./ Conta.java NameService.java Banco.java ImplementacaoNameService.java ImplementacaoBanco.java ServidorNameService.java Servidor.java Cliente.java
 
 Rodando:
-    1. Inicie o rmiregistry na pasta src onde esse README esta localizado (ou configure o classpath)
-    2. [Servidor]: java -classpath ./ -Djava.rmi.server.codebase=file:./ sdi.trabfinal.Servidor
-    3. [Cliente]: java -classpath ./ sdi.trabfinal.Cliente
+    1. Inicie o rmiregistry dentro da pasta src onde esse README esta localizado (ou configure o classpath)
+	3. [ServidorNameService]: java -classpath ./ -Djava.rmi.server.codebase=file:./ bancormi.ServidorNameService
+    4. [Servidor]: java -classpath ./ -Djava.rmi.server.codebase=file:./ bancormi.Servidor <ip_do_servidor_nameservice>
+    5. [Cliente]: java -classpath ./ bancormi.Cliente <ip_do_seridor_nameservice>
