@@ -19,4 +19,8 @@ public interface Banco extends Remote {
 
     // Transfere valor
     int transferir(int idOrigem, int idDestino, double valor) throws RemoteException;
+    
+    // ---
+    boolean isAlive() throws RemoteException;
+    void setServerName(String name) throws RemoteException;
 }

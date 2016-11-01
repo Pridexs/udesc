@@ -23,6 +23,7 @@ import java.util.Random;
 public class ImplementacaoBanco implements Banco {
         
     private ArrayList<Conta> contas;
+    private String name;
 
     public ImplementacaoBanco() {
         contas = new ArrayList<Conta>();
@@ -121,5 +122,13 @@ public class ImplementacaoBanco implements Banco {
         c2.depositar(valor);
 
         return 1;
+    }
+    
+    public boolean isAlive() {
+        return true;
+    }
+    
+    public void setServerName(String name) {
+        this.name = name;
     }
 }

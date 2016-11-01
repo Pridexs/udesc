@@ -8,12 +8,13 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
         
 public class Servidor {
-        
+    
     public Servidor() {}
         
     public static void main(String args[]) {
 
         String host;
+        String mName;
         boolean bRetorno;
         
         if (args.length < 1) {
@@ -35,12 +36,14 @@ public class Servidor {
             registry = LocateRegistry.getRegistry(host);
             NameService sns = (NameService) registry.lookup("NameService");
             
-            bRetorno = sns.bindService("MasterServer", stub);
+            mName = sns.bindService("MasterServer", stub);
             
-            if (bRetorno) {
-                System.out.println("Servidor Banco ativo");
+            
+            if (!mName.equals("ERROR")) {
+                stub.setServerName(mName);
+                System.out.println("Servidor Banco " + mName + " ativo");
             } else {
-                System.out.println("Erro");
+                System.out.println("Erro ao iniciar servidor!");
             }
         } catch (Exception e) {
             System.err.println("Server exception: " + e.toString());

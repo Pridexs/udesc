@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 
 public interface NameService extends Remote {
     // Da bind em um novo servidor
-    boolean bindService(String name, Remote object) throws RemoteException;
+    String bindService(String name, Remote object) throws RemoteException;
     
     // Tira um servidor
     boolean unbindService(String name) throws RemoteException;

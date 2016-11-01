@@ -25,7 +25,7 @@ public class Cliente {
             // Em um programa real eu teria um dominio especifico para
             // hostear o servideo de nameservice para abstrair essa
             // parte do cliente.
-            System.out.println("Execute com o ip do nameservice!");
+            System.out.println("Execute passando o ip do servidor de nameservice!");
             return;
         } else { 
             host = args[0];
@@ -42,7 +42,7 @@ public class Cliente {
                 System.out.println("4. Sacar");
                 System.out.println("5. Transferir");
                 System.out.println("0. Sair");
-                System.out.println("\n> ");
+                System.out.print("\n> ");
 
                 option = in.nextInt();
                 in.nextLine();
