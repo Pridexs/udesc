@@ -1,8 +1,13 @@
 package bancormi;
 //package sdi.trabfinal;
-        
-public class Conta {
 
+import java.io.Serializable;
+
+        
+public class Conta implements Serializable {
+
+    private final static long serialVersionUID = 159624945;
+    
     private int contaId;
     private double saldo;
         

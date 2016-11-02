@@ -36,7 +36,7 @@ public class Cliente {
             Banco stub = (Banco) registry.lookup("MasterServer");
             
             do {
-                System.out.println("1. Criar nova conta");
+                System.out.println("\n1. Criar nova conta");
                 System.out.println("2. Depositar");
                 System.out.println("3. Verificar saldo");
                 System.out.println("4. Sacar");
@@ -98,6 +98,7 @@ public class Cliente {
                     System.out.println("Digite o valor a ser transferido: ");
                     valor = in.nextDouble();
                     
+                    System.out.println(conta + "," + contaDest + "," + valor);
                     retorno_int = stub.transferir(conta, contaDest, valor);
                     if (retorno_int == 4) {
                         System.out.println("Conta de destino invalida!");

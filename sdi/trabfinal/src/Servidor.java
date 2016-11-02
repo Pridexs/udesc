@@ -41,6 +41,12 @@ public class Servidor {
             
             if (!mName.equals("ERROR")) {
                 stub.setServerName(mName);
+                stub.setHost(host);
+                if (!stub.clonarContasMestre()) {
+                    System.out.println("Nao foi possivel clonar as contas do mestre, abortando...");
+                    sns.unbindService(mName);
+                    System.exit(0);
+                }
                 System.out.println("Servidor Banco " + mName + " ativo");
             } else {
                 System.out.println("Erro ao iniciar servidor!");
