@@ -1,3 +1,24 @@
+// WARNING: This code is not to be used. The network
+// bottleneck cause by this implementation is way too
+// big making the algorithm insanely slow.
+// 
+// Implementacao não otimizada de Gauss
+// em MPI.
+//
+// Alexandre Maros 
+//   & Nadyan S. Pscheidt
+//
+// mpicc gauss.c -o gauss
+// mpirun -np 4 gauss < input
+// Rodar com np > 1
+//
+// Se for executar em mais maquinas, certifique-se de
+// que o arquivo do input esteja onde o mestre está!
+//
+// Para gerar input:
+// python3 generate_input <n_linhas>
+//
+
 #include <mpi.h>
 #include <stdio.h>
 #include <string.h>

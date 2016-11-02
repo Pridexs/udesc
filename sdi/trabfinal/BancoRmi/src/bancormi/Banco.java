@@ -3,10 +3,12 @@ package bancormi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 public interface Banco extends Remote {
     // Retorna o ID da conta
     int abreConta() throws RemoteException;
+    int abreConta(int idConta) throws RemoteException;
     
     // Retorna novo saldo
     double depositar(int contaId, double valor) throws RemoteException;
@@ -23,4 +25,6 @@ public interface Banco extends Remote {
     // ---
     boolean isAlive() throws RemoteException;
     void setServerName(String name) throws RemoteException;
+    ArrayList<String> getRegistryList() throws RemoteException;
+    void setHost(String host) throws RemoteException;
 }

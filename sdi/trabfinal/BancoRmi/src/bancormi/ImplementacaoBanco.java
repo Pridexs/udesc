@@ -13,17 +13,22 @@
 package bancormi;
 //package sdi.trabfinal;
         
+import java.rmi.AccessException;
+import java.rmi.NotBoundException;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ImplementacaoBanco implements Banco {
         
     private ArrayList<Conta> contas;
     private String name;
+    private String host;
 
     public ImplementacaoBanco() {
         contas = new ArrayList<Conta>();
@@ -49,7 +54,27 @@ public class ImplementacaoBanco implements Banco {
         
         Conta conta = new Conta(id);
         contas.add(conta);
+        
+        // Replica os dados
+        ArrayList<String> hostSlaves = getRegistryList();
+        int hSize = hostSlaves.size();
+        try {
+            Registry registry = LocateRegistry.getRegistry(host);
+        } catch (RemoteException ex) {
+            Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for (int i = 0; i < hSize; i++) {
+            
+        }
+        
         return id;
+    }
+    
+    // Cria uma conta com um ID especifico
+    public int abreConta(int idConta) {     
+        Conta conta = new Conta(idConta);
+        contas.add(conta);
+        return idConta;
     }
     
     // Retorna novo saldo
@@ -130,5 +155,33 @@ public class ImplementacaoBanco implements Banco {
     
     public void setServerName(String name) {
         this.name = name;
+    }
+    
+    public ArrayList<String> getRegistryList() {
+        ArrayList<String> nomesLista = new ArrayList<String>();
+        
+        Registry registry;
+        try {
+            registry = LocateRegistry.getRegistry(host);
+            String[] list = registry.list();
+            
+            for (int i = 0; i < list.length; i++) {
+                if (list[i] != "MasterServer") {
+                    nomesLista.add(list[i]);
+                }
+            }
+        } catch (RemoteException ex) {
+            // Should not happen
+            System.out.println("Nao encontrei o servidor de NameService, isso nao deveria acontecer.");
+            Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+        
+        return nomesLista;
+    }
+    
+    public void setHost(String host) {
+        this.host = host;
     }
 }

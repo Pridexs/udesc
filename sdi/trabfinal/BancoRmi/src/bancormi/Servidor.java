@@ -41,6 +41,7 @@ public class Servidor {
             
             if (!mName.equals("ERROR")) {
                 stub.setServerName(mName);
+                stub.setHost(host);
                 System.out.println("Servidor Banco " + mName + " ativo");
             } else {
                 System.out.println("Erro ao iniciar servidor!");
