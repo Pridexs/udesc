@@ -98,7 +98,6 @@ public class Cliente {
                     System.out.println("Digite o valor a ser transferido: ");
                     valor = in.nextDouble();
                     
-                    System.out.println(conta + "," + contaDest + "," + valor);
                     retorno_int = stub.transferir(conta, contaDest, valor);
                     if (retorno_int == 4) {
                         System.out.println("Conta de destino invalida!");

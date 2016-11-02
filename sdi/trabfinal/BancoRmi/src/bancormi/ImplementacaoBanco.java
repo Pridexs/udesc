@@ -34,6 +34,8 @@ public class ImplementacaoBanco implements Banco {
     private ArrayList<Conta> contas;
     private String name;
     private String host;
+    
+    Object mutex = new Object();
 
     public ImplementacaoBanco() {
         contas = new ArrayList<Conta>();
@@ -58,25 +60,28 @@ public class ImplementacaoBanco implements Banco {
             }
         } while (existe);
         
-        Conta conta = new Conta(id);
-        contas.add(conta);
-        
-        // Replica os dados
-        if ("MasterServer".equals(name)) {
-            ArrayList<String> hostSlaves = getRegistryList();
-            try {
-                Registry registry = LocateRegistry.getRegistry(host);
-                for (String h : hostSlaves) {
-                    Banco stub = (Banco) registry.lookup(h);
-                    stub.abreConta(id);
+        synchronized(mutex) {
+            Conta conta = new Conta(id);
+            contas.add(conta);
+
+            // Replica os dados
+            if ("MasterServer".equals(name)) {
+                ArrayList<String> hostSlaves = getRegistryList();
+                try {
+                    Registry registry = LocateRegistry.getRegistry(host);
+                    for (String h : hostSlaves) {
+                        Banco stub = (Banco) registry.lookup(h);
+                        stub.abreConta(id);
+                    }
+                } catch (RemoteException ex) {
+                    Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (NotBoundException ex) {
+                    System.out.println("ISSO NAO DEVERIA ACONTECER!");
+                    Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (RemoteException ex) {
-                Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NotBoundException ex) {
-                System.out.println("ISSO NAO DEVERIA ACONTECER!");
-                Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
         
         System.out.println("[" + name + "]: Criei conta " + id);
         
@@ -86,8 +91,10 @@ public class ImplementacaoBanco implements Banco {
     // Cria uma conta com um ID especifico
     @Override
     public void abreConta(int idConta) {     
-        Conta conta = new Conta(idConta);
-        contas.add(conta);
+        synchronized(mutex) {
+            Conta conta = new Conta(idConta);
+            contas.add(conta);
+        }
         System.out.println("[" + name + "]: Criei conta " + idConta);
     }
     
@@ -97,25 +104,28 @@ public class ImplementacaoBanco implements Banco {
     public double depositar(int contaId, double valor) {
         for (Conta c : contas) {
             if (c.getContaId() == contaId) {
-                double novoValor = c.depositar(valor);
-                
-                System.out.println("[" + name + "]: Depositei " + contaId + "," + valor);
-                
-                // Replica os dados
-                if ("MasterServer".equals(name)) {
-                    ArrayList<String> hostSlaves = getRegistryList();
-                    int hSize = hostSlaves.size();
-                    try {
-                        Registry registry = LocateRegistry.getRegistry(host);
-                        for (String h : hostSlaves) {
-                            Banco stub = (Banco) registry.lookup(h);
-                            stub.depositar(contaId, valor);
+                double novoValor = -1.0;
+                synchronized(mutex) {
+                    novoValor = c.depositar(valor);
+
+                    System.out.println("[" + name + "]: Depositei " + contaId + "," + valor);
+
+                    // Replica os dados
+                    if ("MasterServer".equals(name)) {
+                        ArrayList<String> hostSlaves = getRegistryList();
+                        int hSize = hostSlaves.size();
+                        try {
+                            Registry registry = LocateRegistry.getRegistry(host);
+                            for (String h : hostSlaves) {
+                                Banco stub = (Banco) registry.lookup(h);
+                                stub.depositar(contaId, valor);
+                            }
+                        } catch (RemoteException ex) {
+                            Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (NotBoundException ex) {
+                            System.out.println("ISSO NAO DEVERIA ACONTECER!");
+                            Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    } catch (RemoteException ex) {
-                        Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (NotBoundException ex) {
-                        System.out.println("ISSO NAO DEVERIA ACONTECER!");
-                        Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
 
@@ -142,28 +152,31 @@ public class ImplementacaoBanco implements Banco {
     public int sacar(int contaId, double qtd) {
         for (Conta c : contas) {
             if (c.getContaId() == contaId) {
-                int retorno = c.sacar(qtd);
-                if (retorno == 2) {
-                    return 2;
-                }
-                
-                System.out.println("[" + name + "]: Saquei " + contaId + "," + qtd);
-                
-                // Replica os dados
-                if ("MasterServer".equals(name)) {
-                    ArrayList<String> hostSlaves = getRegistryList();
-                    int hSize = hostSlaves.size();
-                    try {
-                        Registry registry = LocateRegistry.getRegistry(host);
-                        for (String h : hostSlaves) {
-                            Banco stub = (Banco) registry.lookup(h);
-                            stub.sacar(contaId, qtd);
+                int retorno = 0;
+                synchronized(mutex) {
+                    retorno = c.sacar(qtd);
+                    if (retorno == 2) {
+                        return 2;
+                    }
+
+                    System.out.println("[" + name + "]: Saquei " + contaId + "," + qtd);
+
+                    // Replica os dados
+                    if ("MasterServer".equals(name)) {
+                        ArrayList<String> hostSlaves = getRegistryList();
+                        int hSize = hostSlaves.size();
+                        try {
+                            Registry registry = LocateRegistry.getRegistry(host);
+                            for (String h : hostSlaves) {
+                                Banco stub = (Banco) registry.lookup(h);
+                                stub.sacar(contaId, qtd);
+                            }
+                        } catch (RemoteException ex) {
+                            Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (NotBoundException ex) {
+                            System.out.println("ISSO NAO DEVERIA ACONTECER!");
+                            Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
                         }
-                    } catch (RemoteException ex) {
-                        Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (NotBoundException ex) {
-                        System.out.println("ISSO NAO DEVERIA ACONTECER!");
-                        Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
                 
@@ -203,31 +216,33 @@ public class ImplementacaoBanco implements Banco {
             return 4;
         }
 
-        int saida = c1.sacar(valor);
-        // saida == 2 (saldo insuficiente)
-        if (saida == 2) {
-            return 2;
-        }
-        
-        c2.depositar(valor);
-        
-        System.out.println("[" + name + "]: Transferi " + idOrigem + "," + idDestino + "," + valor);
-        
-        // Replica os dados
-        if ("MasterServer".equals(name)) {
-            ArrayList<String> hostSlaves = getRegistryList();
-            int hSize = hostSlaves.size();
-            try {
-                Registry registry = LocateRegistry.getRegistry(host);
-                for (String h : hostSlaves) {
-                    Banco stub = (Banco) registry.lookup(h);
-                    stub.transferir(idOrigem, idDestino, valor);
+        synchronized(mutex) {
+            int saida = c1.sacar(valor);
+            // saida == 2 (saldo insuficiente)
+            if (saida == 2) {
+                return 2;
+            }
+
+            c2.depositar(valor);
+
+            System.out.println("[" + name + "]: Transferi " + idOrigem + "," + idDestino + "," + valor);
+
+            // Replica os dados
+            if ("MasterServer".equals(name)) {
+                ArrayList<String> hostSlaves = getRegistryList();
+                int hSize = hostSlaves.size();
+                try {
+                    Registry registry = LocateRegistry.getRegistry(host);
+                    for (String h : hostSlaves) {
+                        Banco stub = (Banco) registry.lookup(h);
+                        stub.transferir(idOrigem, idDestino, valor);
+                    }
+                } catch (RemoteException ex) {
+                    Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (NotBoundException ex) {
+                    System.out.println("ISSO NAO DEVERIA ACONTECER!");
+                    Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (RemoteException ex) {
-                Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NotBoundException ex) {
-                System.out.println("ISSO NAO DEVERIA ACONTECER!");
-                Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -284,25 +299,27 @@ public class ImplementacaoBanco implements Banco {
     
     @Override
     public boolean clonarContasMestre() {
-        try {
-            Registry registry = LocateRegistry.getRegistry(host);
-            Banco stub;
-            stub = (Banco) registry.lookup("MasterServer");
-            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(stub.copiarContas()));
-            
-            // Eu tenho certeza que uma ArrayList<Conta> vai checar aqui.
-            @SuppressWarnings("unchecked")
-            ArrayList<Conta> ccopy = (ArrayList<Conta>)ois.readObject();
-            
-            contas = ccopy;
-            
-            return true;
-        } catch (RemoteException ex) {
-            Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NotBoundException | ClassNotFoundException | IOException ex) {
-            Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+        synchronized(mutex) {
+            try {
+                Registry registry = LocateRegistry.getRegistry(host);
+                Banco stub;
+                stub = (Banco) registry.lookup("MasterServer");
+                ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(stub.copiarContas()));
+
+                // Eu tenho certeza que uma ArrayList<Conta> vai checar aqui.
+                @SuppressWarnings("unchecked")
+                ArrayList<Conta> ccopy = (ArrayList<Conta>)ois.readObject();
+
+                contas = ccopy;
+
+                return true;
+            } catch (RemoteException ex) {
+                Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NotBoundException | ClassNotFoundException | IOException ex) {
+                Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return false;
         }
-        return false;
     }
     
 }

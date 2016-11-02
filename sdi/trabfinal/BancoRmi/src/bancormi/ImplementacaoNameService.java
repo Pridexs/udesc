@@ -15,6 +15,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ImplementacaoNameService implements NameService {
+    private boolean temUmMestre = false;
+
     // Da bind em um novo servidor
     public String bindService(String name, Remote object) throws AccessException {
         Registry registry;
@@ -37,6 +39,7 @@ public class ImplementacaoNameService implements NameService {
         if (registros.size() == 1) {
             try {
                 registry.bind(newName, object);
+                temUmMestre = true;
             } catch (RemoteException ex) {
                 Logger.getLogger(ImplementacaoNameService.class.getName()).log(Level.SEVERE, null, ex);
             } catch (AlreadyBoundException ex) {
