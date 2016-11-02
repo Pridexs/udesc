@@ -12,6 +12,6 @@ public interface NameService extends Remote {
     boolean unbindService(String name) throws RemoteException;
     
     // Elege um novo mestre
-    int eleicao() throws RemoteException;
+    String eleicao(String nome) throws RemoteException;
 }
 

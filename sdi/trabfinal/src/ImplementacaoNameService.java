@@ -15,6 +15,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ImplementacaoNameService implements NameService {
+    
+    Object mutex = new Object();
+
     // Da bind em um novo servidor
     public String bindService(String name, Remote object) throws AccessException {
         Registry registry;
@@ -31,8 +34,7 @@ public class ImplementacaoNameService implements NameService {
         }
 
         String newName = name;
-        boolean nomeEmUso = false;
-
+        
         // Se for 1 nao tem ServidorMestre entao seja o mestre.
         if (registros.size() == 1) {
             try {
@@ -98,7 +100,34 @@ public class ImplementacaoNameService implements NameService {
     }
     
     // Elege um novo mestre
-    public int eleicao() {
-        return 0;
+    // O primeiro que chamar vai ser o novo mestre
+    public String eleicao(String nome) {
+        synchronized(mutex) {
+            // checa se o objeto servidor realmente nao responde.
+            try {
+                Registry registry = LocateRegistry.getRegistry();
+                Banco stub = (Banco) registry.lookup("MasterServer");
+                stub.isAlive();
+            } catch (RemoteException ex) {
+                System.out.println("Nao tem um mestre ativo...");
+                try {
+                    Registry registry = LocateRegistry.getRegistry();
+                    registry.rebind("MasterServer", registry.lookup(nome));
+                    registry.unbind(nome);
+                    Banco stub2 = (Banco)registry.lookup("MasterServer");
+                    stub2.setServerName("MasterServer");
+                    return "MasterServer";
+                } catch (RemoteException ex1) {
+                    Logger.getLogger(ImplementacaoNameService.class.getName()).log(Level.SEVERE, null, ex1);
+                } catch (NotBoundException ex1) {
+                    Logger.getLogger(ImplementacaoNameService.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            } catch (NotBoundException ex) {
+                Logger.getLogger(ImplementacaoNameService.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
+        return nome;
     }
+    
 }

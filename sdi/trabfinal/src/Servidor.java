@@ -47,6 +47,7 @@ public class Servidor {
                     sns.unbindService(mName);
                     System.exit(0);
                 }
+                stub.mestreAtivo();
                 System.out.println("Servidor Banco " + mName + " ativo");
             } else {
                 System.out.println("Erro ao iniciar servidor!");

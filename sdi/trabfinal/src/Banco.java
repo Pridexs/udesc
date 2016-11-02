@@ -30,4 +30,5 @@ public interface Banco extends Remote {
     byte[] copiarContas() throws RemoteException, IOException;
     boolean clonarContasMestre() throws RemoteException;
     void setHost(String host) throws RemoteException;
+    void mestreAtivo() throws RemoteException;
 }

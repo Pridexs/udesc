@@ -26,6 +26,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +41,6 @@ public class ImplementacaoBanco implements Banco {
 
     public ImplementacaoBanco() {
         contas = new ArrayList<Conta>();
-        
     }
 
     // Retorna o ID da conta
@@ -113,7 +114,6 @@ public class ImplementacaoBanco implements Banco {
                     // Replica os dados
                     if ("MasterServer".equals(name)) {
                         ArrayList<String> hostSlaves = getRegistryList();
-                        int hSize = hostSlaves.size();
                         try {
                             Registry registry = LocateRegistry.getRegistry(host);
                             for (String h : hostSlaves) {
@@ -322,4 +322,48 @@ public class ImplementacaoBanco implements Banco {
         }
     }
     
+    
+    // A cada 10 segundos o Slave verifica se o mestre nao morreu
+    @Override
+    public void mestreAtivo() {
+        new Thread(new Runnable(){
+                public void run(){
+                    Timer timer = new Timer();
+                    timer.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (!name.equals("MasterServer")) {
+                              try {
+                                  Registry registry = LocateRegistry.getRegistry(host);
+                                  Banco stub;
+                                  stub = (Banco) registry.lookup("MasterServer");
+                                  if (stub.isAlive()) {
+                                      //
+                                  }
+                              } catch (RemoteException ex) {
+                                  System.out.println("[" + name + "]: Servidor mestre nao ativo. Tentando ser mestre.");
+                                  try {
+                                      Registry registry = LocateRegistry.getRegistry(host);
+                                      NameService sns = (NameService) registry.lookup("NameService");
+                                      String novoNome = sns.eleicao(name);
+                                      if ("MasterServer".equals(novoNome)) {
+                                          System.out.println("[" + name + "]: Agora sou mestre.");
+                                      } else {
+                                          System.out.println("[" + name + "]: Nao fui eleito o novo mestre.");
+                                      }
+                                  } catch (RemoteException ex1) {
+                                      Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex1);
+                                  } catch (NotBoundException ex1) {
+                                      Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex1);
+                                  }
+                                  
+                              } catch (NotBoundException ex) {
+                                  Logger.getLogger(ImplementacaoBanco.class.getName()).log(Level.SEVERE, null, ex);
+                              }
+                          }
+                        }
+                      }, 3*1000, 3*1000);
+        }
+        }).start();
+    }
 }
