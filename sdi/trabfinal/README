@@ -1,8 +1,18 @@
+Alunos: Alexandre Maros & Nadyan S. Pscheidt
+
+Disciplina: SDI
+
 Compilando:
     1. javac -d ./ Conta.java NameService.java Banco.java ImplementacaoNameService.java ImplementacaoBanco.java ServidorNameService.java Servidor.java Cliente.java
 
 Rodando:
     1. Inicie o rmiregistry dentro da pasta src onde esse README esta localizado (ou configure o classpath)
-	3. [ServidorNameService]: java -classpath ./ -Djava.rmi.server.codebase=file:./ bancormi.ServidorNameService
-    4. [Servidor]: java -classpath ./ -Djava.rmi.server.codebase=file:./ bancormi.Servidor <ip_do_servidor_nameservice>
-    5. [Cliente]: java -classpath ./ bancormi.Cliente <ip_do_seridor_nameservice>
+
+	2. Inicie o Serviço de Nomes no mesmo local onde o RMIREGISTRY está rodando.
+		java -classpath ./ -Djava.rmi.server.codebase=file:./ -Djava.net.preferIPv4Stack=true -Djava.rmi.server.hostname=ip_da_maquina bancormi.ServidorNameService 
+
+	3. Inicie o(s) servidor(es):
+		java -classpath ./ -Djava.rmi.server.codebase=file:./ -Djava.net.preferIPv4Stack=true -Djava.rmi.server.hostname=ip_da_maquina bancormi.Servidor ip_do_servico_de_nomes
+
+    4. Inicie o cliente
+		java -classpath ./ bancormi.Cliente <ip_do_seridor_nameservice>
