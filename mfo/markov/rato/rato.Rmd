@@ -28,4 +28,9 @@ for (i in 2:13) {
 p[[13]]
 ```
 
+> 2 a)
+
+Qual a probabilidade da pessoa comprar a cerveja 1 após comprar a terceira após 13 iterações.
+
+> 3 a)
 

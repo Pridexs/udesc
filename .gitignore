@@ -19,3 +19,7 @@
 /sdi/trabfinal/BancoRmi/nbproject/private/
 /sdi/trabfinal/BancoRmi/dist/
 /sdi/trabfinal/BancoRmi/build/
+
+# sdi
+/sdi/trabfinal/BancoRmi/*
+/sdi/trabfinal/copiar.sh
