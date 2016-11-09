@@ -74,7 +74,7 @@ int main(){
     dim3 tbloco = dim3(1,1,1);
     //vector_mul<<< (N + (THREADS_PER_BLOCK-1)) / THREADS_PER_BLOCK, THREADS_PER_BLOCK >>>(d_a, d_b, d_c);
 
-    vector_mul<<< tthreads, tbloco >>>(d_a, d_b, d_c);
+    vector_mul<<< tbloco, tthreads >>>(d_a, d_b, d_c);
 
     cudaMemcpy(c, d_c, size, cudaMemcpyDeviceToHost);
     printf("c[0] = %d\n",c[0]);

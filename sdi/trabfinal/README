@@ -9,10 +9,20 @@ Rodando:
     1. Inicie o rmiregistry dentro da pasta src onde esse README esta localizado (ou configure o classpath)
 
 	2. Inicie o Serviço de Nomes no mesmo local onde o RMIREGISTRY está rodando.
-		java -classpath ./ -Djava.rmi.server.codebase=file:./ -Djava.net.preferIPv4Stack=true -Djava.rmi.server.hostname=ip_da_maquina bancormi.ServidorNameService 
+		java -classpath ./ -Djava.rmi.server.codebase=file:./ -Djava.net.preferIPv4Stack=true -Djava.rmi.server.hostname=ip_da_maquina bancormi.ServidorNameService
 
 	3. Inicie o(s) servidor(es):
 		java -classpath ./ -Djava.rmi.server.codebase=file:./ -Djava.net.preferIPv4Stack=true -Djava.rmi.server.hostname=ip_da_maquina bancormi.Servidor ip_do_servico_de_nomes
 
     4. Inicie o cliente
 		java -classpath ./ bancormi.Cliente <ip_do_seridor_nameservice>
+
+Informações:
+    Foi utilizada a geração de stubs dinâmicos, como aconselhado pelo nova referência do java.
+
+    Exemplo do Servidor.java:
+
+    ImplementacaoBanco obj = new ImplementacaoBanco();
+    Banco stub = (Banco) UnicastRemoteObject.exportObject(obj, 0);
+
+    Aqui ele gera e retorna o stub dinamicamente.
