@@ -1,48 +1,34 @@
 #include <stdio.h>
 
-#define NLINHAS 4096
-#define NCOLUNAS 4096
+#define NLINHAS 1024
+#define NCOLUNAS 1024
 #define THREADS_PER_BLOCK 1024
-#define
+//32x32
+#define NTHREADS 32
+#define NCOLUNASPERBLOCK NCOLUNAS/32
+#define NLINHASPERBLOCK NLINHAS/32
 
 __global__ void vector_mul(int *a, int *b, int *c) {
-    int i, j, z, soma = 0;
+    int i, z, soma = 0;
 
     int coluna = blockIdx.x * blockDim.x + threadIdx.x;
     int linha =  blockIdx.y * blockDim.y + threadIdx.y;
 
-	// nColunasPerBlock should be equal to nLinhasPerBlock
-	// for now at least
-	int nColunasPerBlock = (NCOLUNAS/blockDim.x);
-	int nLinhasPerBlock = (NLINHAS/blockDim.y);
+    __shared__ int s_a[NLINHASPERBLOCK][NCOLUNASPERBLOCK];
+    __shared__ int s_b[NLINHASPERBLOCK][NCOLUNASPERBLOCK];
 
-    __shared__ int s_a[nLinhasPerBlock][nColunasPerBlock];
-    __shared__ int s_b[nLinhasPerBlock][nColunasPerBlock];
-
-    // carregar pra memoria compartilhada da GPU
-
-	// blockDim.x DEVEM SER IGUAIS blockDim.y
     // Copia Matriz
-	int nColunasPerBlock = (NCOLUNAS/blockDim.x);
 	for (z = 0; z < blockDim.x; z++) {
-		for (i = 0; i < nColunasPerBlock; i++) {
-			s_a[ blockIdx.y * nLinhasPerBlock  ][ z * nColunasPerBlock + i ] = a
-		}
-
-		// cudaMemcpy(&d_a[0], s_a,
-	    // 	(NLINHAS/blockDim.y) * NCOLUNAS * sizeof(int), cudaMemcpyDeviceToDevice);
-		//
-	    // // Copia Matriz B
-	    // for(i = 0; i < NLINHAS; i++) {
-	    //     cudaMemcpy(&d_b[ (i * NCOLUNAS * sizeof(int)) + (blockDim.x * sizeof(int) * (NCOLUNAS/blockDim.x)) ],
-	    //     s_b, sizeof(int) * (NCOLUNAS/blockDim.x), cudaMemcpyDeviceToDevice);
-	    // }
-
-
-	    __syncthreads();
-
-		for (i = 0; i < nLinhasPerBlock; i++) {
-	    	soma += s_a[i] * s_b[i];
+        //s_a[threadIdx.x][threadIdx.y] = a[ blockIdx.y * NLINHASPERBLOCK + threadIdx.y ][ z * NCOLUNASPERBLOCK + threadIdx.x ]
+        //s_b[threadIdx.x][threadIdx.y] = b[ z * NLINHASPERBLOCK + threadId.x  ][ blockIdx.x * NCOLUNASPERBLOCK + threadIdx.x ]
+        
+        s_a[threadIdx.x][threadIdx.y] = a[ (NCOLUNAS * (blockIdx.y * NLINHASPERBLOCK + threadIdx.y)) + (z * NCOLUNASPERBLOCK + threadIdx.x) ];
+        s_b[threadIdx.x][threadIdx.y] = b[ (NCOLUNAS * (z * NLINHASPERBLOCK + threadIdx.x)) + blockIdx.x * NCOLUNASPERBLOCK + threadIdx.x ];
+        
+        __syncthreads();
+        
+		for (i = 0; i < NLINHASPERBLOCK; i++) {
+	    	soma += s_a[threadIdx.y][i] * s_b[i][threadIdx.x];
 	    }
 	}
 
@@ -53,6 +39,7 @@ int main(){
     int *a, *b, *c;
     int *d_a, *d_b, *d_c;
     int size = NLINHAS * NCOLUNAS * sizeof(int);
+    int i;
 
     cudaMalloc((void **) &d_a, size);
     cudaMalloc((void **) &d_b, size);
@@ -62,7 +49,7 @@ int main(){
     b = (int *)malloc(size);
     c = (int *)malloc(size);
 
-    for(int i = 0; i < NLINHAS*NCOLUNAS; i++){
+    for(i = 0; i < NLINHAS*NCOLUNAS; i++){
         a[i] = b[i] = i;
         c[i] = 0;
     }
@@ -71,7 +58,7 @@ int main(){
     cudaMemcpy(d_b, b, size, cudaMemcpyHostToDevice);
 
     dim3 tthreads = dim3(32, 32, 1);
-    dim3 tbloco = dim3(1,1,1);
+    dim3 tbloco = dim3(NLINHAS / NLINHASPERBLOCK, NCOLUNAS / NCOLUNASPERBLOCK,1);
     //vector_mul<<< (N + (THREADS_PER_BLOCK-1)) / THREADS_PER_BLOCK, THREADS_PER_BLOCK >>>(d_a, d_b, d_c);
 
     vector_mul<<< tbloco, tthreads >>>(d_a, d_b, d_c);
