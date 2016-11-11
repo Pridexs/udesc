@@ -28,6 +28,8 @@ __global__ void vector_mul(int *a, int *b, int *c) {
 		for (i = 0; i < NLINHASPERBLOCK; i++) {
 	    	soma += s_a[threadIdx.y][i] * s_b[i][threadIdx.x];
 	    }
+
+        __syncthreads();
 	}
 
     //printf("%d %d\n", linha, coluna);
@@ -38,7 +40,7 @@ int main(){
     int *a, *b, *c;
     int *d_a, *d_b, *d_c;
     int size = NLINHAS * NCOLUNAS * sizeof(int);
-    int i;
+    int i, j, n;
 
     struct timeval timevalA;
 	struct timeval timevalB;
@@ -52,10 +54,23 @@ int main(){
     c = (int *)malloc(size);
 
     for(i = 0; i < NLINHAS*NCOLUNAS; i++){
-        a[i] = b[i] = i % 10;
+//        a[i] = b[i] = i % 10;
         c[i] = 0;
     }
 
+    scanf("%d", &n);
+
+    for (int i = 0; i < NLINHAS; i++) {
+        for (j = 0; j < NLINHAS; j++) {
+            scanf("%d", &a[i * NLINHAS + j]);
+        }
+    }
+
+    for (int i = 0; i < NLINHAS; i++) {
+        for (j = 0; j < NLINHAS; j++) {
+            scanf("%d", &b[i * NLINHAS + j]);
+        }
+    }
 
     gettimeofday(&timevalA,NULL);
     cudaMemcpy(d_a, a, size, cudaMemcpyHostToDevice);
@@ -69,10 +84,13 @@ int main(){
     gettimeofday(&timevalB,NULL);
     
     // imprimir primeira coluna
-    for (i = 0; i < NLINHAS; i++) {
-        printf("[%d]: %d\n", i, c[i * NLINHAS]);
-    }
-    printf("\n");
+    // for (i = 0; i < NLINHAS; i++) {
+    //     for (j = 0; j < NLINHAS; j++) {
+    //         printf("%d ", c[i * NLINHAS + j]);
+    //     }
+    //     printf("\n");
+    // }
+    //printf("\n");
 
     printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
 

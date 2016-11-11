@@ -12,6 +12,7 @@ int main()
     size_t size = NLINHAS * NLINHAS * sizeof(int);
     
     int *a, *b, *c;
+
     a = (int *)malloc(size);
     b = (int *)malloc(size);
     c = (int *)malloc(size);
@@ -19,14 +20,19 @@ int main()
     struct timeval timevalA;
 	struct timeval timevalB;
     
-    for (int i = 0; i < NLINHAS*NLINHAS; i++) {
-        a[i] = b[i] = i % 10;
+    scanf("%d", &n);
+
+    for (int i = 0; i < NLINHAS; i++) {
+        for (j = 0; j < NLINHAS; j++) {
+            scanf("%d", &a[i * NLINHAS + j]);
+        }
     }
 
-    for (int i = 0; i < 32; i++) {
-        printf("%d ", b[i * NLINHAS + 31]);
+    for (int i = 0; i < NLINHAS; i++) {
+        for (j = 0; j < NLINHAS; j++) {
+            scanf("%d", &b[i * NLINHAS + j]);
+        }
     }
-    printf("\n");
 
     gettimeofday(&timevalA,NULL);
 
@@ -44,10 +50,13 @@ int main()
     gettimeofday(&timevalB,NULL);
 
     // imprimir primeira coluna
-    for (i = 0; i < NLINHAS; i++) {
-        printf("%d\n", c[i * NLINHAS]);
-    }
-    printf("\n");
+    // for (i = 0; i < NLINHAS; i++) {
+    //     for (j = 0; j < NLINHAS; j++) {
+    //         printf("%d ", c[i * NLINHAS + j]);
+    //     }
+    //     printf("\n");
+    // }
+    //printf("\n");
 
     printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
 
