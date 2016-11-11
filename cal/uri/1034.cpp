@@ -11,7 +11,7 @@ int t, n, m, b;
 int min(z) {
     int menor = 0;
     for (int i = 0; i < n; i++) {
-        
+        if ( 1+minBlocos[z-1]  )
     }
 }
 

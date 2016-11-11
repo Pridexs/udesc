@@ -1,12 +1,14 @@
 #include <stdio.h>
+#include <time.h>
+#include <sys/time.h>
 
-#define NLINHAS 1024
-#define NCOLUNAS 1024
+#define NLINHAS 2048
+#define NCOLUNAS 2048
 #define THREADS_PER_BLOCK 1024
 //32x32
 #define NTHREADS 32
-#define NCOLUNASPERBLOCK NCOLUNAS/32
-#define NLINHASPERBLOCK NLINHAS/32
+#define NCOLUNASPERBLOCK 32
+#define NLINHASPERBLOCK 32
 
 __global__ void vector_mul(int *a, int *b, int *c) {
     int i, z, soma = 0;
@@ -17,22 +19,19 @@ __global__ void vector_mul(int *a, int *b, int *c) {
     __shared__ int s_a[NLINHASPERBLOCK][NCOLUNASPERBLOCK];
     __shared__ int s_b[NLINHASPERBLOCK][NCOLUNASPERBLOCK];
 
-    // Copia Matriz
-	for (z = 0; z < blockDim.x; z++) {
-        //s_a[threadIdx.x][threadIdx.y] = a[ blockIdx.y * NLINHASPERBLOCK + threadIdx.y ][ z * NCOLUNASPERBLOCK + threadIdx.x ]
-        //s_b[threadIdx.x][threadIdx.y] = b[ z * NLINHASPERBLOCK + threadId.x  ][ blockIdx.x * NCOLUNASPERBLOCK + threadIdx.x ]
-        
-        s_a[threadIdx.x][threadIdx.y] = a[ (NCOLUNAS * (blockIdx.y * NLINHASPERBLOCK + threadIdx.y)) + (z * NCOLUNASPERBLOCK + threadIdx.x) ];
-        s_b[threadIdx.x][threadIdx.y] = b[ (NCOLUNAS * (z * NLINHASPERBLOCK + threadIdx.x)) + blockIdx.x * NCOLUNASPERBLOCK + threadIdx.x ];
+	for (z = 0; z < gridDim.x; z++) {
+        s_a[threadIdx.y][threadIdx.x] = a[ (NCOLUNAS * (blockIdx.y * NLINHASPERBLOCK + threadIdx.y)) + (z * NCOLUNASPERBLOCK + threadIdx.x) ];
+        s_b[threadIdx.y][threadIdx.x] = b[ (NCOLUNAS * (z * NLINHASPERBLOCK + threadIdx.y)) + blockIdx.x * NCOLUNASPERBLOCK + threadIdx.x ];
         
         __syncthreads();
-        
+
 		for (i = 0; i < NLINHASPERBLOCK; i++) {
 	    	soma += s_a[threadIdx.y][i] * s_b[i][threadIdx.x];
 	    }
 	}
 
-    c[(NLINHAS * linha) + coluna] = soma;
+    //printf("%d %d\n", linha, coluna);
+    c[linha * NLINHAS + coluna] = soma;
 }
 
 int main(){
@@ -40,6 +39,9 @@ int main(){
     int *d_a, *d_b, *d_c;
     int size = NLINHAS * NCOLUNAS * sizeof(int);
     int i;
+
+    struct timeval timevalA;
+	struct timeval timevalB;
 
     cudaMalloc((void **) &d_a, size);
     cudaMalloc((void **) &d_b, size);
@@ -50,22 +52,29 @@ int main(){
     c = (int *)malloc(size);
 
     for(i = 0; i < NLINHAS*NCOLUNAS; i++){
-        a[i] = b[i] = i;
+        a[i] = b[i] = i % 10;
         c[i] = 0;
     }
 
+
+    gettimeofday(&timevalA,NULL);
     cudaMemcpy(d_a, a, size, cudaMemcpyHostToDevice);
     cudaMemcpy(d_b, b, size, cudaMemcpyHostToDevice);
 
+    dim3 tbloco = dim3(64, 64,1);
     dim3 tthreads = dim3(32, 32, 1);
-    dim3 tbloco = dim3(NLINHAS / NLINHASPERBLOCK, NCOLUNAS / NCOLUNASPERBLOCK,1);
-    //vector_mul<<< (N + (THREADS_PER_BLOCK-1)) / THREADS_PER_BLOCK, THREADS_PER_BLOCK >>>(d_a, d_b, d_c);
-
-    vector_mul<<< tbloco, tthreads >>>(d_a, d_b, d_c);
-
+    vector_mul<<<tbloco,tthreads>>>(d_a, d_b, d_c);
+    
     cudaMemcpy(c, d_c, size, cudaMemcpyDeviceToHost);
-    printf("c[0] = %d\n",c[0]);
-    printf("c[%d] = %d\n", (NLINHAS*NCOLUNAS)-1, c[(NLINHAS*NCOLUNAS)-1]);
+    gettimeofday(&timevalB,NULL);
+    
+    // imprimir primeira coluna
+    for (i = 0; i < NLINHAS; i++) {
+        printf("[%d]: %d\n", i, c[i * NLINHAS]);
+    }
+    printf("\n");
+
+    printf("%.5lf\n", timevalB.tv_sec-timevalA.tv_sec+(timevalB.tv_usec-timevalA.tv_usec)/(double)1000000);
 
     free(a); free(b); free(c);
 
