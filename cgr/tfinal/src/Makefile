@@ -1,14 +1,14 @@
 CC=g++
-CFLAGS=-lSDL2 -lGL -lGLU -lm -I $(IDIR) -lglfw -lGLEW
+CFLAGS=-lSDL2 -lGL -lGLU -lm -I $(IDIR) -lglfw -lGLEW -Llib -lassimp
 
 IDIR = include
 ODIR = obj
 SDIR = src
 
-_DEPS =  shader.h
+_DEPS =  shader.h texture.h controls.h objloader.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = shader.o
+_OBJ = shader.o texture.o controls.o objloader.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 $(ODIR)/%.o: $(SDIR)/%.cpp $(DEPS)

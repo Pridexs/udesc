@@ -14,8 +14,8 @@
 /cal/rsa/RSA/dist/
 
 #cgr
-/cgr/tfinal/lib/*
-/cgr/tfinal/include/assimp/*
+/cgr/tfinal/src/lib/*
+/cgr/tfinal/src/include/assimp/*
 
 # oprp/trab1_mpi
 /oprp/trab1_mpi/input
