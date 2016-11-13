@@ -13,6 +13,10 @@
 /cal/rsa/RSA/build/
 /cal/rsa/RSA/dist/
 
+#cgr
+/cgr/tfinal/lib
+/cgr/tfinal/include/assimp
+
 # oprp/trab1_mpi
 /oprp/trab1_mpi/input
 /oprp/trab1_mpi/gauss
