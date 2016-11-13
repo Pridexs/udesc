@@ -80,14 +80,13 @@ int main() {
     
     GLuint textureID  = glGetUniformLocation(programID, "myTextureSampler");
     glUniform1i(textureID, 0);
-    glUniform1i(textureID, 1);
 
     GLuint textureRua = loadDDS("textures/rua.DDS");
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureRua);
 
     GLuint textureBoneco = loadDDS("textures/boneco.DDS");
-    glActiveTexture(GL_TEXTURE1);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureBoneco);
 
     // Read our .obj file
@@ -102,7 +101,7 @@ int main() {
 	std::vector<unsigned short> indices_boneco;
 
 	bool res = loadAssImp("objects/rua.obj", indices_rua, vert_rua, uvs_rua, normals_rua);
-    res = loadAssImp("objects/boneco.obj", indices_rua, vert_rua, uvs_rua, normals_rua);
+    res = loadAssImp("objects/boneco.obj", indices_boneco, vert_boneco, uvs_boneco, normals_boneco);
 
     GLuint vertexBuffer_rua;
 	glGenBuffers(1, &vertexBuffer_rua);
@@ -137,10 +136,9 @@ int main() {
         glm::mat4 ModelMatrix = glm::mat4(1.0);
         glm::mat4 mvp = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-        glm::mat4 ModelMatrix_boneco = glm::rotate(40.0f, glm::vec3(0, 10, 0)) * ModelMatrix;
+        glm::mat4 ModelMatrix_boneco = ModelMatrix;
         glm::mat4 mvp_boneco = ProjectionMatrix * ViewMatrix * ModelMatrix_boneco;
         
-
         /** RUA **/
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 
@@ -175,16 +173,14 @@ int main() {
 
         glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
-        glfwSwapBuffers(window);
         /** END RUA **/
 
         /** BONECO **/
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp_boneco[0][0]);
-        
-        //getchar();
-        glUseProgram(programID);
-        glActiveTexture(GL_TEXTURE1);
+
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureBoneco);
+        glUniform1i(textureID, 0);
 
 		glEnableVertexAttribArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_boneco);
@@ -222,7 +218,7 @@ int main() {
         glfwWindowShouldClose(window) == 0 );
 
     // Cleanup VBO
-    glDeleteBuffers(1, &vertexBuffer_rua);
+    // glDeleteBuffers(1, &vertexBuffer_rua);
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);
 
