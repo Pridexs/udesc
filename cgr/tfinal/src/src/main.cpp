@@ -78,26 +78,51 @@ int main() {
     // Get a handle for our "MVP" uniform
     GLuint MatrixID = glGetUniformLocation(programID, "MVP");
     
-    GLuint TextureID  = glGetUniformLocation(programID, "myTextureSampler");
+    GLuint textureID  = glGetUniformLocation(programID, "myTextureSampler");
+    glUniform1i(textureID, 0);
+    glUniform1i(textureID, 1);
 
-    GLuint Texture = loadDDS("textures/chaleira.DDS");
+    GLuint textureRua = loadDDS("textures/rua.DDS");
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureRua);
+
+    GLuint textureBoneco = loadDDS("textures/boneco.DDS");
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, textureBoneco);
+
     // Read our .obj file
-	std::vector<glm::vec3> vertices;
-	std::vector<glm::vec2> uvs;
-	std::vector<glm::vec3> normals; // Won't be used at the moment.
-	std::vector<unsigned short> indices;
+	std::vector<glm::vec3> vert_rua;
+	std::vector<glm::vec2> uvs_rua;
+	std::vector<glm::vec3> normals_rua;
+	std::vector<unsigned short> indices_rua;
 
-	bool res = loadAssImp("objects/chaleira.obj", indices, vertices, uvs, normals);
+    std::vector<glm::vec3> vert_boneco;
+	std::vector<glm::vec2> uvs_boneco;
+	std::vector<glm::vec3> normals_boneco;
+	std::vector<unsigned short> indices_boneco;
 
-    GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+	bool res = loadAssImp("objects/rua.obj", indices_rua, vert_rua, uvs_rua, normals_rua);
+    res = loadAssImp("objects/boneco.obj", indices_rua, vert_rua, uvs_rua, normals_rua);
 
-	GLuint uvbuffer;
-	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+    GLuint vertexBuffer_rua;
+	glGenBuffers(1, &vertexBuffer_rua);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_rua);
+	glBufferData(GL_ARRAY_BUFFER, vert_rua.size() * sizeof(glm::vec3), &vert_rua[0], GL_STATIC_DRAW);
+
+	GLuint uvbuffer_rua;
+	glGenBuffers(1, &uvbuffer_rua);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer_rua);
+	glBufferData(GL_ARRAY_BUFFER, uvs_rua.size() * sizeof(glm::vec2), &uvs_rua[0], GL_STATIC_DRAW);
+
+    GLuint vertexBuffer_boneco;
+	glGenBuffers(1, &vertexBuffer_boneco);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_boneco);
+	glBufferData(GL_ARRAY_BUFFER, vert_boneco.size() * sizeof(glm::vec3), &vert_boneco[0], GL_STATIC_DRAW);
+
+	GLuint uvbuffer_boneco;
+	glGenBuffers(1, &uvbuffer_boneco);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer_boneco);
+	glBufferData(GL_ARRAY_BUFFER, uvs_boneco.size() * sizeof(glm::vec2), &uvs_boneco[0], GL_STATIC_DRAW);
 
 
     do{
@@ -112,16 +137,19 @@ int main() {
         glm::mat4 ModelMatrix = glm::mat4(1.0);
         glm::mat4 mvp = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
+        glm::mat4 ModelMatrix_boneco = glm::rotate(40.0f, glm::vec3(0, 10, 0)) * ModelMatrix;
+        glm::mat4 mvp_boneco = ProjectionMatrix * ViewMatrix * ModelMatrix_boneco;
+        
+
+        /** RUA **/
         glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp[0][0]);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, Texture);
-        // Set our "myTextureSampler" sampler to user Texture Unit 0
-        glUniform1i(TextureID, 0);
+        glBindTexture(GL_TEXTURE_2D, textureRua);
 
-        // 1rst attribute buffer : vertices
+        // 1rst attribute buffer : vert_rua
 		glEnableVertexAttribArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_rua);
 		glVertexAttribPointer(
 			0,                  // attribute
 			3,                  // size
@@ -131,9 +159,46 @@ int main() {
 			(void*)0            // array buffer offset
 		);
 
-		// 2nd attribute buffer : UVs
+		// 2nd attribute buffer : uvs_rua
 		glEnableVertexAttribArray(1);
-		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer_rua);
+		glVertexAttribPointer(
+			1,                                // attribute
+			2,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+		// Draw the triangle !
+		glDrawArrays(GL_TRIANGLES, 0, vert_rua.size() );
+
+        glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+        glfwSwapBuffers(window);
+        /** END RUA **/
+
+        /** BONECO **/
+        glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &mvp_boneco[0][0]);
+        
+        //getchar();
+        glUseProgram(programID);
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textureBoneco);
+
+		glEnableVertexAttribArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer_boneco);
+		glVertexAttribPointer(
+			0,                  // attribute		// 2nd attribute buffer : uvs_rua
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		glEnableVertexAttribArray(1);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer_boneco);
 		glVertexAttribPointer(
 			1,                                // attribute
 			2,                                // size
@@ -144,10 +209,12 @@ int main() {
 		);
 
 		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, vertices.size() );
+		glDrawArrays(GL_TRIANGLES, 0, vert_boneco.size() );
 
-		glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
+
+        /** END BONECO **/
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -155,7 +222,7 @@ int main() {
         glfwWindowShouldClose(window) == 0 );
 
     // Cleanup VBO
-    glDeleteBuffers(1, &vertexbuffer);
+    glDeleteBuffers(1, &vertexBuffer_rua);
     glDeleteVertexArrays(1, &VertexArrayID);
     glDeleteProgram(programID);
 
