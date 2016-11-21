@@ -30,7 +30,10 @@ public class RSA {
                 System.out.print("Digite quantos bytes a chave privada terá: ");
                 int nBytes = in.nextInt();
                 in.nextLine();
+                long tStart = System.nanoTime();
                 grsa = new GeradorRSA(nBytes);
+                long tEnd = System.nanoTime();
+                System.out.println("\nDemorou " + ( ((tEnd - tStart) / 1000000)) + " milisegundos para gera as chaves." );
             } else if (option == 2) {
                 grsa.imprimirChaves();
             } else if (option == 3) {
