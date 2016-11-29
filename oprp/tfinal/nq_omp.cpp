@@ -1,13 +1,24 @@
+/*
+ * n-queens problem using only openmp
+ * idea/base code from: https://hbfs.wordpress.com/2012/03/27/openmp-and-the-n-queens-problem/
+ */
+
 #include <sys/time.h>
-#include <time.h>
-#include <stdint.h>
-#include <cstdlib>
+#include <time.h>    // gettimeofday
+#include <stdint.h>  // uint64_t
+#include <cstdlib>   // atoi
 #include <iostream>
-#include <algorithm>
-#include <iomanip> 
+#include <algorithm> // min, max
+#include <iomanip>  // setw, setprecision, etc.
+
+
+#define NUM_THREADS 8
+
+///////////////////////////////////////
 
 const int maxdim = 32;
 
+///////////////////////////////////////
 inline uint64_t now() 
  {
   struct timeval tv;
@@ -17,10 +28,10 @@ inline uint64_t now()
 
 ///////////////////////////////////////
 inline bool test(int k, int j,
-                uint64_t diag45,
-                uint64_t diag135,
-                uint64_t cols)  
-{
+                 uint64_t diag45,
+                 uint64_t diag135,
+                 uint64_t cols)  
+ {
   return ( (cols    & (1ull << j))
          + (diag135 & (1ull << (j+k))) 
          + (diag45  & (1ull << (32+j-k))) )==0;
@@ -55,7 +66,7 @@ uint64_t meta_solve( int dx )
 
   int niv=dx-1;
 
-  #pragma omp parallel for reduction(+:solutions) schedule(guided)
+  #pragma omp parallel for reduction(+:solutions) schedule(guided) num_threads(NUM_THREADS)
   for (int i=0;i<dx;i++)
    solutions+=solve(niv-1,dx,
                     (1ull << (32+i-niv)),  // diag45
@@ -90,7 +101,8 @@ int main(int argc, const char * argv[])
    }
   else 
    {
-    std::cerr << " Precisez un nombre entre 1 et " << maxdim << std::endl;
+    std::cerr << "./nqo <num>" << std::endl;
     return 1;
    }
  }
+
