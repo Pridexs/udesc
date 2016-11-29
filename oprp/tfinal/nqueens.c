@@ -17,10 +17,10 @@ inline uint64_t now()
 
 ///////////////////////////////////////
 inline bool test(int k, int j,
-                 uint64_t diag45,
-                 uint64_t diag135,
-                 uint64_t cols)  
- {
+                uint64_t diag45,
+                uint64_t diag135,
+                uint64_t cols)  
+{
   return ( (cols    & (1ull << j))
          + (diag135 & (1ull << (j+k))) 
          + (diag45  & (1ull << (32+j-k))) )==0;

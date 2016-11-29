@@ -12,3 +12,4 @@ This repository is mainly to hold day-to-day code and small projects for my clas
 | sop              | Operating Systems    | 2015/1       |
 | teg              | Graph Theory         | 2015/1       |
 | sdi              | Distributed Systems  | 2016/2       |
+| tec              | Theory of Computation| 2016/2       |

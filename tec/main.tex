@@ -1,0 +1,187 @@
+\documentclass{beamer}
+
+\usepackage{graphicx,hyperref,udesc,url}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage[portuges]{babel}
+
+
+\title[Teoremas da Incompletude de Gödel]{Os Teoremas da Incompletude de Gödel e suas implicações}
+
+\author[Alexandre M, Nadyan P.]{
+    Alexandre Maros, Nadyan S. Pscheidt\\\medskip
+    {\small \url{alehstk@gmail.com}} \\
+{\small \url{nadyan.suriel@gmail.com}}}
+
+\institute[UDESC]{
+    Departamento de Ci\^encia da Computa\c{c}\~ao \\
+    Centro de Ci\^encias e Tecnol\'ogias\\
+Universidade do Estado de Santa Catarina}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+
+\end{frame}
+
+%
+% TOPICOS E CONCEITOS
+%
+
+\section{Tópicos e Conceitos}
+\begin{frame}
+    \frametitle{Tópicos}
+
+    \begin{itemize}
+        \item Conceitos
+        \item O Primeiro Teorema da Incompletude
+        \item O Segundo Teorema da Incompletude
+        \item Implicações
+        \item Conclusão
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Conceitos}
+
+    \begin{itemize}
+        \item \textit{\textbf{Sistema Formal}}: Um sistema de axiomas equipados com regras de inferência, que possibilitam a criação de novos teoremas.
+        \item Um sistema formal é \textbf{completo} se, para toda afirmação da linguagem do sistema, ou essa afirmação ou a negação dessa afirmação são derivadas no sistema.
+        \item Um sistema formal é \textbf{consistente} se o sistema não tem contradições dentro de si mesmo.
+        \begin{itemize}
+            \item i.e, \textit{"Esta frase não é provável em $F$"}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+%
+% O 1o TEOREMA
+%
+
+\section{O Primeiro Teorema}
+\begin{frame}
+    \frametitle{O Primeiro Teorema de Gödel - Definiçao}
+
+    \begin{center}
+        \textit{"Qualquer teoria efetivamente gerada capaz de expressar aritmética elementar não pode ser tanto \textbf{consistente} quanto \textbf{completa}."} \\~\\~\\
+        \textit{"[...] existe uma afirmação aritmética que é verdadeira, mas que não pode ser provada em teoria."}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Prova}
+
+    \begin{itemize}
+        \item Consistência-$\omega$
+        \item Representabilidade
+        \item Mapeamento da Linguagem Formal (\textbf{Números de Gödel})
+        \item Lema da diagonal
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Prova Alternativa}
+
+    \begin{itemize}
+        \item[] Suponha que temos um sistema formal $\textbf{F}$ completo e consistente que seja capaz de entender máquinas de Turing.
+        \item[] Usando F nós podemos resolver o problema da parada da seguinte forma:
+            \begin{itemize}
+                \item Dado uma máquina M, nos queremos saber se ela para em uma fita branca.
+                \item Logo, enumeramos todas as possíveis provas de F até achar uma que diz que a máquina \textit{para} ou que entra em \textit{loop}.
+            \end{itemize}
+        \item[] Por o sistema ser \textbf{completo}, iremos achar tal prova.
+        \item[] Como o sistema é \textbf{consistente}, eu posso ter certeza dessa prova.
+        \item[] Logo $F$ não pode existir pois estamos resolvendo o problema da Parada.
+    \end{itemize}
+
+\end{frame}
+
+%
+% O 2o TEOREMA
+%
+
+\section{O Segundo Teorema}
+\begin{frame}
+    \frametitle{O Segundo Teorema de Gödel - Definição}
+
+    \begin{center}
+        \textit{"Para todo sistema consistente F com um certo conjunto aritmético elementar, a consistência de F \textbf{\textit{não}} pode ser provada no próprio F."}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{O Segundo Teorema de Gödel - Consistência}
+
+    Sendo:
+    \begin{center}
+        \begin{itemize}
+            \item $cons(F)$ a consistência de $F$;
+            \item $G_F$ a sentença para $F$;
+        \end{itemize}
+    \end{center}
+    
+    %vdash quer dizer "satisfaz"
+    Temos que:
+    \begin{center}
+        $F \vdash cons(F) \rightarrow G_F$ \\
+    \end{center} 
+    Ou seja, se $cons(F)$ fosse provável em $F$, $G_F$ também seria, porém contradizendo o primeiro teorema. Então $cons(F)$ \textbf{não} pode ser provável em $F$.\\
+    
+    Então:
+    \begin{center}
+        $F \nvdash cons(F)$
+    \end{center}
+\end{frame}
+
+%
+% EFEITOS
+%
+
+\section{Implicações}
+\begin{frame}
+    \frametitle{Trabalhos inspirados}
+
+    Certamente os teoremas de Gödel inspiraram importantes pesquisadores e seus trabalhos, alguns deles são:
+    \begin{itemize}
+        \item Alonzo Church e seus estudos na área de indecidibilidade, 1936.
+        \item Martin Hugo Löb e seus estudos sobre demonstrabilidade, do tipo \textit{"Se uma fórmula F for demonstrável, então certamente F é verdadeira"}, 1955.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Efeitos em outras áreas}
+
+    Outras áreas de pesquisa foram afetadas pelos teoremas, como:
+    \begin{itemize}
+        \item Filosofia da matemática, onde alguns acreditam que os teoremas de Gödel refutam o logicismo.
+        %logicismo acredita que as formulações lógicas são suficientes por si mesmas, assim como toda a matematica pode ser redutivel à logica.
+        \item Física teórica, onde a afirmação de que uma teoria não pode ser capaz de provar tudo e a si mesma sem conceitos externos pode impossibilitar a existência da tão buscada "teoria de tudo". 
+    \end{itemize}
+\end{frame}
+
+%
+% CONCLUSAO MAYBE???
+%
+
+\section{Conclusão}
+\begin{frame}
+    \frametitle{Conclusão}
+
+    Os Teoremas da Incompletude de Gödel foram de fato importantes para definir o rumo das ciências na época.\\
+    
+    Os conceitos descritos e provados transformaram o modo de muitos pesquisadores olharem para seus campos de estudo, além de inspirar muitos outros a alcançarem as provas de mais teoremas baseados em suas fórmulas complexas
+    
+\end{frame}
+
+\begin{frame}{Referências}
+
+    \begin{itemize}
+        \item P. Raatikainen, \textbf{Goodel’s incompleteness theorem}s, in:  E. N. Zalta (Ed.), The Stanford Encyclopedia of Philosophy, spring 2015 Edition, 2015.
+    \end{itemize}
+     
+\end{frame}
+
+\end{document}
+
