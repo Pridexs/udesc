@@ -15,45 +15,46 @@ const int maxdim = 32;
 
 ///////////////////////////////////////
 inline uint64_t now() 
- {
-  struct timeval tv;
-  gettimeofday(&tv,0);
-  return tv.tv_sec*1000000ull+tv.tv_usec;
- }
+{
+    struct timeval tv;
+    gettimeofday(&tv,0);
+    return tv.tv_sec*1000000ull+tv.tv_usec;
+}
 
 ///////////////////////////////////////
 inline bool test(int k, int j,
                  uint64_t diag45,
                  uint64_t diag135,
                  uint64_t cols)  
- {
-  return ( (cols    & (1ull << j))
-         + (diag135 & (1ull << (j+k))) 
-         + (diag45  & (1ull << (32+j-k))) )==0;
- }
+{
+    return ( (cols    & (1ull << j))
+            + (diag135 & (1ull << (j+k))) 
+            + (diag45  & (1ull << (32+j-k))) )==0;
+}
 
 ///////////////////////////////////////
 uint64_t solve( int niv, int dx, 
                 uint64_t diag45,
                 uint64_t diag135,
                 uint64_t cols)
- {
-  uint64_t solutions=0;
-  if (niv)
-   {
-    for (int i=0; i<dx; i++)
-     if (test(niv,i, diag45, diag135, cols))
-       solutions+=solve ( niv-1, dx, 
-                          diag45 | (1ull << (32+i-niv)), 
-                          diag135 | (1ull << (niv+i)), 
-                          cols | (1ull << i ));
-   }
-  else
-   for (int i=0; i<dx; i++)
-    solutions += test(0,i, diag45, diag135, cols);
-
-  return solutions;
- }
+{
+    uint64_t solutions=0;
+    if (niv)
+    {
+        for (int i=0; i<dx; i++)
+            if (test(niv,i, diag45, diag135, cols))
+                solutions+=solve ( niv-1, dx, 
+                                diag45 | (1ull << (32+i-niv)), 
+                                diag135 | (1ull << (niv+i)), 
+                                cols | (1ull << i ));
+    }
+    else
+    {
+        for (int i=0; i<dx; i++)
+            solutions += test(0,i, diag45, diag135, cols);
+    }
+    return solutions;
+}
 
 
 uint64_t meta_solve( int dx, int rank, int size )
@@ -69,9 +70,8 @@ uint64_t meta_solve( int dx, int rank, int size )
 
     int fim = comeco + NUM_THREADS ;
 
-    if (fim > dx) {
+    if (fim > dx)
         fim = dx;
-    }
 
     #pragma omp parallel for reduction(+:solutions) schedule(guided) num_threads(NUM_THREADS)
     for (int i=comeco;i<fim;i++)
@@ -81,7 +81,7 @@ uint64_t meta_solve( int dx, int rank, int size )
                     (1ull << i )           // cols
                     );
     
-    std::cout << solutions << std::endl;
+    std::cout << "Rank " << rank << " found " << solutions << " solutions." << std::endl;
 
     return solutions;
 }
