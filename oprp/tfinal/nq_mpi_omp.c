@@ -1,3 +1,8 @@
+/*
+ * n-queens problem using only openmp
+ * idea/base code from: https://hbfs.wordpress.com/2012/03/27/openmp-and-the-n-queens-problem/
+ */
+
 #include <sys/time.h>
 #include <time.h>
 #include <stdint.h>
@@ -10,7 +15,6 @@
 #define NUM_THREADS 8
 
 ///////////////////////////////////////
-
 const int maxdim = 32;
 
 ///////////////////////////////////////
@@ -56,7 +60,7 @@ uint64_t solve( int niv, int dx,
     return solutions;
 }
 
-
+///////////////////////////////////////
 uint64_t meta_solve( int dx, int rank, int size )
 {
     uint64_t solutions=0;
