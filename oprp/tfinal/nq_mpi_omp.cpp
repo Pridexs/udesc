@@ -1,6 +1,8 @@
 /*
  * n-queens problem using only openmp
  * idea/base code from: https://hbfs.wordpress.com/2012/03/27/openmp-and-the-n-queens-problem/
+ * 
+ * mpiCC nq_mpi_omp.cpp -o nq
  */
 
 #include <sys/time.h>
