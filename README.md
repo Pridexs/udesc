@@ -13,6 +13,7 @@ This repository is mainly to hold day-to-day code and small projects for my clas
 | teg              | Graph Theory         | 2015/1       |
 | sdi              | Distributed Systems  | 2016/2       |
 | tec              | Theory of Computation| 2016/2       |
+| pim              | Image Processing     | 2017/1       |
 
 ---
 <sup>1</sup> Didn't think of a better translation.
