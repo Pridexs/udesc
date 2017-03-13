@@ -1,4 +1,4 @@
-# Very simple morphism/cross shading script.
+# Very simple morphism/cross fading script.
 # This one is slow and only for educational purposes.
 #
 # Alexandre Maros - 2017/1
