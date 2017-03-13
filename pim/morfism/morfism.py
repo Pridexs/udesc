@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+
+#
 # Very simple morphism/cross fading script.
 # This one is slow and only for educational purposes.
 #
