@@ -15,5 +15,6 @@ This repository is mainly to hold day-to-day code and small projects for my clas
 | tec              | Theory of Computation| 2016/2       |
 | pim              | Image Processing     | 2017/1       |
 
+
 ---
 <sup>1</sup> Didn't think of a better translation.
