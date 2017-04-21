@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,10 +30,10 @@ def histogramEqualization(img, hist):
         for j in range(0, i):
             new_hist[i] += int(g_f[j])
 
-    print("Antes de equalizar: ")
-    print(hist)
-    print("Depois de equalizar: ")
-    print(new_hist)
+    # print("Antes de equalizar: ")
+    # print(hist)
+    # print("Depois de equalizar: ")
+    # print(new_hist)
 
     return new_hist
 
@@ -46,7 +48,7 @@ img = Image.open(img_name)
 
 # Plottando o Histogram antes da Equalizacao
 plt.hist(np.asarray(img).ravel(), 255)
-plt.savefig('hist1.jpg')
+plt.savefig('hist_in.jpg')
 plt.clf()
 
 
@@ -66,3 +68,8 @@ for i in range(0, height):
 		out.putpixel((i,j), histogram_[pixel])
 
 out.save("out_teste.jpg", "JPEG")
+
+# Plottando o Histogram depois da Equalizacao
+plt.hist(np.asarray(out.convert("RGB")).ravel(), 255)
+plt.savefig('hist_out.jpg')
+plt.clf()
