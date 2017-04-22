@@ -27,3 +27,5 @@
 # sdi
 /sdi/trabfinal/BancoRmi/*
 /sdi/trabfinal/copiar.sh
+
+*.swp
