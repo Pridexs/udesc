@@ -11,7 +11,7 @@ def calculateHistogram(img):
     hist = [0] * 256
     data = list(img.getdata())
     for p in data:
-        hist[p[0]] += 1
+        hist[p] += 1
     return hist
 
 def histogramEqualization(img, hist):
@@ -21,14 +21,15 @@ def histogramEqualization(img, hist):
     g_f = [0] * 256
     #calcula ate o round(gk * num_tons_cinza)
     for i in range(0, len(hist)):
-        g_f[i] = ( hist[i] * (len(hist) - 1) ) / size
+        g_f[i] = float(hist[i] / size)
 
     new_hist = [0] * 256
     #calcula o valor do hist na enésima posição
     for i in range(0, len(hist)):
         #new_hist[i] = somatorio ate então
         for j in range(0, i):
-            new_hist[i] += int(g_f[j])
+            new_hist[i] += float(g_f[j])
+        new_hist[i] = int( (new_hist[i] * 255) + 0.5)
 
     # print("Antes de equalizar: ")
     # print(hist)
@@ -47,29 +48,27 @@ img_name = sys.argv[1]
 img = Image.open(img_name)
 
 # Plottando o Histogram antes da Equalizacao
-plt.hist(np.asarray(img).ravel(), 255)
+plt.hist(np.asarray(img.convert("L")).ravel(), 256,[0,256])
 plt.savefig('hist_in.jpg')
 plt.clf()
-
 
 img1 = Image.open(img_name).convert("L")
 height,width = img1.size
 out = Image.new(img1.mode, (height, width))
 
-
 # Obtendo o Histogram manualmente
-histogram = calculateHistogram(img)
+histogram = calculateHistogram(img1)
 # Equalizando o histograma
 histogram_ = histogramEqualization(img, histogram)
 
 for i in range(0, height):
-	for j in range(0, width):
-		pixel = img1.getpixel((i,j))
-		out.putpixel((i,j), histogram_[pixel])
+    for j in range(0, width):
+        pixel = img1.getpixel((i,j))
+        out.putpixel((i,j), histogram_[pixel])
 
 out.save("out_teste.jpg", "JPEG")
 
 # Plottando o Histogram depois da Equalizacao
-plt.hist(np.asarray(out.convert("RGB")).ravel(), 255)
+plt.hist(np.asarray(out).ravel(), 256, [0,256])
 plt.savefig('hist_out.jpg')
 plt.clf()
