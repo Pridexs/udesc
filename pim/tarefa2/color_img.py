@@ -30,15 +30,14 @@ M=np.reshape(M,(256,3))
 # M = plt.cm.get_cmap('Vega20c')
 
 # im = Image.open('mapaEUA.jpg')
-im = Image.open(nome_imagem)
+im = Image.open(nome_imagem).convert("L")
 
 out = Image.new("RGB", im.size)
 height,width = im.size
 
 for i in range(0,height):
-	for j in range(0, width):
-		pixel = M[im.getpixel((i,j))[0]]
-		out.putpixel((i,j),  (np.uint8(pixel[0]), np.uint8(pixel[1]),
-                        np.uint8(pixel[2]) ))
+    for j in range(0, width):
+        pixel = M[im.getpixel((i,j))]
+        out.putpixel((i,j),  (np.uint8(pixel[0]), np.uint8(pixel[1]), np.uint8(pixel[2]) ))
 
-out.save("out_" + nome_imagem, "JPEG")
+out.save("out.jpeg", "JPEG")
