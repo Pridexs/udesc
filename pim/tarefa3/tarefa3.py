@@ -1,5 +1,7 @@
 # Sobel edge detector with local maximum calculation
-# Code is very messy was just trying to understand the concept
+# Code is very messy, was just trying to understand the concept
+# Not optimized at allllll
+# Do not use thiss for serious stuffff
 
 import sys
 import numpy as np
@@ -8,8 +10,6 @@ import matplotlib as mpl
 from numpy.random import randn
 from PIL import Image
 import math
-
-np.set_printoptions(threshold=np.nan)
 
 # Median Filter
 # Its wrapping up borders, not extending them
@@ -32,14 +32,14 @@ def medianFilter(img):
                     ny = y + fy - edgey 
 
                     if ( nx < 0 ):
-                        nx = window_width - nx
-                    elif (nx >= window_width):
-                        nx = nx - window_width
+                        nx = width + nx
+                    elif (nx >= width):
+                        nx = nx - width
 
                     if ( ny < 0 ):
-                        ny = window_height - ny
-                    elif (ny >= window_height):
-                        ny = ny - window_height
+                        ny = height + ny
+                    elif (ny >= height):
+                        ny = ny - height
 
                     window[i] = img.getpixel( (nx, ny) )
                     i = i + 1
@@ -48,6 +48,109 @@ def medianFilter(img):
             newImg.putpixel((x,y), int(middle_value))
 
     return newImg
+
+
+def blurImg(img):
+    width, height = img.size
+    window_height = 5
+    window_width = 5
+
+    newImg = Image.new("L", img.size)
+
+    edgex = 2
+    edgey = 2
+
+    for x in range(0, width):
+        for y in range(0, height):
+            value = 0.0
+            for fx in range(0, window_width):
+                for fy in range(0, window_height):
+                    nx = x + fx - edgex
+                    ny = y + fy - edgey 
+
+                    if ( nx < 0 ):
+                        nx = width + nx
+                    elif (nx >= width):
+                        nx = nx - width
+
+                    if ( ny < 0 ):
+                        ny = height + ny
+                    elif (ny >= height):
+                        ny = ny - height
+
+                    # print(width, height, nx, ny)
+                    pixel = img.getpixel( (nx, ny) )
+                    value = value + pixel
+
+            value = np.clip( value / 25.0, 0, 255)
+            newImg.putpixel((x,y), int(value))
+
+    return newImg
+
+
+def highBoost(img, constant):
+    width, height = img.size
+
+    newImg = Image.new("L", img.size)
+    mask = Image.new("L", img.size)
+
+    blurredImg = blurImg(img)
+
+    d1 = np.array(img).astype("float64")
+    d2 = np.array(blurredImg).astype("float64")
+    d3 = np.zeros(d1.shape).astype("float64")
+
+    for x in range(0, width):
+        for y in range(0, height):
+            d3[y][x] = float(d1[y][x] - d2[y][x])
+
+    for x in range(0, width):
+        for y in range(0, height):
+            value = np.clip( d1[y][x] + d3[y][x] * constant, 0, 255)
+            newImg.putpixel((x,y), int(value))
+
+    return newImg
+
+# Wrong highBoost
+# def highBoost(img, constant):
+    # width, height = img.size
+    # window_height = 3
+    # window_width = 3
+
+    # newImg = Image.new("L", img.size)
+
+    # edgex = 1
+    # edgey = 1
+
+    # for x in range(0, width):
+        # for y in range(0, height):
+            # value = 0.0
+            # for fx in range(0, window_width):
+                # for fy in range(0, window_height):
+                    # nx = x + fx - edgex
+                    # ny = y + fy - edgey 
+
+                    # if ( nx < 0 ):
+                        # nx = width + nx
+                    # elif (nx >= width):
+                        # nx = nx - width
+
+                    # if ( ny < 0 ):
+                        # ny = height + ny
+                    # elif (ny >= height):
+                        # ny = ny - height
+
+                    # # print(width, height, nx, ny)
+                    # pixel = img.getpixel( (nx, ny) )
+                    # if (nx == x and ny == y):
+                        # value = value + ((constant * 9 - 1) * pixel)
+                    # else:
+                        # value = value - (pixel)
+
+            # value = np.clip( value / 9.0, 0, 255)
+            # newImg.putpixel((x,y), int(value))
+
+    # return newImg
 
 def pontosSemInterpolacao(S, i, j, angulo):
     ponto1 = 0
@@ -128,7 +231,7 @@ def gradMaximosLocais(S, G_x, G_y, img, interp=False):
     edgey = int(window_height / 2)
     for i in range(0+edgey, height-edgey):
         for j in range(0+edgex, width-edgex):
-            angulo = S[i][j]
+            angulo = np.arctan2( G_y[i][j], G_x[i][j] )
            
             if (not interp):
                 newImg.putpixel( (j,i), int(pontosSemInterpolacao(S, i, j, angulo)))
@@ -138,20 +241,21 @@ def gradMaximosLocais(S, G_x, G_y, img, interp=False):
     return newImg 
 
 # Verificando se os argumentos foram passados
-if ( len(sys.argv) != 2 ):
-    print("Usage: python colormap.py <nome_imagem>")
+if ( len(sys.argv) != 3 ):
+    print("Usage: python colormap.py <nome_imagem> <nome_output>")
 
 nome_imagem = sys.argv[1]
+nome_output = sys.argv[2]
 
 # Abrindo imagem e convertendo pra B&W de uma vez
 img = Image.open(nome_imagem).convert("L")
 width, height = img.size
 
 # Imagem com o filtro de mediana aplicado
-img_median = medianFilter(img)
+# img_median = medianFilter(img)
 
 # se quiser aplicar sobre filtro da mediana, descomente essa linha
-img = img_median
+# img = img_median
 
 arr = np.array(img)
 G_y, G_x = np.gradient(arr.astype('float64'))
@@ -168,6 +272,19 @@ for i in range(G_x.shape[1]):
     for j in range(G_x.shape[0]):
         newImg.putpixel( (i,j), int(S[j][i]) )
 
-newImg.save("out_magnitude.jpg", "JPEG")
+newImg.save(nome_output + "_edges_mag.jpg", "JPEG")
+highBoost(newImg, 0.5).save(nome_output + "_mag_0.5.jpg", "JPEG")
+highBoost(newImg, 1.0).save(nome_output + "_mag_1.0.jpg", "JPEG")
+highBoost(newImg, 1.5).save(nome_output + "_mag_1.5.jpg", "JPEG")
 
-gradMaximosLocais(S, G_x, G_y, img, interp=True).save("edges.jpg", "JPEG")
+gradImg = gradMaximosLocais(S, G_x, G_y, img, interp=False)
+gradImg.save(nome_output + "_grad.jpg", "JPEG")
+highBoost(gradImg, 0.5).save(nome_output + "_grad_0.5.jpg", "JPEG")
+highBoost(gradImg, 1.0).save(nome_output + "_grad_1.0.jpg", "JPEG")
+highBoost(gradImg, 1.5).save(nome_output + "_grad_1.5.jpg", "JPEG")
+
+gradImg = gradMaximosLocais(S, G_x, G_y, img, interp=True)
+gradImg.save(nome_output + "_grad_interp.jpg", "JPEG")
+highBoost(gradImg, 0.5).save(nome_output + "_grad_0.5_interp.jpg", "JPEG")
+highBoost(gradImg, 1.0).save(nome_output + "_grad_1.0_interp.jpg", "JPEG")
+highBoost(gradImg, 1.5).save(nome_output + "_grad_1.5_interp.jpg", "JPEG")
