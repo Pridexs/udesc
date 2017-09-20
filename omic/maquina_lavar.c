@@ -249,7 +249,16 @@ void TON(struct stTON *st){
 #define LED_ETAPA4_H        PIN_D0_H
 #define LED_ETAPA4_L        PIN_D0_L
 
+#define LED_MOTOR_ESQ_H     PIN_C1_H
+#define LED_MOTOR_ESQ_L     PIN_C1_L
+#define LED_MOTOR_DIR_H     PIN_C0_H
+#define LED_MOTOR_DIR_L     PIN_C0_L
+
 #define BOTAO_INICIA_H      (PINC & 0b00100000)
+
+#define SENSOR_NIVEL_AGUA1  (PINC & 0b00010000)
+#define SENSOR_NIVEL_AGUA2  (PINC & 0b00001000)
+#define SENSOR_NIVEL_AGUA3  (PINC & 0b00000100)
 /* FIM DEFINES BOTOES E LEDS */
 
 void controlar_nivel_agua(char *estado_nivel_agua, char *botao_nagua_released);
@@ -260,7 +269,7 @@ void controlar_enxague_extra(char *enxague_extra, char *botao_enxague_released);
 int main2(void)
 {
     DDRB = 0b11011101;
-    DDRC = 0b11011111;
+    DDRC = 0b11000011;
     DDRD = 0b10110111;
 
     st_TCY tcy1, tcy2;
@@ -378,7 +387,7 @@ int main2(void)
         _delay_ms(1);
         
     }
-    
+
     return 0;
 }
 
