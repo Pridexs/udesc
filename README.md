@@ -14,6 +14,7 @@ This repository is mainly to hold day-to-day code and small projects for my clas
 | sdi              | Distributed Systems  | 2016/2       |
 | tec              | Theory of Computation| 2016/2       |
 | pim              | Image Processing     | 2017/1       |
+| omic             | Microprocessors      | 2017/2       |
 
 
 ---

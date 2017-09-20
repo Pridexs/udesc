@@ -29,3 +29,9 @@
 /sdi/trabfinal/copiar.sh
 
 *.swp
+
+# omic
+/omic/tcy-ton/bin/Release/*
+!/omic/tcy-ton/bin/Release/.gitkeep
+/omic/tcy-ton/obj/Release/*
+!/omic/tcy-ton/obj/Release/.gitkeep
