@@ -218,113 +218,191 @@ void TON(struct stTON *st){
 
 
 
-/* BEGIN PROGRAMA */
+/* BEGIN PROGRAMA main.c */
 
+/* INICIO DEFINES BOTOES E LEDS */
+#define BOTAO_NIVEL_AGUA_H  (PINB & 0b00100000)
+#define LED_NIVEL_AGUA1_H   PIN_B4_H
+#define LED_NIVEL_AGUA1_L   PIN_B4_L
+#define LED_NIVEL_AGUA2_H   PIN_B3_H
+#define LED_NIVEL_AGUA2_L   PIN_B3_L
+#define LED_NIVEL_AGUA3_H   PIN_B2_H
+#define LED_NIVEL_AGUA3_L   PIN_B2_L
 
- /* INICIO CONTROLE NIVEL AGUA */
- #define BOTAO_NIVEL_AGUA_H (PINB & 0b00100000)
- 
- #define LED_NIVEL_AGUA1_H PIN_B4_H
- #define LED_NIVEL_AGUA1_L PIN_B4_L
- 
- #define LED_NIVEL_AGUA2_H PIN_B3_H
- #define LED_NIVEL_AGUA2_L PIN_B3_L
- 
- #define LED_NIVEL_AGUA3_H PIN_B2_H
- #define LED_NIVEL_AGUA3_L PIN_B2_L
- /* FIM CONTROLE NIVEL AGUA */
+#define BOTAO_PROGRAMA_H    (PINB & 0b00000010)
+#define LED_EXTRA_RAPIDO_H  PIN_B0_H 
+#define LED_EXTRA_RAPIDO_L  PIN_B0_L
+#define LED_PESADO_H        PIN_D7_H
+#define LED_PESADO_L        PIN_D7_L
 
+#define BOTAO_ENXAGUE_H     (PIND & 0b01000000)
+#define LED_ENXAGUE_H       PIN_D5_H
+#define LED_ENXAGUE_L       PIN_D5_L
+/* FIM DEFINES BOTOES E LEDS */
+
+void atualizar_led_nivel_agua(char *estado_nivel_agua);
+void atualizar_led_programa(char *estado_programa);
+void controlar_enxague_extra(char *enxague_extra, char *botao_enxague_released);
 
 int main2(void)
 {
-    /*  Maquina de estados principal
-        estado == 0 == 'desligado';
-        estado == 1 == configuracao;
-        estado == 2 == ?
-    */
-    char estado = 0;
-
-    /* Estados nivel agua 
-        estado_nivel_agua == 1 == nivel agua baixo;
-        estado_nivel_agua == 2 == nivel agua medio;
-        estado_nivel_agua == 3 == nivel agua alto;
-    */
-    char estado_nivel_agua = 1;
-
-    /* Estados programa
-        estado_programa == 1 == extra_rapido;
-        estado_programa == 2 == pesado;
-    */
-    char estado_programa = 1;
+    // Exemplo
+    //DDRD = 0b11111110;
+    /////             ^--- RX como entrada
+    DDRB = 0b11011101;
+    DDRC = 0b11111111;
+    DDRD = 0b10111111;
 
     st_TCY tcy1, tcy2;
     st_TON ton1, ton2;
 
-    DDRB = 0b11011111;
-    DDRC = 0b11111111;
-    DDRD = 0b11111111;
-
-    // Exemplo
-    //DDRD = 0b11111110;
-    /////             ^--- RX como entrada
-
+    /*  Maquina de estados principal
+    estado == 0 == 'desligado';
+    estado == 1 == configuracao;
+    estado == 2 == ?
+    */
+    char estado = 0;
+    
+    /* Estados nivel agua 
+    estado_nivel_agua == 1 == nivel agua baixo;
+    estado_nivel_agua == 2 == nivel agua medio;
+    estado_nivel_agua == 3 == nivel agua alto;
+    */
+    char estado_nivel_agua = 1;
+    // Variavel para controle
     char botao_nagua_released = 0;
+    
+    /* Estados programa
+    estado_programa == 1 == extra_rapido;
+    estado_programa == 2 == pesado;
+    */
+    char estado_programa = 1;
+    char botao_programa_released = 0;
 
+    /* Enxague extra
+    enxague_extra == 0 == sem enxague extra
+    enxague_extra == 1 == com exangue extra
+    */
+    char enxague_extra = 0;
+    char botao_enxague_released = 0;
+    
     while (1) {
         if (estado == 0) {
             LED_NIVEL_AGUA1_L;
             LED_NIVEL_AGUA2_L;
             LED_NIVEL_AGUA3_L;
+            LED_EXTRA_RAPIDO_L;
+            LED_ENXAGUE_L;
             // ... Apagar outras leds ainda nao configuradas
-
-            if (BOTAO_NIVEL_AGUA_H /* e outros botoes... */ ) {
+            
+            if (BOTAO_NIVEL_AGUA_H || BOTAO_PROGRAMA_H || BOTAO_ENXAGUE_H 
+                /* e outros botoes... */ ) {
                 estado = 1;
+
+                atualizar_led_nivel_agua(&estado_nivel_agua);
+                atualizar_led_programa(&estado_programa);
+                controlar_enxague_extra(&enxague_extra, &botao_enxague_released);
             }
-
-        // IF estado == 1 == configuracao
+            
+            // IF estado == 1 == configuracao
         } else if (estado == 1) {
-
+            
             /* BEGIN Controle Nivel Agua */
             if (BOTAO_NIVEL_AGUA_H && botao_nagua_released == 1) {
                 estado_nivel_agua++;
                 botao_nagua_released = 0;
-    
+                
                 if(estado_nivel_agua > 3) {
                     estado_nivel_agua = 1;
                 }
-
-                if (estado_nivel_agua == 1) {
-                    LED_NIVEL_AGUA1_H;
-                    LED_NIVEL_AGUA2_L;
-                    LED_NIVEL_AGUA3_L;
-                } else if (estado_nivel_agua == 2) {
-                    LED_NIVEL_AGUA1_L;
-                    LED_NIVEL_AGUA2_H;
-                    LED_NIVEL_AGUA3_L;
-                } else if (estado_nivel_agua == 3) {
-                    LED_NIVEL_AGUA1_L;
-                    LED_NIVEL_AGUA2_L;
-                    LED_NIVEL_AGUA3_H;
-                }
+                
+                atualizar_led_nivel_agua(&estado_nivel_agua);
             }
-    
+            
             if (!BOTAO_NIVEL_AGUA_H) {
                 botao_nagua_released = 1;
             }
             /* END Controle Nivel Agua */
 
+            /* BEGIN Controle Programa */
+            if (BOTAO_PROGRAMA_H && botao_programa_released == 1) {
+                estado_programa++;
+                botao_programa_released = 0;
+                
+                if(estado_programa > 2) {
+                    estado_programa = 1;
+                }
+                
+                atualizar_led_programa(&estado_programa);
+            }
+
+            if (!BOTAO_PROGRAMA_H) {
+                botao_programa_released = 1;
+            }
+            /* END Controle Programa */
+
+            // Como o enxague pode ser alterado no meio da lavagem achei mais
+            // interessante fazer uma funcao para controlar.
+            controlar_enxague_extra(&enxague_extra, &botao_enxague_released);
         }
         
     }
-
+    
     return 0;
 }
 
 void setup() {
-  main2();
+    main2();
 }
 
 void loop() {
-  
+    
 }
 
+void atualizar_led_nivel_agua(char *estado_nivel_agua) {
+    if (*estado_nivel_agua == 1) {
+        LED_NIVEL_AGUA1_H;
+        LED_NIVEL_AGUA2_L;
+        LED_NIVEL_AGUA3_L;
+    } else if (*estado_nivel_agua == 2) {
+        LED_NIVEL_AGUA1_L;
+        LED_NIVEL_AGUA2_H;
+        LED_NIVEL_AGUA3_L;
+    } else if (*estado_nivel_agua == 3) {
+        LED_NIVEL_AGUA1_L;
+        LED_NIVEL_AGUA2_L;
+        LED_NIVEL_AGUA3_H;
+    }
+}
+
+void atualizar_led_programa(char *estado_programa) {
+    if (*estado_programa == 1) {
+        LED_EXTRA_RAPIDO_H;
+        LED_PESADO_L;
+    } else if (*estado_programa == 2) {
+        LED_EXTRA_RAPIDO_L;
+        LED_PESADO_H;
+    }
+}
+
+void controlar_enxague_extra(char *enxague_extra, char *botao_enxague_released) {
+    
+    if (BOTAO_ENXAGUE_H && (*botao_enxague_released) == 1) {
+        (*enxague_extra)++;
+        *botao_enxague_released = 0;
+        
+        if(*enxague_extra > 1) {
+            *enxague_extra = 0;
+        }
+    }
+
+    if (!BOTAO_ENXAGUE_H) {
+        *botao_enxague_released = 1;
+    }
+
+    if (*enxague_extra == 0) {
+        LED_ENXAGUE_L;
+    } else if (*enxague_extra == 1) {
+        LED_ENXAGUE_H;
+    }
+}
