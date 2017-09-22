@@ -273,9 +273,14 @@ int main2(void)
     DDRC = 0b11000011;
     DDRD = 0b10110111;
 
-    st_TCY tcy1, tcy2;
+    // tcy1 = Controla os leds das estapas
+    // tcy2 = Controla o tempo do molho longo e fica piscando os leds referentes aos motores
+    // tcy3 = Controla o tempo para ficar lavando
+    st_TCY tcy1, tcy2, tcy3;
     st_TON ton1, ton2;
     TCY_init(&tcy1);
+    TCY_init(&tcy2);
+    TCY_init(&tcy3);
 
     /*  Maquina de estados principal
     estado == 0 == 'desligado';
@@ -410,16 +415,95 @@ int main2(void)
                 if (estado_individual < 1 || estado_individual > 4)
                     estado_individual = 2;
 
+                if (estado_individual == 2) {
+                    if ( !esta_cheio(estado_nivel_agua) ) {
+                        // Acende led azul (faltou portas) e fica enchendo
+                    } else {
+                        estado_individual = 3;
+                        TCY_init(&tcy2);
+                        TCY_init(&tcy3);
+                    }
+                } else if (estado_individual == 3) {
+                    tcy2.IN = 1;
+                    tcy2.PT = 500;
+                    TCY(&tcy2);
+                    if (tcy2.Q) LED_MOTOR_ESQ_H; else LED_MOTOR_ESQ_L;
+                    if (!tcy2.Q) LED_MOTOR_DIR_H; else LED_MOTOR_DIR_L;
+
+                    tcy3.IN = 1;
+                    tcy3.PT = 20000;
+                    TCY(&tcy3);
+                    if (tcy3.Q) {
+                        estado_individual = 4;
+                        TCY_init(&tcy3);
+                        LED_MOTOR_DIR_L;
+                        LED_MOTOR_ESQ_L;
+                    }
+                } else if (estado_individual == 4) {
+                    if ( esta_cheio(estado_nivel_agua) ) {
+                        // Acende led azul (faltou portas) e esvazia
+                    } else {
+                        estado_etapa = 2;
+                        estado_individual = 5;
+                    }
+                }
+
             // IF estado_etapa == 2 == Enxaguar
             // 5. Verifica se tem agua, se tem esvazia
             // 6. Enche de agua ate nivel especificado
             // 7. Fica alternando motor por 5 segundos
-            // 8. Esvazia
+            // 8. Esvazia (se tiver enxague extra, volte etapa 5)
             } else if (estado_etapa == 2) {
                 // Se o estado individual da lavagem não estar no range especifico
                 // Retorne para o inicio daquele estado.
                 if (estado_individual < 5 || estado_individual > 8)
                     estado_individual = 5;
+
+                if (estado_individual == 5) {
+                    if (esta_cheio(estado_nivel_agua)) {
+                        //Acende led Azul (faltou portas) e esvazia
+                    } else {
+                        estado_individual = 6;
+                    }
+                }
+                else if (estado_individual == 6) {
+                    if ( !esta_cheio(estado_nivel_agua) ) {
+                        // Acende led azul (faltou portas) e fica enchendo
+                    } else {
+                        estado_individual = 7;
+                        TCY_init(&tcy2);
+                        TCY_init(&tcy3);
+                    }
+                } else if (estado_individual == 7) {
+                    tcy2.IN = 1;
+                    tcy2.PT = 500;
+                    TCY(&tcy2);
+                    if (tcy2.Q) LED_MOTOR_ESQ_H; else LED_MOTOR_ESQ_L;
+                    if (!tcy2.Q) LED_MOTOR_DIR_H; else LED_MOTOR_DIR_L;
+
+                    tcy3.IN = 1;
+                    tcy3.PT = 5000;
+                    TCY(&tcy3);
+                    if (tcy3.Q) {
+                        estado_individual = 8;
+                        TCY_init(&tcy3);
+                        LED_MOTOR_DIR_L;
+                        LED_MOTOR_ESQ_L;
+                    }
+                } else if (estado_individual == 8) {
+                    if ( esta_cheio(estado_nivel_agua) ) {
+                        // Acende led azul (faltou portas) e esvazia
+                    } else {
+                        if (enxague_extra == 1) {
+                            estado_individual = 5;
+                            enxague_extra = 0;
+                            LED_ENXAGUE_L;
+                        } else {
+                            estado_etapa = 3;
+                            estado_individual = 9;
+                        }
+                    }
+                }
 
             // IF estado_etapa == 3 == Centrifugar
             // 9. Verifica se tem agua, se tiver esvazia
@@ -565,10 +649,12 @@ void controlar_etapas(char *estado_etapa, char *botao_etapas_released,
 }
 
 char esta_cheio(char estado_nivel_agua) {
-    if (estado_nivel_agua == 1 && SENSOR_NIVEL_AGUA1_H)
+    if (estado_nivel_agua == 1 && SENSOR_NIVEL_AGUA1_H && !SENSOR_NIVEL_AGUA2_H
+            && !SENSOR_NIVEL_AGUA3_H)
         return 1;
     
-    if (estado_nivel_agua == 2 && SENSOR_NIVEL_AGUA1_H && SENSOR_NIVEL_AGUA2_H)
+    if (estado_nivel_agua == 2 && SENSOR_NIVEL_AGUA1_H && SENSOR_NIVEL_AGUA2_H
+            && !SENSOR_NIVEL_AGUA3_H)
         return 1;
     
     if (estado_nivel_agua == 3 && SENSOR_NIVEL_AGUA1_H && SENSOR_NIVEL_AGUA2_H
