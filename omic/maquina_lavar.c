@@ -316,6 +316,13 @@ int main2(void)
     char estado_etapa = 0;
     char botao_etapas_released = 0;
     
+    /* Variavel para controle os estados individuais de cada etapa
+    0-1 para controlar os estados do molho longo
+    2-4 para controlar os estados da lavagem
+    5-8 para controlar os estados do enxague
+    9-10 para controlar os estados de centrifugar
+    */
+    char estado_individual = 0;
     
     while (1) {
 
@@ -335,6 +342,8 @@ int main2(void)
             LED_ETAPA2_L;
             LED_ETAPA3_L;
             LED_ETAPA4_L;
+            LED_MOTOR_ESQ_L;
+            LED_MOTOR_DIR_L;
             
             // Se algum botao pressionar, passa para o proximo estado
             if (BOTAO_NIVEL_AGUA_H || BOTAO_PROGRAMA_H || BOTAO_ENXAGUE_H ||
@@ -363,13 +372,44 @@ int main2(void)
         // IF estado == 2 == Lavando
         } else if (estado == 2) {
             
+            // IF estado_etapa == 0 == molho longo
+            // 0. Verifica se tem agua, se nao enche ate nivel especificado
+            // 1. Espera 10 segundos
             if (estado_etapa == 0) {
+                // Se o estado individual da lavagem não estar no range especifico
+                // Retorne para o inicio daquele estado.
+                if (estado_individual > 1)
+                    estado_individual = 0;
 
+            // IF estado_etapa == 1 == lavar
+            // 2. Verifica se tem agua, se nao enche
+            // 3. Fica alternando motor por 20 segundos
+            // 4. Esvazia
             } else if (estado_etapa == 1) {
+                // Se o estado individual da lavagem não estar no range especifico
+                // Retorne para o inicio daquele estado.
+                if (estado_individual < 1 || estado_individual > 4)
+                    estado_individual = 2;
 
+            // IF estado_etapa == 2 == Enxaguar
+            // 5. Verifica se tem agua, se tem esvazia
+            // 6. Enche de agua ate nivel especificado
+            // 7. Fica alternando motor por 5 segundos
+            // 8. Esvazia
+            } else if (estado_etapa == 2) {
+                // Se o estado individual da lavagem não estar no range especifico
+                // Retorne para o inicio daquele estado.
+                if (estado_individual < 5 || estado_individual > 8)
+                    estado_individual = 5;
+
+            // IF estado_etapa == 3 == Centrifugar
+            // 9. Verifica se tem agua, se tiver esvazia
+            // 10. Fica girando motor para um sentido por 20s
             } else if (estado_etapa == 3) {
-
-            } else if (estado_etapa == 4) {
+                // Se o estado individual da lavagem não estar no range especifico
+                // Retorne para o inicio daquele estado.
+                if (estado_individual < 9 || estado_individual > 10)
+                    estado_individual = 9;
 
             }
 
