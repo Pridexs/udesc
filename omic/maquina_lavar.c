@@ -256,15 +256,16 @@ void TON(struct stTON *st){
 
 #define BOTAO_INICIA_H      (PINC & 0b00100000)
 
-#define SENSOR_NIVEL_AGUA1  (PINC & 0b00010000)
-#define SENSOR_NIVEL_AGUA2  (PINC & 0b00001000)
-#define SENSOR_NIVEL_AGUA3  (PINC & 0b00000100)
+#define SENSOR_NIVEL_AGUA1_H  (PINC & 0b00010000)
+#define SENSOR_NIVEL_AGUA2_H  (PINC & 0b00001000)
+#define SENSOR_NIVEL_AGUA3_H  (PINC & 0b00000100)
 /* FIM DEFINES BOTOES E LEDS */
 
 void controlar_nivel_agua(char *estado_nivel_agua, char *botao_nagua_released);
 void controlar_programa(char *estado_programa, char *botao_programa_released);
-void controlar_etapas(char *estado_etapa, char *botao_etapas_released, struct stTCY *st);
+void controlar_etapas(char *estado_etapa, char *botao_etapas_released, char *estado, struct stTCY *st);
 void controlar_enxague_extra(char *enxague_extra, char *botao_enxague_released);
+char esta_cheio(char estado_nivel_agua);
 
 int main2(void)
 {
@@ -360,7 +361,7 @@ int main2(void)
             controlar_nivel_agua(&estado_nivel_agua, &botao_nagua_released);
             controlar_programa(&estado_programa, &botao_programa_released);
             controlar_enxague_extra(&enxague_extra, &botao_enxague_released);
-            controlar_etapas(&estado_etapa, &botao_etapas_released, &tcy1);
+            controlar_etapas(&estado_etapa, &botao_etapas_released, &estado, &tcy1);
 
             if (BOTAO_INICIA_H && botao_inicia_released == 1)  {
                 estado = 2;
@@ -380,6 +381,24 @@ int main2(void)
                 // Retorne para o inicio daquele estado.
                 if (estado_individual > 1)
                     estado_individual = 0;
+                
+                if (estado_individual == 0) {
+                    if ( !esta_cheio(estado_nivel_agua) ) {
+                        // Acende led azul (faltou portas) e fica enchendo
+                    } else {
+                        estado_individual = 1;
+                        TCY_init(&tcy2);
+                    }
+                } else if (estado_individual == 1) {
+                    tcy2.IN = 1;
+                    tcy2.PT = 10000;
+                    TCY(&tcy2);
+
+                    if (tcy2.Q == 1) {
+                        estado_etapa = 1;
+                        estado_individual = 2;
+                    }
+                }
 
             // IF estado_etapa == 1 == lavar
             // 2. Verifica se tem agua, se nao enche
@@ -414,7 +433,7 @@ int main2(void)
             }
 
             controlar_enxague_extra(&enxague_extra, &botao_enxague_released);
-            controlar_etapas(&estado_etapa, &botao_etapas_released, &tcy1);
+            controlar_etapas(&estado_etapa, &botao_etapas_released, &estado, &tcy1);
 
             if (BOTAO_INICIA_H && botao_inicia_released == 1)  {
                 estado = 0;
@@ -508,7 +527,8 @@ void controlar_enxague_extra(char *enxague_extra, char *botao_enxague_released) 
     }
 }
 
-void controlar_etapas(char *estado_etapa, char *botao_etapas_released, struct stTCY *st) {
+void controlar_etapas(char *estado_etapa, char *botao_etapas_released, 
+                        char *estado, struct stTCY *st) {
     if (BOTAO_ETAPAS_H && (*botao_etapas_released) == 1) {
         (*estado_etapa)++;
         *botao_etapas_released = 0;
@@ -521,25 +541,39 @@ void controlar_etapas(char *estado_etapa, char *botao_etapas_released, struct st
     }
 
     if (*estado_etapa == 0) {
-        if (st->Q) LED_ETAPA1_H; else LED_ETAPA1_L;
+        if (*estado == 1 || st->Q) LED_ETAPA1_H; else LED_ETAPA1_L;
         LED_ETAPA2_H;
         LED_ETAPA3_H;
         LED_ETAPA4_H;
     } else if (*estado_etapa == 1) {
         LED_ETAPA1_L;
-        if (st->Q) LED_ETAPA2_H; else LED_ETAPA2_L;
+        if (st->Q || *estado == 1) LED_ETAPA2_H; else LED_ETAPA2_L;
         LED_ETAPA3_H;
         LED_ETAPA4_H;
     } else if (*estado_etapa == 2) {
         LED_ETAPA1_L;
         LED_ETAPA2_L;
-        if (st->Q) LED_ETAPA3_H; else LED_ETAPA3_L;
+        if (st->Q || *estado == 1) LED_ETAPA3_H; else LED_ETAPA3_L;
         LED_ETAPA4_H;
     } else if (*estado_etapa == 3) {
         LED_ETAPA1_L;
         LED_ETAPA2_L;
         LED_ETAPA3_L;
-        if (st->Q) LED_ETAPA4_H; else LED_ETAPA4_L;
+        if (st->Q || *estado == 1) LED_ETAPA4_H; else LED_ETAPA4_L;
     }
 
+}
+
+char esta_cheio(char estado_nivel_agua) {
+    if (estado_nivel_agua == 1 && SENSOR_NIVEL_AGUA1_H)
+        return 1;
+    
+    if (estado_nivel_agua == 2 && SENSOR_NIVEL_AGUA1_H && SENSOR_NIVEL_AGUA2_H)
+        return 1;
+    
+    if (estado_nivel_agua == 3 && SENSOR_NIVEL_AGUA1_H && SENSOR_NIVEL_AGUA2_H
+            && SENSOR_NIVEL_AGUA3_H)
+        return 1;
+    
+    return 0;
 }
