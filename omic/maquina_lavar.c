@@ -262,10 +262,14 @@ void TON(struct stTON *st){
 /* FIM DEFINES BOTOES E LEDS */
 
 void controlar_nivel_agua(char *estado_nivel_agua, char *botao_nagua_released);
-void controlar_programa(char *estado_programa, char *botao_programa_released);
+void controlar_programa(char *estado_programa, char *botao_programa_released,
+                        int *tempo_molho_longo, int *tempo_lavar,
+                        int *tempo_centrifugar);
 void controlar_etapas(char *estado_etapa, char *botao_etapas_released, char *estado, struct stTCY *st);
 void controlar_enxague_extra(char *enxague_extra, char *botao_enxague_released);
+
 char esta_cheio(char estado_nivel_agua);
+char esta_vazio(char estado_nivel_agua);
 
 int main2(void)
 {
@@ -329,6 +333,10 @@ int main2(void)
     9-10 para controlar os estados de centrifugar
     */
     char estado_individual = 0;
+
+    int tempo_molho_longo   = 10000;
+    int tempo_lavar         = 12000;
+    int tempo_centrifugar   = 5000;
     
     while (1) {
 
@@ -364,7 +372,8 @@ int main2(void)
         } else if (estado == 1) {
             
             controlar_nivel_agua(&estado_nivel_agua, &botao_nagua_released);
-            controlar_programa(&estado_programa, &botao_programa_released);
+            controlar_programa(&estado_programa, &botao_programa_released,
+                                &tempo_molho_longo, &tempo_lavar, &tempo_centrifugar);
             controlar_enxague_extra(&enxague_extra, &botao_enxague_released);
             controlar_etapas(&estado_etapa, &botao_etapas_released, &estado, &tcy1);
 
@@ -380,7 +389,7 @@ int main2(void)
             
             // IF estado_etapa == 0 == molho longo
             // 0. Verifica se tem agua, se nao enche ate nivel especificado
-            // 1. Espera 10 segundos
+            // 1. Espera tempo_molho_longo millisegundos
             if (estado_etapa == 0) {
                 // Se o estado individual da lavagem não estar no range especifico
                 // Retorne para o inicio daquele estado.
@@ -388,7 +397,7 @@ int main2(void)
                     estado_individual = 0;
                 
                 if (estado_individual == 0) {
-                    if ( !esta_cheio(estado_nivel_agua) ) {
+                    if ( esta_vazio(estado_nivel_agua) ) {
                         // Acende led azul (faltou portas) e fica enchendo
                     } else {
                         estado_individual = 1;
@@ -396,7 +405,7 @@ int main2(void)
                     }
                 } else if (estado_individual == 1) {
                     tcy2.IN = 1;
-                    tcy2.PT = 10000;
+                    tcy2.PT = tempo_molho_longo;
                     TCY(&tcy2);
 
                     if (tcy2.Q == 1) {
@@ -407,7 +416,7 @@ int main2(void)
 
             // IF estado_etapa == 1 == lavar
             // 2. Verifica se tem agua, se nao enche
-            // 3. Fica alternando motor por 20 segundos
+            // 3. Fica alternando motor por tempo_lavar ms
             // 4. Esvazia
             } else if (estado_etapa == 1) {
                 // Se o estado individual da lavagem não estar no range especifico
@@ -416,7 +425,7 @@ int main2(void)
                     estado_individual = 2;
 
                 if (estado_individual == 2) {
-                    if ( !esta_cheio(estado_nivel_agua) ) {
+                    if ( esta_vazio(estado_nivel_agua) ) {
                         // Acende led azul (faltou portas) e fica enchendo
                     } else {
                         estado_individual = 3;
@@ -431,7 +440,7 @@ int main2(void)
                     if (!tcy2.Q) LED_MOTOR_DIR_H; else LED_MOTOR_DIR_L;
 
                     tcy3.IN = 1;
-                    tcy3.PT = 20000;
+                    tcy3.PT = tempo_lavar;
                     TCY(&tcy3);
                     if (tcy3.Q) {
                         estado_individual = 4;
@@ -467,7 +476,7 @@ int main2(void)
                     }
                 }
                 else if (estado_individual == 6) {
-                    if ( !esta_cheio(estado_nivel_agua) ) {
+                    if ( esta_vazio(estado_nivel_agua) ) {
                         // Acende led azul (faltou portas) e fica enchendo
                     } else {
                         estado_individual = 7;
@@ -507,13 +516,34 @@ int main2(void)
 
             // IF estado_etapa == 3 == Centrifugar
             // 9. Verifica se tem agua, se tiver esvazia
-            // 10. Fica girando motor para um sentido por 20s
+            // 10. Fica girando motor para um sentido por tempo_centrifugar ms
             } else if (estado_etapa == 3) {
                 // Se o estado individual da lavagem não estar no range especifico
                 // Retorne para o inicio daquele estado.
                 if (estado_individual < 9 || estado_individual > 10)
                     estado_individual = 9;
 
+                if (estado_individual == 9) {
+                    if (esta_cheio(estado_nivel_agua)) {
+                        // Acende led azul (faltou portas) e esvazia
+                    } else {
+                        estado_individual = 10;
+                        TCY_init(&tcy3);
+                        LED_MOTOR_DIR_H;
+                        LED_MOTOR_ESQ_L;
+                    }
+                } else if (estado_individual == 10) {
+                    tcy3.IN = 1;
+                    tcy3.PT = tempo_centrifugar;
+                    TCY(&tcy3);
+                    if (tcy3.Q) {
+                        LED_MOTOR_DIR_L;
+                        LED_MOTOR_ESQ_L;
+                        TCY_init(&tcy3);
+                        estado_etapa = 0;
+                        estado = 1;
+                    }
+                }
             }
 
             controlar_enxague_extra(&enxague_extra, &botao_enxague_released);
@@ -570,7 +600,9 @@ void controlar_nivel_agua(char *estado_nivel_agua, char *botao_nagua_released) {
     }
 }
 
-void controlar_programa(char *estado_programa, char *botao_programa_released) {
+void controlar_programa(char *estado_programa, char *botao_programa_released,
+                        int *tempo_molho_longo, int *tempo_lavar,
+                        int *tempo_centrifugar) {
     if (BOTAO_PROGRAMA_H && *botao_programa_released == 1) {
         (*estado_programa)++;
         *botao_programa_released = 0;
@@ -586,9 +618,15 @@ void controlar_programa(char *estado_programa, char *botao_programa_released) {
     if (*estado_programa == 1) {
         LED_EXTRA_RAPIDO_H;
         LED_PESADO_L;
+        *tempo_molho_longo   = 10000;
+        *tempo_lavar         = 12000;
+        *tempo_centrifugar   = 5000;
     } else if (*estado_programa == 2) {
         LED_EXTRA_RAPIDO_L;
         LED_PESADO_H;
+        *tempo_molho_longo   = 15000;
+        *tempo_lavar         = 15000;
+        *tempo_centrifugar   = 8000;
     }
 }
 
@@ -659,6 +697,13 @@ char esta_cheio(char estado_nivel_agua) {
     
     if (estado_nivel_agua == 3 && SENSOR_NIVEL_AGUA1_H && SENSOR_NIVEL_AGUA2_H
             && SENSOR_NIVEL_AGUA3_H)
+        return 1;
+    
+    return 0;
+}
+
+char esta_vazio(char estado_nivel_agua) {
+    if (!SENSOR_NIVEL_AGUA1_H && !SENSOR_NIVEL_AGUA2_H && !SENSOR_NIVEL_AGUA3_H)
         return 1;
     
     return 0;
