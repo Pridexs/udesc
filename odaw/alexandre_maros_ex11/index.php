@@ -10,9 +10,6 @@
         exit();
     }
 
-    $query = "SELECT * FROM usuario";
-    $results = mysqli_query($link, $query);
-
     $formulario_cadastro = false;
     $cadastro_ok         = false;
 
@@ -23,16 +20,52 @@
         $senha        = $_POST['senha'];
         $descricao    = $_POST['descricao'];
         $idade        = $_POST['idade'];
+        $newsletter   = (int) $_POST['newsletter'];
         $temBicicleta = isset($_POST['bicicleta']);
         $temCarro     = isset($_POST['carro']);
 
-        if ($email != "" && $senha != "") {
+        // Verificar se ja existe um cadastro com esse email
+        $stmt = mysqli_prepare($link, "SELECT * FROM usuario WHERE email = (?)");
+        mysqli_stmt_bind_param($stmt, "s", $email);
+        mysqli_stmt_execute($stmt);
+        mysqli_stmt_store_result($stmt);
+        mysqli_stmt_close($stmt);
 
-        } else {
-            // preencha pelo menos senha e email...
+        if (mysqli_stmt_num_rows($stmt) == 0) {
+            if ($email != "" && $senha != "") {
+
+                $stmt = mysqli_prepare($link, "INSERT INTO usuario(email, senha, descricao, idade, receber_emails) VALUES (?, ?, ?, ?, ?)");
+                mysqli_stmt_bind_param($stmt, "ssssi", $email, $senha, $descricao, $idade, $newsletter);
+                mysqli_stmt_execute($stmt);
+                mysqli_stmt_close($stmt);
+                
+                if ($temBicicleta) {
+                    $veic = 'b';
+                    $stmt = mysqli_prepare($link, "INSERT INTO veiculos (email_usuario, tipo_veiculo) VALUES (?, ?)");
+                    mysqli_stmt_bind_param($stmt, "ss", $email, $veic);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                }
+                
+                if ($temCarro) {
+                    $veic = 'c';
+                    $stmt = mysqli_prepare($link, "INSERT INTO veiculos (email_usuario, tipo_veiculo) VALUES (?, ?)");
+                    mysqli_stmt_bind_param($stmt, "ss", $email, $veic);
+                    mysqli_stmt_execute($stmt);
+                    mysqli_stmt_close($stmt);
+                }
+
+                $cadastro_ok = true;
+
+            } else {
+                // preencha pelo menos senha e email...
+            }
+
         }
-
     }
+
+    $query = "SELECT * FROM usuario";
+    $r_usuarios = mysqli_query($link, $query);
 ?>
 
 <html>
@@ -63,6 +96,10 @@
 
         <p>Exercício de PHP</p>
 
+        <?php if($formulario_cadastro && $cadastro_ok == false): ?>
+            <p style="color:red;">Email ja cadastrado ou email e senha não preenchidos.</p>
+        <?php endif ?>
+
     </section>
 
 
@@ -91,8 +128,8 @@
 
                 <label for="newsletter">Deseja receber nossos emails?</label>
                 <select name="newsletter">
-                    <option value="sim">Sim</option>
-                    <option value="nao">Não</option>
+                    <option value="1">Sim</option>
+                    <option value="0">Não</option>
                 </select>
 
                 <label for="subject">Descrição</label>
@@ -106,25 +143,50 @@
     </section>
 
     <section id="contato">
-        <h1>Visualziar dados ja inseridos</h1>
+        <h1>Visualizar dados ja inseridos</h1>
         <hr>
-
+    </section>
+    
+    <section id="dados">
         <table style="width:100%">
             <tr>
                 <th>email</th>
                 <th>senha</th>
                 <th>idade</th>
                 <th>recebe emails?</th>
-                <!--<th>veiculos</th>-->
+                <th>veiculos</th>
                 <th>descricao</th>
+                <th>Editar</th>
+                <th>Deletar</th>
             </tr>
-            <?php while($r = mysqli_fetch_row($r_usuarios)): ?>
+            <?php while($r = mysqli_fetch_array($r_usuarios)): ?>
+            <?php 
+                $query = "SELECT * FROM veiculos WHERE email_usuario = '" . $r['email'] . "'";
+                $r_veiculos = mysqli_query($link, $query);
+            ?>
             <tr>
-                <td><?php echo $r[1];?></td>
-                <td><?php echo $r[2];?></td>
-                <td><?php echo $r[3];?></td>
-                <td><?php echo $r[4];?></td>
-                <td><?php echo $r[5];?></td>
+                <td><?php echo $r['email'];?></td>
+                <td><?php echo $r['senha'];?></td>
+                <td><?php echo $r['idade'];?></td>
+                <td><?php if($r['receber_emails']) echo("Sim"); else echo("Não"); ?></td>
+                <td>
+                    <ul>
+                    <?php while($r2 = mysqli_fetch_array($r_veiculos)): ?>
+                        <?php if ($r2['tipo_veiculo'] == 'c'): ?>
+                            <li>Carro</li>
+                        <?php elseif ($r2['tipo_veiculo'] == 'b'): ?>
+                            <li>Biciclieta</li>
+                        <?php endif; ?>
+                    <?php endwhile; ?>
+                    </ul>
+                </td>
+                <td><?php echo $r['descricao'];?></td>
+                <td>
+                    <a style="color:blue;" href="editar.php?email=<?php echo $r['email'];?>">Editar</a>
+                </td>
+                <td>
+                    <a style="color:blue;" href="deletar.php?email=<?php echo $r['email'];?>">Deletar</a>
+                </td>
             </tr>
             <?php endwhile; ?>
         </table>
