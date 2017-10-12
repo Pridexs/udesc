@@ -29,9 +29,10 @@
         mysqli_stmt_bind_param($stmt, "s", $email);
         mysqli_stmt_execute($stmt);
         mysqli_stmt_store_result($stmt);
+        $qtd_rows = mysqli_stmt_num_rows($stmt);
         mysqli_stmt_close($stmt);
 
-        if (mysqli_stmt_num_rows($stmt) == 0) {
+        if ($qtd_rows == 0) {
             if ($email != "" && $senha != "") {
 
                 $stmt = mysqli_prepare($link, "INSERT INTO usuario(email, senha, descricao, idade, receber_emails) VALUES (?, ?, ?, ?, ?)");
@@ -135,7 +136,7 @@
                 <label for="subject">Descrição</label>
                 <textarea id="subject" name="descricao" placeholder="Escreva algo.." style="height:200px"></textarea>
 
-                <input type="submit" name="form_cadastro" value="Enviar para o servidor">
+                <input type="submit" name="form_cadastro" value="Cadastrar">
                 <input type="reset" value="Resetar">
 
             </form>
