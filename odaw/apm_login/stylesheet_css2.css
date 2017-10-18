@@ -1,0 +1,68 @@
+body {
+  font-family: monospace;
+  font-size: 13pt;
+}
+
+#menu li {
+    display:inline;
+    margin: 0px 5px 0px 0px;
+    height: 40px;
+    width: 100px;
+    background-color: black;
+    position: relative;
+    border: 2px solid black;
+    border-radius: 5px;
+}
+
+#sobre {
+    width: 40%;
+    margin: 30px auto 0 auto;
+}
+
+#artigo {
+    margin-left: 5%;
+    text-align: justify;
+    font-weight: bold;
+}
+
+#contato {
+    width: 40%;
+    margin: 50px auto 0 auto;
+}
+
+input[type=text], input[type=password], select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    resize: vertical;
+}
+
+h1 {
+  color: #0087cd;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+#tabela_fatorial table {
+  border-collapse: collapse;
+}
+
+#tabela_fatorial table, th, td {
+   border: 1px solid black;
+   font-size:15pt;
+}
+
+#tabela_fatorial th {
+  color: #0087cd;
+}
