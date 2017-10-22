@@ -448,7 +448,7 @@ int main2(void)
                         LED_MOTOR_ESQ_L;
                     }
                 } else if (estado_individual == 4) {
-                    if ( esta_cheio(estado_nivel_agua) ) {
+                    if ( !esta_vazio(estado_nivel_agua) ) {
                         // Acende led azul (faltou portas) e esvazia
                     } else {
                         estado_etapa = 2;
@@ -500,7 +500,7 @@ int main2(void)
                         LED_MOTOR_ESQ_L;
                     }
                 } else if (estado_individual == 8) {
-                    if ( esta_vazio(estado_nivel_agua) ) {
+                    if ( !esta_vazio(estado_nivel_agua) ) {
                         // Acende led azul (faltou portas) e esvazia
                     } else {
                         if (enxague_extra == 1) {
@@ -568,6 +568,7 @@ int main2(void)
 }
 
 void setup() {
+    Serial.begin(9600);
     main2();
 }
 
