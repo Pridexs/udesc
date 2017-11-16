@@ -1,5 +1,4 @@
-//Programa : Controle 2 motores DC usando Ponte H L298N
-//Autor : FILIPEFLOP
+#include <SoftwareSerial.h>
 
 //Definicoes pinos Arduino ligados a entrada da Ponte H
 int IN1 = 4;
@@ -31,9 +30,14 @@ int IN8 = 11;
 #define motor4_frente   digitalWrite(IN7, LOW); digitalWrite(IN8, HIGH);
 #define motor4_morto    digitalWrite(IN7, LOW); digitalWrite(IN8, LOW);
 
+SoftwareSerial mySerial(0, 1);
+String command = "";
+
 void setup()
 {
     Serial.begin(9600);
+    mySerial.begin(9600);
+    
     //Define os pinos como saida
     pinMode(IN1, OUTPUT);
     pinMode(IN2, OUTPUT);
@@ -47,42 +51,50 @@ void setup()
 
 void loop()
 {
-    motor1_frente;
-    delay(1000);
-    motor1_tras;
-    delay(1000);
-    motor1_morto;
-
-    motor2_frente;
-    delay(1000);
-    motor2_tras;
-    delay(1000);
-    motor2_morto;
-
-    motor3_frente;
-    delay(1000);
-    motor3_tras;
-    delay(1000);
-    motor3_morto;
-
-    motor4_frente;
-    delay(1000);
-    motor4_tras;
-    delay(1000);
-    motor4_morto;
-
-    motor1_frente;
-    motor2_frente;
-    delay(1000);
-
-    motor3_frente;
-    motor4_frente;
-    delay(1000);
-
-    motor1_morto;
-    motor2_morto;
-    motor3_morto;
-    motor4_morto;
+      if (mySerial.available()) {
+          while(mySerial.available()) { // While there is more to be read, keep reading.
+              command += (char)mySerial.read();
+          }
+          
+          Serial.println(command);
+          command = ""; // No repeats
+      }
+//    motor1_frente;
+//    delay(1000);
+//    motor1_tras;
+//    delay(1000);
+//    motor1_morto;
+//
+//    motor2_frente;
+//    delay(1000);
+//    motor2_tras;
+//    delay(1000);
+//    motor2_morto;
+//
+//    motor3_frente;
+//    delay(1000);
+//    motor3_tras;
+//    delay(1000);
+//    motor3_morto;
+//
+//    motor4_frente;
+//    delay(1000);
+//    motor4_tras;
+//    delay(1000);
+//    motor4_morto;
+//
+//    motor1_frente;
+//    motor2_frente;
+//    delay(1000);
+//
+//    motor3_frente;
+//    motor4_frente;
+//    delay(1000);
+//
+//    motor1_morto;
+//    motor2_morto;
+//    motor3_morto;
+//    motor4_morto;
 
 }
 
