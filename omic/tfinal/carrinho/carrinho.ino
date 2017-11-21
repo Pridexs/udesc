@@ -20,9 +20,9 @@ int IN8 = 11;
 #define motor2_tras     digitalWrite(IN3, LOW); digitalWrite(IN4, HIGH);
 #define motor2_morto    digitalWrite(IN3, LOW); digitalWrite(IN4, LOW);
 
-#define motor3_tras     digitalWrite(IN5, HIGH); digitalWrite(IN6, LOW);
+#define motor3_frente     digitalWrite(IN5, HIGH); digitalWrite(IN6, LOW);
 #define motor3_parar    digitalWrite(IN5, HIGH); digitalWrite(IN6, HIGH);
-#define motor3_frente   digitalWrite(IN5, LOW); digitalWrite(IN6, HIGH);
+#define motor3_tras   digitalWrite(IN5, LOW); digitalWrite(IN6, HIGH);
 #define motor3_morto    digitalWrite(IN5, LOW); digitalWrite(IN6, LOW);
 
 #define motor4_tras     digitalWrite(IN7, HIGH); digitalWrite(IN8, LOW);
@@ -30,7 +30,7 @@ int IN8 = 11;
 #define motor4_frente   digitalWrite(IN7, LOW); digitalWrite(IN8, HIGH);
 #define motor4_morto    digitalWrite(IN7, LOW); digitalWrite(IN8, LOW);
 
-SoftwareSerial mySerial(0, 1);
+SoftwareSerial mySerial(2, 3);
 String command = "";
 
 void setup()
@@ -51,53 +51,48 @@ void setup()
 
 void loop()
 {
-      if (mySerial.available()) {
-          while(mySerial.available()) { // While there is more to be read, keep reading.
-              command += (char)mySerial.read();
-          }
-          
-          Serial.println(command);
-          command = ""; // No repeats
-      }
-//    motor1_frente;
-//    delay(1000);
-//    motor1_tras;
-//    delay(1000);
-//    motor1_morto;
-//
-//    motor2_frente;
-//    delay(1000);
-//    motor2_tras;
-//    delay(1000);
-//    motor2_morto;
-//
-//    motor3_frente;
-//    delay(1000);
-//    motor3_tras;
-//    delay(1000);
-//    motor3_morto;
-//
-//    motor4_frente;
-//    delay(1000);
-//    motor4_tras;
-//    delay(1000);
-//    motor4_morto;
-//
-//    motor1_frente;
-//    motor2_frente;
-//    delay(1000);
-//
-//    motor3_frente;
-//    motor4_frente;
-//    delay(1000);
-//
-//    motor1_morto;
-//    motor2_morto;
-//    motor3_morto;
-//    motor4_morto;
+    if (mySerial.available()) {
+        command = (char) mySerial.read();
+        Serial.println(command);
+        
+        if (command == "S")
+        {
+            motor1_morto;
+            motor2_morto;
+            motor3_morto;
+            motor4_morto;
+        }
+        else if (command == "F")
+        {
+            motor1_frente;
+            motor2_frente;
+            motor3_morto;
+            motor4_morto;
+        } else if (command == "B")
+        {
+            motor1_morto;
+            motor2_morto;
+            motor3_tras;
+            motor4_tras;
+        } else if (command == "R")
+        {
+            motor2_frente;
+            motor3_frente;
+            motor1_morto;
+            motor4_morto;
+        } else if (command = "L")
+        {
+            motor1_frente;
+            motor4_frente;
+            motor2_morto;
+            motor3_morto;
+        } else {
+            motor1_morto;
+            motor2_morto;
+            motor3_morto;
+            motor4_morto;
+        }
 
+        command = "";
+    }
 }
-
-
-
-
