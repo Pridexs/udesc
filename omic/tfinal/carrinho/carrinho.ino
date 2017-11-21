@@ -30,13 +30,13 @@ int IN8 = 11;
 #define motor4_frente   digitalWrite(IN7, LOW); digitalWrite(IN8, HIGH);
 #define motor4_morto    digitalWrite(IN7, LOW); digitalWrite(IN8, LOW);
 
-SoftwareSerial mySerial(2, 3);
+SoftwareSerial BTSerial(2, 3);
 String command = "";
 
 void setup()
 {
     Serial.begin(9600);
-    mySerial.begin(9600);
+    BTSerial.begin(9600);
     
     //Define os pinos como saida
     pinMode(IN1, OUTPUT);
@@ -51,9 +51,8 @@ void setup()
 
 void loop()
 {
-    if (mySerial.available()) {
-        command = (char) mySerial.read();
-        Serial.println(command);
+    if (BTSerial.available()) {
+        command = (char) BTSerial.read();
         
         if (command == "S")
         {
