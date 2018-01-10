@@ -1,6 +1,8 @@
 # udesc
 This repository is mainly to hold day-to-day code and small projects for my classes at UDESC. Nothing of much relevance.
 
+Por favor, não copie nenhum trabalho. Esses arquivos estão aqui somente para consulta/idéias/qualquer coisa do genero.
+
 # Courses
 | Course code      | Course name         | Date Taken    |
 | ---------------- |:-------------------:|:--------------|
